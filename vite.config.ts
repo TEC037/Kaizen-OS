@@ -2,10 +2,11 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
+import { gymPublicAssets } from './vite-plugin-gym-assets';
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), gymPublicAssets()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
