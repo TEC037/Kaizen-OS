@@ -1,0 +1,6 @@
+{
+  "name": "Kaizen OS",
+  "description": "Prototipo web navegable de baja fidelidad del sistema modular Kaizen OS para mejora continua personal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
