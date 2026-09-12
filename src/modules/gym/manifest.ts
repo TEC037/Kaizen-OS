@@ -1,6 +1,7 @@
 /**
  * @file src/modules/gym/manifest.ts
- * @description Manifiesto declarativo del módulo de Gimnasio para Kaizen OS.
+ * @description Manifiesto declarativo del módulo "Punto Fuerte" (FitAi) para Kaizen OS.
+ * La aplicación completa vive en el submódulo Git `src/modules/gym/fitai`.
  * Por defecto está en estado 'available' (disponible para instalar).
  */
 
@@ -10,15 +11,16 @@ import { GymWidget } from './GymWidget';
 
 export const gymManifest: ModuleManifest = {
   id: 'gym',
-  name: 'Gimnasio',
-  description: 'Registro de entrenamientos, rutinas estructuradas y métricas de progreso físico.',
+  name: 'Punto Fuerte',
+  description:
+    'Entrenamientos, rutinas estructuradas, catálogo de ejercicios, nutrición y progreso atlético personal.',
   category: 'Salud y Bienestar',
   iconName: 'Dumbbell',
   defaultStatus: 'available', // IMPORTANTE: Inicialmente disponible, NO instalado
   routes: [
     {
       path: '/gym',
-      label: 'Gimnasio',
+      label: 'Punto Fuerte',
       iconName: 'Dumbbell',
       component: GymPage,
     },
@@ -26,7 +28,7 @@ export const gymManifest: ModuleManifest = {
   widgets: [
     {
       id: 'gym-workout-log',
-      title: 'Entrenamiento & Rutinas',
+      title: 'Punto Fuerte',
       gridSpan: 'half',
       component: GymWidget,
     },

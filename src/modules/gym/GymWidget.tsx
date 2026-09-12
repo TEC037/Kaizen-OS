@@ -1,36 +1,70 @@
 /**
  * @file src/modules/gym/GymWidget.tsx
- * @description Widget de Gimnasio para el Dashboard de Kaizen OS.
- * Solo aparece cuando el módulo está habilitado.
+ * @description Widget del módulo "Punto Fuerte" (FitAi) para el Dashboard de Kaizen OS.
+ * Lee la persistencia del submódulo (fitai_history_v2 / fitai_user_v2) para mostrar
+ * la última sesión y el cumplimiento semanal. Solo aparece cuando el módulo está habilitado.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
-import { WorkoutLogItem, INITIAL_WORKOUT_LOGS } from '../../data/demoData';
-import { loadCustomData } from '../../core/storage';
-import { Dumbbell, Calendar, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { STORAGE_KEYS } from './fitai/src/config/constants';
+import { WorkoutSessionLog, UserProfile } from './fitai/src/types';
+import { Dumbbell, ArrowRight, Flame, CheckCircle2 } from 'lucide-react';
+
+const WORKOUT_COMPLETED_EVENT = 'punto-fuerte:workout-completed';
+
+function readHistory(): WorkoutSessionLog[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.HISTORY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as WorkoutSessionLog[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function readProfile(): Partial<UserProfile> | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USER);
+    if (!raw) return null;
+    return JSON.parse(raw) as Partial<UserProfile>;
+  } catch {
+    return null;
+  }
+}
 
 export const GymWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
-  const [logs, setLogs] = useState<WorkoutLogItem[]>(() =>
-    loadCustomData<WorkoutLogItem[]>('gym_logs', INITIAL_WORKOUT_LOGS)
+  const [history, setHistory] = useState<WorkoutSessionLog[]>(() => readHistory());
+  const [profile, setProfile] = useState<Partial<UserProfile> | null>(() =>
+    readProfile()
   );
 
-  useEffect(() => {
-    const handleStorage = () => {
-      setLogs(loadCustomData<WorkoutLogItem[]>('gym_logs', INITIAL_WORKOUT_LOGS));
-    };
-    window.addEventListener('storage_gym_updated', handleStorage);
-    return () => window.removeEventListener('storage_gym_updated', handleStorage);
+  const refresh = useCallback(() => {
+    setHistory(readHistory());
+    setProfile(readProfile());
   }, []);
 
-  const lastSession = logs[0];
+  useEffect(() => {
+    const handleStorage = () => refresh();
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener(WORKOUT_COMPLETED_EVENT, handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener(WORKOUT_COMPLETED_EVENT, handleStorage);
+    };
+  }, [refresh]);
+
+  const lastSession = history[0];
+  const weeklyCompliance =
+    typeof profile?.weeklyCompliance === 'number' ? profile.weeklyCompliance : null;
 
   return (
     <ModuleWidget
       id="gym-overview"
       moduleId="gym"
-      title="Gimnasio & Entrenamientos"
+      title="Punto Fuerte"
       targetPath="/gym"
       onNavigate={onNavigate}
     >
@@ -43,46 +77,58 @@ export const GymWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
                 <Dumbbell size={14} className="text-zinc-700" />
                 <span>Última sesión: {lastSession.routineName}</span>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500 border border-zinc-200 px-1 py-0.2 bg-white">
-                {lastSession.date}
-              </span>
+              <CheckCircle2 size={14} className="text-green-600" />
             </div>
 
             <div className="grid grid-cols-3 gap-1.5 text-center text-[11px] font-mono">
               <div className="border border-zinc-200 bg-white p-1">
+                <span className="text-zinc-500 block text-[9px]">FECHA</span>
+                <span className="font-semibold text-zinc-800">{lastSession.date}</span>
+              </div>
+              <div className="border border-zinc-200 bg-white p-1">
                 <span className="text-zinc-500 block text-[9px]">DURACIÓN</span>
-                <span className="font-semibold text-zinc-800">{lastSession.durationMinutes} min</span>
+                <span className="font-semibold text-zinc-800">
+                  {lastSession.durationMinutes} min
+                </span>
               </div>
               <div className="border border-zinc-200 bg-white p-1">
-                <span className="text-zinc-500 block text-[9px]">EJERCICIOS</span>
-                <span className="font-semibold text-zinc-800">{lastSession.exercisesCount}</span>
-              </div>
-              <div className="border border-zinc-200 bg-white p-1">
-                <span className="text-zinc-500 block text-[9px]">INTENSIDAD</span>
-                <span className="font-semibold text-zinc-800">{lastSession.intensity}</span>
+                <span className="text-zinc-500 block text-[9px]">VOLUMEN</span>
+                <span className="font-semibold text-zinc-800">
+                  {lastSession.totalVolumeKg.toLocaleString()} kg
+                </span>
               </div>
             </div>
 
-            <p className="text-[11px] text-zinc-600 italic">
-              "{lastSession.notes}"
-            </p>
+            {lastSession.caloriesBurned > 0 && (
+              <p className="text-[11px] text-zinc-600 italic flex items-center gap-1">
+                <Flame size={11} className="text-orange-500" />
+                ~{lastSession.caloriesBurned} kcal quemadas · {lastSession.totalSets} series
+              </p>
+            )}
           </div>
         ) : (
           <p className="text-xs text-zinc-500 italic py-2">
-            No hay entrenamientos registrados aún.
+            Aún no hay entrenamientos registrados en Punto Fuerte.
           </p>
         )}
 
         <div className="flex items-center justify-between pt-1">
-          <span className="text-xs font-mono text-zinc-600">
-            Total sesiones mes: <strong className="text-zinc-900">{logs.length}</strong>
-          </span>
+          {weeklyCompliance !== null ? (
+            <span className="text-xs font-mono text-zinc-600">
+              Cumplimiento semanal:{' '}
+              <strong className="text-zinc-900">{weeklyCompliance}%</strong>
+            </span>
+          ) : (
+            <span className="text-xs font-mono text-zinc-600">
+              Total sesiones: <strong className="text-zinc-900">{history.length}</strong>
+            </span>
+          )}
           <button
             type="button"
             onClick={() => onNavigate('/gym')}
             className="text-xs font-mono text-zinc-800 hover:text-zinc-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
-            <span>Ver rutinas y registrar</span>
+            <span>Abrir Punto Fuerte</span>
             <ArrowRight size={12} />
           </button>
         </div>

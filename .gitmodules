@@ -1,0 +1,3 @@
+[submodule "src/modules/gym/fitai"]
+	path = src/modules/gym/fitai
+	url = https://github.com/TEC037/FitAi.git
