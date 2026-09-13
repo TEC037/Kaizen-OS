@@ -53,7 +53,11 @@ export function useProjectsStore() {
   );
 
   const removeProject = useCallback(
-    (id) => commit(projects.filter((p) => p.id !== id)),
+    (id) => {
+      const target = projects.find((p) => p.id === id);
+      commit(projects.filter((p) => p.id !== id));
+      if (target) dispatchForja('project-removed', { title: target.title });
+    },
     [projects, commit]
   );
 
@@ -98,6 +102,7 @@ export function useProjectsStore() {
             : p
         )
       );
+      dispatchForja('project-regressed', { title: target.title, status });
     },
     [projects, commit]
   );
@@ -118,9 +123,13 @@ export function useProjectsStore() {
   const resetToSeed = useCallback(() => {
     const seed = seedProjects.map((s) => ({ ...s, createdAt: new Date().toISOString(), log: [] }));
     commit(seed);
+    dispatchForja('projects-reset', {});
   }, [commit]);
 
-  const clearAll = useCallback(() => commit([]), [commit]);
+  const clearAll = useCallback(() => {
+    commit([]);
+    dispatchForja('projects-cleared', {});
+  }, [commit]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

@@ -33,16 +33,29 @@ export const ProjectsPage: React.FC = () => {
       window.dispatchEvent(new Event('storage_projects_updated'));
     };
 
+    const handleProjectMutated = () => {
+      soundEngine.playTap();
+      window.dispatchEvent(new Event('storage_projects_updated'));
+    };
+
     window.addEventListener('forja:next-action-done', handleNextAction);
     window.addEventListener('forja:project-completed', handleProjectCompleted);
     window.addEventListener('forja:project-advanced', handleProjectAdvanced);
     window.addEventListener('forja:project-created', handleProjectCreated);
+    window.addEventListener('forja:project-regressed', handleProjectMutated);
+    window.addEventListener('forja:project-removed', handleProjectMutated);
+    window.addEventListener('forja:projects-reset', handleProjectMutated);
+    window.addEventListener('forja:projects-cleared', handleProjectMutated);
 
     return () => {
       window.removeEventListener('forja:next-action-done', handleNextAction);
       window.removeEventListener('forja:project-completed', handleProjectCompleted);
       window.removeEventListener('forja:project-advanced', handleProjectAdvanced);
       window.removeEventListener('forja:project-created', handleProjectCreated);
+      window.removeEventListener('forja:project-regressed', handleProjectMutated);
+      window.removeEventListener('forja:project-removed', handleProjectMutated);
+      window.removeEventListener('forja:projects-reset', handleProjectMutated);
+      window.removeEventListener('forja:projects-cleared', handleProjectMutated);
     };
   }, []);
 
