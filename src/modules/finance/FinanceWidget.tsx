@@ -18,7 +18,7 @@ import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
 import { awardKaizenPoints } from '../../core/scoring';
-import { Wallet, ArrowRight, Target, Plus } from 'lucide-react';
+import { Wallet, ArrowRight, Target, Plus, CheckCircle2, RefreshCw } from 'lucide-react';
 
 export const FinanceWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const [categories, setCategories] = useState<ExpenseCategoryItem[]>(() =>
@@ -27,6 +27,7 @@ export const FinanceWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const [goals, setGoals] = useState<FinancialGoalItem[]>(() =>
     loadCustomData<FinancialGoalItem[]>('finance_goals', INITIAL_FINANCIAL_GOALS)
   );
+  const [activeGoalIndex, setActiveGoalIndex] = useState(0);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -40,33 +41,41 @@ export const FinanceWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const totalSpent = categories.reduce((acc, c) => acc + c.spent, 0);
   const totalAllocated = categories.reduce((acc, c) => acc + c.allocated, 0);
   const budgetPercent = totalAllocated > 0 ? Math.round((totalSpent / totalAllocated) * 100) : 0;
-  const primaryGoal = goals[0];
-  const goalPercent = primaryGoal
-    ? Math.round((primaryGoal.currentAmount / primaryGoal.targetAmount) * 100)
+  
+  const activeGoal = goals[activeGoalIndex % (goals.length || 1)] || goals[0];
+  const isGoalReached = Boolean(activeGoal && activeGoal.currentAmount >= activeGoal.targetAmount);
+  const goalPercent = activeGoal
+    ? Math.round((activeGoal.currentAmount / activeGoal.targetAmount) * 100)
     : 0;
 
-  const contributeToGoal = (amount: number) => {
-    if (!primaryGoal) return;
-    const nextAmount = Math.min(primaryGoal.targetAmount, primaryGoal.currentAmount + amount);
-    const isGoalReached = nextAmount >= primaryGoal.targetAmount;
+  const cycleNextGoal = () => {
+    soundEngine.playTap();
+    if (goals.length <= 1) return;
+    setActiveGoalIndex((prev) => (prev + 1) % goals.length);
+  };
 
-    const updated = goals.map((g) => (g.id === primaryGoal.id ? { ...g, currentAmount: nextAmount } : g));
+  const contributeToGoal = (amount: number) => {
+    if (!activeGoal) return;
+    const nextAmount = Math.min(activeGoal.targetAmount, activeGoal.currentAmount + amount);
+    const willBeReached = nextAmount >= activeGoal.targetAmount;
+
+    const updated = goals.map((g) => (g.id === activeGoal.id ? { ...g, currentAmount: nextAmount } : g));
     setGoals(updated);
     saveCustomData('finance_goals', updated);
     window.dispatchEvent(new Event('storage_finance_updated'));
 
-    if (isGoalReached) {
+    if (willBeReached) {
       soundEngine.playMilestone();
-      awardKaizenPoints(40, 'finance', `Hito Financiero: ¡Meta alcanzada "${primaryGoal.title}"!`);
+      awardKaizenPoints(40, 'finance', `Hito Financiero: ¡Meta alcanzada "${activeGoal.title}"!`);
     } else {
       soundEngine.playComplete();
-      awardKaizenPoints(15, 'finance', `Ahorro registrado: +$${amount} hacia "${primaryGoal.title}"`);
+      awardKaizenPoints(15, 'finance', `Ahorro registrado: +$${amount} hacia "${activeGoal.title}"`);
     }
 
     kaizenBus.emit(KaizenContracts.FinanceExpenseLogged, {
       category: 'Ahorro / Metas',
       amount,
-      description: primaryGoal.title,
+      description: activeGoal.title,
     });
   };
 
@@ -98,18 +107,36 @@ export const FinanceWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
         </div>
 
         {/* Meta destacada con aporte rápido en 1 click */}
-        {primaryGoal && (
+        {activeGoal && (
           <div className="p-3 border border-stone-200 bg-[#faf8f1] rounded-sm space-y-2">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 min-w-0">
                 <Target size={13} className="text-emerald-700 shrink-0" />
                 <span className="font-bold text-stone-900 truncate">
-                  {primaryGoal.title}
+                  {activeGoal.title}
                 </span>
               </div>
-              <span className="text-[10px] font-bold border border-emerald-300 bg-emerald-50 text-emerald-800 px-1.5 py-0.2 rounded-xs">
-                {goalPercent}%
-              </span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {goals.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={cycleNextGoal}
+                    className="p-1 border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 rounded-xs text-[10px] cursor-pointer"
+                    title="Alternar entre metas financieras"
+                  >
+                    <RefreshCw size={11} />
+                  </button>
+                )}
+                <span
+                  className={`text-[10px] font-bold border px-1.5 py-0.2 rounded-xs ${
+                    isGoalReached
+                      ? 'border-emerald-400 bg-emerald-100 text-emerald-900'
+                      : 'border-emerald-300 bg-emerald-50 text-emerald-800'
+                  }`}
+                >
+                  {goalPercent}%
+                </span>
+              </div>
             </div>
 
             <div className="w-full bg-stone-200 h-1.5 rounded-xs overflow-hidden">
@@ -120,34 +147,50 @@ export const FinanceWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-stone-600">
-              <span>${primaryGoal.currentAmount.toLocaleString()} de ${primaryGoal.targetAmount.toLocaleString()}</span>
-              <span>Plazo: {primaryGoal.deadline}</span>
+              <span>${activeGoal.currentAmount.toLocaleString()} de ${activeGoal.targetAmount.toLocaleString()}</span>
+              <span>Plazo: {activeGoal.deadline}</span>
             </div>
 
-            {/* Acciones de aporte rápido (+ $25 y + $50) */}
-            <div className="flex items-center justify-between pt-1 border-t border-stone-200/60">
-              <span className="text-[10px] text-stone-500">Aporte rápido:</span>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => contributeToGoal(25)}
-                  disabled={primaryGoal.currentAmount >= primaryGoal.targetAmount}
-                  className="px-2 py-0.5 border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 rounded-xs text-[10px] font-bold cursor-pointer disabled:opacity-40 transition-colors"
-                  title="Aportar $25 a esta meta (+15 pts Kaizen)"
-                >
-                  +$25
-                </button>
-                <button
-                  type="button"
-                  onClick={() => contributeToGoal(50)}
-                  disabled={primaryGoal.currentAmount >= primaryGoal.targetAmount}
-                  className="px-2 py-0.5 border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-950 rounded-xs text-[10px] font-bold cursor-pointer disabled:opacity-40 transition-colors"
-                  title="Aportar $50 a esta meta (+15 pts Kaizen)"
-                >
-                  +$50
-                </button>
+            {/* Acciones de aporte rápido (+ $25 y + $50) o estado de meta cumplida */}
+            {isGoalReached ? (
+              <div className="flex items-center justify-between pt-1 border-t border-stone-200/60">
+                <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-[11px]">
+                  <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
+                  <span>¡Meta alcanzada! (+40 pts)</span>
+                </div>
+                {goals.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={cycleNextGoal}
+                    className="px-2 py-0.5 border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 rounded-xs text-[10px] font-bold cursor-pointer"
+                  >
+                    Siguiente meta →
+                  </button>
+                )}
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center justify-between pt-1 border-t border-stone-200/60">
+                <span className="text-[10px] text-stone-500">Aporte rápido:</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => contributeToGoal(25)}
+                    className="px-2 py-0.5 border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 rounded-xs text-[10px] font-bold cursor-pointer transition-colors"
+                    title="Aportar $25 a esta meta (+15 pts Kaizen)"
+                  >
+                    +$25
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => contributeToGoal(50)}
+                    className="px-2 py-0.5 border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-950 rounded-xs text-[10px] font-bold cursor-pointer transition-colors"
+                    title="Aportar $50 a esta meta (+15 pts Kaizen)"
+                  >
+                    +$50
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
