@@ -9,6 +9,8 @@ import { BookItem, INITIAL_BOOKS } from '../../data/demoData';
 import { loadCustomData, saveCustomData } from '../../core/storage';
 import { awardKaizenPoints } from '../../core/scoring';
 import { soundEngine } from '../../core/sound';
+import { kaizenBus } from '../../sdk/bus';
+import { KaizenContracts } from '../../sdk/contracts';
 import { BookOpen, Plus, Check, Bookmark, ArrowUpRight } from 'lucide-react';
 
 export const ReadingPage: React.FC = () => {
@@ -51,6 +53,11 @@ export const ReadingPage: React.FC = () => {
       soundEngine.playComplete();
       awardKaizenPoints(15, 'reading', `Lectura activa: +${pagesToAdd} págs en ${bookTitle}`);
     }
+
+    kaizenBus.emit(KaizenContracts.ReadingSessionFinished, {
+      bookTitle,
+      pagesRead: pagesToAdd,
+    });
   };
 
   const handleAddBook = (e: React.FormEvent) => {

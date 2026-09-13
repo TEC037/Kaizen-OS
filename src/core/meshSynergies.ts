@@ -128,6 +128,47 @@ export function initializeMeshSynergies(): () => void {
   });
   cleanups.push(unsubHabits);
 
+  // 5. Lectura -> Hábitos (TRANSMUTE)
+  const unsubReading = kaizenBus.on(KaizenContracts.ReadingSessionFinished, (_payload) => {
+    try {
+      const raw = localStorage.getItem('transmute-storage');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const habits: Array<{ id: string; name: string; completedDays?: Record<string, boolean> }> =
+          parsed?.state?.habits ?? [];
+        const today = new Date().toISOString().split('T')[0];
+
+        // Buscar un hábito que contenga palabras clave de lectura o libros
+        const readingHabit = habits.find((h) => {
+          const name = (h.name || '').toLowerCase();
+          return (
+            name.includes('lectura') ||
+            name.includes('leer') ||
+            name.includes('libro') ||
+            name.includes('read') ||
+            name.includes('páginas') ||
+            name.includes('paginas')
+          );
+        });
+
+        if (readingHabit && !readingHabit.completedDays?.[today]) {
+          import('../modules/habits/transmute/src/store/useStore')
+            .then(({ useStore }) => {
+              const { toggleHabit } = useStore.getState();
+              toggleHabit(readingHabit.id, today);
+              console.info(
+                `[MeshSynergy] Hábito "${readingHabit.name}" auto-completado tras sesión de Lectura.`
+              );
+            })
+            .catch(() => {});
+        }
+      }
+    } catch (err) {
+      console.warn('[MeshSynergy] Error intentando sinergia Lectura -> Hábitos:', err);
+    }
+  });
+  cleanups.push(unsubReading);
+
   return () => {
     cleanups.forEach((fn) => fn());
   };
