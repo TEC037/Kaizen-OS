@@ -7,6 +7,8 @@ import React from 'react';
 import { X, Keyboard } from 'lucide-react';
 import { KzHotKey } from './ui/KzHotKey';
 
+import { soundEngine } from '../core/sound';
+
 interface ShortcutsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -52,7 +54,10 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              soundEngine.playTap();
+            }}
             className="text-stone-500 hover:text-stone-900 border border-stone-300 px-2 py-0.5 rounded-sm cursor-pointer"
           >
             <X size={14} />
@@ -80,7 +85,10 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
         <div className="pt-2 border-t border-stone-200 flex justify-end">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              soundEngine.playTap();
+            }}
             className="px-4 py-1.5 text-xs font-mono font-bold bg-[#211d19] text-[#faf8f1] rounded-sm cursor-pointer hover:bg-stone-800"
           >
             Entendido [Esc]
