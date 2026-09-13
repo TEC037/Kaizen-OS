@@ -435,8 +435,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <button
               type="button"
               id="btn-dashboard-customize"
-              onClick={onToggleDashboardCustomize}
-              className="px-2.5 py-1 text-xs font-mono border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 flex items-center gap-1.5 rounded-sm cursor-pointer"
+              onClick={() => {
+                onToggleDashboardCustomize();
+                soundEngine.playTap();
+              }}
+              className={`px-2.5 py-1 text-xs font-mono border flex items-center gap-1.5 rounded-sm cursor-pointer transition-colors ${
+                showDashboardCustomize
+                  ? 'border-stone-400 bg-stone-100 text-stone-900 font-semibold'
+                  : 'border-stone-300 bg-white hover:bg-stone-50 text-stone-700'
+              }`}
               title="Personalizar orden y visibilidad de widgets"
             >
               <LayoutGrid size={13} />
@@ -481,7 +488,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
-                      onClick={() => movePlacement(placement.widgetId, -1)}
+                      onClick={() => {
+                        movePlacement(placement.widgetId, -1);
+                        soundEngine.playTap();
+                      }}
                       disabled={index === 0}
                       className="p-1 border border-stone-300 bg-white text-stone-600 hover:text-stone-900 disabled:opacity-30 rounded-xs cursor-pointer"
                       title="Mover arriba"
@@ -490,7 +500,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => movePlacement(placement.widgetId, 1)}
+                      onClick={() => {
+                        movePlacement(placement.widgetId, 1);
+                        soundEngine.playTap();
+                      }}
                       disabled={index === widgetLayout.placements.length - 1}
                       className="p-1 border border-stone-300 bg-white text-stone-600 hover:text-stone-900 disabled:opacity-30 rounded-xs cursor-pointer"
                       title="Mover abajo"
@@ -514,7 +527,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setPlacement(placement.widgetId, { visible: !placement.visible })}
+                    onClick={() => {
+                      setPlacement(placement.widgetId, { visible: !placement.visible });
+                      soundEngine.playTap();
+                    }}
                     className={`px-2 py-1 border flex items-center gap-1 cursor-pointer text-[11px] rounded-sm ${
                       placement.visible
                         ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
