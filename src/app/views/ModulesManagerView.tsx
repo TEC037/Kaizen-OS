@@ -3,8 +3,8 @@
  * @description Vista del Catálogo y Gestión Central de Módulos de Kaizen OS.
  */
 
-import React from 'react';
-import { RotateCcw } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { RotateCcw, Search, X } from 'lucide-react';
 import { ModuleManifest, ModuleStatus } from '../../core/types';
 import { ModuleCard } from '../../components/ModuleCard';
 import { EmptyState } from '../../components/EmptyState';
@@ -12,6 +12,7 @@ import { ModuleSettings } from '../../components/ModuleSettings';
 import { KzCard } from '../../components/ui/KzCard';
 import { KzButton } from '../../components/ui/KzButton';
 import { KzBadge } from '../../components/ui/KzBadge';
+import { soundEngine } from '../../core/sound';
 
 interface ModulesManagerViewProps {
   allManifests: ModuleManifest[];
@@ -40,6 +41,34 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
   onFullReset,
   onNavigate,
 }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const allCategories = useMemo(() => {
+    const cats = new Set<string>();
+    allManifests.forEach((m) => {
+      if (m.category) cats.add(m.category);
+    });
+    return Array.from(cats);
+  }, [allManifests]);
+
+  const filterManifest = (m: ModuleManifest) => {
+    const q = searchQuery.toLowerCase().trim();
+    const matchesQuery =
+      !q ||
+      m.name.toLowerCase().includes(q) ||
+      m.id.toLowerCase().includes(q) ||
+      m.description.toLowerCase().includes(q) ||
+      m.category.toLowerCase().includes(q);
+
+    const matchesCategory = selectedCategory === 'all' || m.category === selectedCategory;
+
+    return matchesQuery && matchesCategory;
+  };
+
+  const filteredInstalled = installedManifests.filter(filterManifest);
+  const filteredAvailable = availableManifests.filter(filterManifest);
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Encabezado */}
@@ -72,12 +101,70 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
         </div>
       </KzCard>
 
+      {/* Barra de Búsqueda Rápida y Filtro por Categorías */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+        <div className="relative flex-1 max-w-sm">
+          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar módulo por nombre o categoría..."
+            className="w-full pl-8 pr-7 py-1.5 border border-stone-300 bg-white text-stone-900 rounded-sm outline-none focus:border-stone-500 placeholder:text-stone-400"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 cursor-pointer"
+            >
+              <X size={13} />
+            </button>
+          )}
+        </div>
+
+        {/* Chips de Categorías */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedCategory('all');
+              soundEngine.playTap();
+            }}
+            className={`px-2 py-1 rounded-xs border text-[11px] cursor-pointer transition-colors ${
+              selectedCategory === 'all'
+                ? 'bg-stone-900 border-stone-900 text-stone-100 font-bold'
+                : 'bg-white border-stone-300 text-stone-600 hover:bg-stone-100'
+            }`}
+          >
+            Todos ({allManifests.length})
+          </button>
+          {allCategories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => {
+                setSelectedCategory(cat);
+                soundEngine.playTap();
+              }}
+              className={`px-2 py-1 rounded-xs border text-[11px] cursor-pointer transition-colors ${
+                selectedCategory === cat
+                  ? 'bg-stone-900 border-stone-900 text-stone-100 font-bold'
+                  : 'bg-white border-stone-300 text-stone-600 hover:bg-stone-100'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Grupo 1: Módulos Instalados (Habilitados y Suspendidos) */}
       <div className="space-y-3">
         <div className="border-b border-stone-300 pb-2 flex items-center justify-between font-mono">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-bold text-stone-900 tracking-tight uppercase">
-              Módulos Instalados ({installedManifests.length})
+              Módulos Instalados ({filteredInstalled.length})
             </h2>
             <span className="text-xs text-stone-500">
               ({enabledManifests.length} habilitados, {installedManifests.length - enabledManifests.length} suspendidos)
@@ -97,9 +184,13 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
             onAction={onFullReset}
             variant="neutral"
           />
+        ) : filteredInstalled.length === 0 ? (
+          <div className="border border-dashed border-stone-300 bg-[#faf8f1] p-6 text-center text-xs text-stone-600 font-mono rounded-sm">
+            No se encontraron módulos instalados que coincidan con &ldquo;{searchQuery}&rdquo;.
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {installedManifests.map((manifest) => (
+            {filteredInstalled.map((manifest) => (
               <ModuleCard
                 key={manifest.id}
                 manifest={manifest}
@@ -163,7 +254,7 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
         <div className="border-b border-stone-300 pb-2 flex items-center justify-between font-mono">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-bold text-stone-900 tracking-tight uppercase">
-              Módulos Disponibles ({availableManifests.length})
+              Módulos Disponibles ({filteredAvailable.length})
             </h2>
             <span className="text-xs text-stone-500">
               Listos para ser instalados en un click
@@ -178,9 +269,13 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
           <div className="border border-dashed border-stone-300 bg-[#faf8f1] p-6 text-center text-xs text-stone-600 font-mono rounded-sm">
             Todos los módulos del catálogo ya están instalados en tu sistema.
           </div>
+        ) : filteredAvailable.length === 0 ? (
+          <div className="border border-dashed border-stone-300 bg-[#faf8f1] p-6 text-center text-xs text-stone-600 font-mono rounded-sm">
+            No se encontraron módulos disponibles que coincidan con &ldquo;{searchQuery}&rdquo;.
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {availableManifests.map((manifest) => (
+            {filteredAvailable.map((manifest) => (
               <ModuleCard
                 key={manifest.id}
                 manifest={manifest}
