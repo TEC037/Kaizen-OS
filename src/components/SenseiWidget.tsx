@@ -40,6 +40,7 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
   const [insightIndex, setInsightIndex] = useState(0);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiInsight, setAiInsight] = useState<SenseiInsight | null>(null);
+  const [hasKey, setHasKey] = useState<boolean>(() => Boolean(getGeminiApiKey()));
   const exportCardRef = useRef<HTMLDivElement>(null);
 
   // Leer estado real de los módulos para correlación holística
@@ -96,7 +97,9 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
     );
     if (input !== null) {
       setGeminiApiKey(input);
-      if (input.trim()) {
+      const active = Boolean(input.trim());
+      setHasKey(active);
+      if (active) {
         soundEngine.playComplete();
         handleNextInsight();
       }
@@ -141,10 +144,14 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
           <button
             type="button"
             onClick={handleConfigureKey}
-            className="p-1.5 border border-stone-300 bg-white hover:bg-stone-100 text-stone-600 rounded-sm cursor-pointer"
-            title="Configurar API Key de Gemini para reflexiones de IA"
+            className={`p-1.5 border rounded-sm cursor-pointer transition-colors ${
+              hasKey
+                ? 'border-emerald-400 bg-emerald-50 text-emerald-900'
+                : 'border-stone-300 bg-white hover:bg-stone-100 text-stone-600'
+            }`}
+            title={hasKey ? 'Gemini IA activa (click para modificar API Key)' : 'Configurar API Key de Gemini para reflexiones de IA en vivo'}
           >
-            <Key size={12} />
+            <Key size={12} className={hasKey ? 'text-emerald-700' : 'text-stone-500'} />
           </button>
 
           <KzButton
