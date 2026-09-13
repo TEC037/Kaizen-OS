@@ -115,8 +115,12 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
           {searchQuery && (
             <button
               type="button"
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                soundEngine.playTap();
+              }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 cursor-pointer"
+              title="Limpiar búsqueda"
             >
               <X size={13} />
             </button>
