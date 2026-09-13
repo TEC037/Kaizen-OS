@@ -192,7 +192,10 @@ export const ReadingWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
           </span>
           <button
             type="button"
-            onClick={() => onNavigate('/reading')}
+            onClick={() => {
+              soundEngine.playTap();
+              onNavigate('/reading');
+            }}
             className="text-xs text-stone-700 hover:text-stone-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
             <span>Ver biblioteca</span>
