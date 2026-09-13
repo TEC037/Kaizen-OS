@@ -260,8 +260,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   />
                   <span><strong>{scoreState.currentStreakDays} {scoreState.currentStreakDays === 1 ? 'día' : 'días'}</strong></span>
                 </span>
-                <span className="flex items-center gap-1 border border-stone-200 px-2 py-0.5 bg-[#faf8f1] rounded-sm text-[11px]">
-                  <Award size={12} className="text-stone-700" />
+                <span
+                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-colors ${
+                    isDailyGoalAchieved
+                      ? 'border-emerald-400 bg-emerald-100/80 text-emerald-950 font-semibold'
+                      : 'border-stone-200 bg-[#faf8f1] text-stone-700'
+                  }`}
+                  title={
+                    isDailyGoalAchieved
+                      ? `¡Meta del 1% diario alcanzada! (${scoreState.todayPoints}/${scoreState.dailyGoalPoints} pts)`
+                      : `Progreso de puntos de hoy: ${scoreState.todayPoints} de ${scoreState.dailyGoalPoints} pts`
+                  }
+                >
+                  <Award
+                    size={12}
+                    className={
+                      isDailyGoalAchieved
+                        ? 'text-emerald-700'
+                        : 'text-stone-700'
+                    }
+                  />
                   <span><strong>{scoreState.todayPoints}/{scoreState.dailyGoalPoints}</strong></span>
                 </span>
               </div>
