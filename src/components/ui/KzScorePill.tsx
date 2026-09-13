@@ -6,6 +6,7 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { soundEngine } from '../../core/sound';
 
 export interface KzScorePillProps {
   points: number;
@@ -25,12 +26,19 @@ export const KzScorePill: React.FC<KzScorePillProps> = ({
   const isClickable = Boolean(onClick);
   const isGoalDone = typeof dailyPercent === 'number' && dailyPercent >= 100;
 
+  const handleClick = () => {
+    if (onClick) {
+      soundEngine.playTap();
+      onClick();
+    }
+  };
+
   return (
     <motion.button
       type="button"
       whileHover={isClickable ? { scale: 1.02 } : undefined}
       whileTap={isClickable ? { scale: 0.97 } : undefined}
-      onClick={onClick}
+      onClick={isClickable ? handleClick : undefined}
       className={`inline-flex items-center gap-1.5 font-mono border rounded-sm select-none transition-all ${
         isGoalDone
           ? 'border-emerald-400 bg-emerald-50/90 text-emerald-950 hover:bg-emerald-100/90 shadow-[0_0_8px_rgba(16,185,129,0.15)]'
