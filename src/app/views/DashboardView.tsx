@@ -238,8 +238,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
 
               <div className="flex items-center gap-2 text-xs font-mono">
-                <span className="flex items-center gap-1 border border-stone-200 px-2 py-0.5 bg-[#faf8f1] rounded-sm text-[11px]">
-                  <Flame size={12} className="text-amber-600" />
+                <span
+                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-colors ${
+                    scoreState.currentStreakDays >= 7
+                      ? 'border-amber-400 bg-amber-100/80 text-amber-950 font-semibold'
+                      : 'border-stone-200 bg-[#faf8f1] text-stone-700'
+                  }`}
+                  title={
+                    scoreState.currentStreakDays >= 7
+                      ? `¡Gran racha de constancia!: ${scoreState.currentStreakDays} días consecutivos`
+                      : `Racha actual: ${scoreState.currentStreakDays} días`
+                  }
+                >
+                  <Flame
+                    size={12}
+                    className={
+                      scoreState.currentStreakDays >= 7
+                        ? 'text-amber-600 fill-amber-500'
+                        : 'text-amber-600'
+                    }
+                  />
                   <span><strong>{scoreState.currentStreakDays} {scoreState.currentStreakDays === 1 ? 'día' : 'días'}</strong></span>
                 </span>
                 <span className="flex items-center gap-1 border border-stone-200 px-2 py-0.5 bg-[#faf8f1] rounded-sm text-[11px]">
