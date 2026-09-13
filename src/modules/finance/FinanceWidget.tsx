@@ -209,7 +209,10 @@ export const FinanceWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
         <div className="pt-1 flex justify-end">
           <button
             type="button"
-            onClick={() => onNavigate('/finance')}
+            onClick={() => {
+              soundEngine.playTap();
+              onNavigate('/finance');
+            }}
             className="text-xs font-mono text-stone-700 hover:text-stone-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
             <span>Ver categorías y metas</span>
