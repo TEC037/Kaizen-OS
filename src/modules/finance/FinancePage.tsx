@@ -5,7 +5,7 @@
  * No utiliza datos bancarios reales.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ExpenseCategoryItem,
   FinancialGoalItem,
@@ -29,6 +29,19 @@ export const FinancePage: React.FC = () => {
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]?.id || '');
   const [expenseAmount, setExpenseAmount] = useState(25);
+
+  useEffect(() => {
+    if (!showExpenseModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        soundEngine.playTap();
+        setShowExpenseModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showExpenseModal]);
 
   const updateCategories = (cats: ExpenseCategoryItem[]) => {
     setCategories(cats);
