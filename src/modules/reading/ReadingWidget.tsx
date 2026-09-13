@@ -160,20 +160,22 @@ export const ReadingWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    onClick={() => advancePages(5)}
+                    onClick={() => advancePages(Math.min(5, activeBook.totalPages - activeBook.currentPage))}
                     className="px-2 py-0.5 border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 rounded-xs text-[10px] font-bold cursor-pointer transition-colors"
-                    title="Registrar 5 páginas leídas (+15 pts Kaizen)"
+                    title={`Registrar ${Math.min(5, activeBook.totalPages - activeBook.currentPage)} páginas leídas (+15 pts Kaizen)`}
                   >
-                    +5 págs
+                    +{Math.min(5, activeBook.totalPages - activeBook.currentPage)} págs
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => advancePages(10)}
-                    className="px-2 py-0.5 border border-indigo-300 bg-indigo-50 hover:bg-indigo-100 text-indigo-950 rounded-xs text-[10px] font-bold cursor-pointer transition-colors"
-                    title="Registrar 10 páginas leídas (+15 pts Kaizen)"
-                  >
-                    +10 págs
-                  </button>
+                  {activeBook.totalPages - activeBook.currentPage > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => advancePages(Math.min(10, activeBook.totalPages - activeBook.currentPage))}
+                      className="px-2 py-0.5 border border-indigo-300 bg-indigo-50 hover:bg-indigo-100 text-indigo-950 rounded-xs text-[10px] font-bold cursor-pointer transition-colors"
+                      title={`Registrar ${Math.min(10, activeBook.totalPages - activeBook.currentPage)} páginas leídas (+15 pts Kaizen)`}
+                    >
+                      +{Math.min(10, activeBook.totalPages - activeBook.currentPage)} págs
+                    </button>
+                  )}
                 </div>
               </div>
             )}
