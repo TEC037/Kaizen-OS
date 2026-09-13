@@ -122,6 +122,7 @@ const InnerShell: React.FC = () => {
     onToggleCommandBar: () => setShowCommandBar(!showCommandBar),
     onToggleZenMode: toggleZenMode,
     onToggleShortcutsModal: () => setShowShortcutsModal(!showShortcutsModal),
+    onToggleSound: toggleSound,
     onNavigate: navigate,
     onCloseModals: closeAllModals,
   });

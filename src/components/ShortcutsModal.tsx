@@ -18,6 +18,7 @@ const SHORTCUT_GROUPS = [
     items: [
       { keys: ['⌘', 'K'], label: 'Abrir Centro de Mando / Omnibar' },
       { keys: ['Z'], label: 'Alternar Modo Zen (enfoque sin distracciones)' },
+      { keys: ['M'], label: 'Silenciar / Activar sonido' },
       { keys: ['?'], label: 'Ver esta ayuda de atajos' },
       { keys: ['Esc'], label: 'Cerrar modal / menú activo' },
     ],

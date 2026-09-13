@@ -10,6 +10,7 @@ interface KeyboardShortcutsOptions {
   onToggleCommandBar: () => void;
   onToggleZenMode: () => void;
   onToggleShortcutsModal: () => void;
+  onToggleSound?: () => void;
   onNavigate: (path: string) => void;
   onCloseModals: () => void;
 }
@@ -18,6 +19,7 @@ export function useKeyboardShortcuts({
   onToggleCommandBar,
   onToggleZenMode,
   onToggleShortcutsModal,
+  onToggleSound,
   onNavigate,
   onCloseModals,
 }: KeyboardShortcutsOptions) {
@@ -56,6 +58,13 @@ export function useKeyboardShortcuts({
       if (e.key.toLowerCase() === 'z') {
         e.preventDefault();
         onToggleZenMode();
+        return;
+      }
+
+      // Sonido toggle: tecla 'm' o 'M' (Mute) cuando no viene de secuencia 'g'
+      if (e.key.toLowerCase() === 'm' && prevKey.key.toLowerCase() !== 'g') {
+        e.preventDefault();
+        onToggleSound?.();
         return;
       }
 
