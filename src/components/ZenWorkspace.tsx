@@ -150,7 +150,10 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
         <KzButton
           variant="craft"
           size="sm"
-          onClick={onExitZen}
+          onClick={() => {
+            soundEngine.playTap();
+            onExitZen();
+          }}
           icon={<Minimize2 size={13} />}
           title="Salir de Modo Zen (tecla Z)"
         >
@@ -192,6 +195,7 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
               <button
                 type="button"
                 onClick={() => {
+                  soundEngine.playTap();
                   const next = soundEngine.toggleAmbientRain();
                   setIsRainActive(next);
                 }}
@@ -295,6 +299,7 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
                   variant="craft"
                   size="md"
                   onClick={() => {
+                    soundEngine.playTap();
                     onExitZen();
                     onNavigate('/projects');
                   }}
