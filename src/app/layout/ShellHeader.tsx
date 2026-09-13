@@ -182,7 +182,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
           <button
             type="button"
             id="nav-dashboard"
-            onClick={() => onNavigate('/')}
+            onClick={() => {
+              onNavigate('/');
+              soundEngine.playTap();
+            }}
             className={`px-3 py-1.5 rounded-sm border flex items-center gap-1.5 cursor-pointer transition-colors ${
               currentPath === '/'
                 ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-semibold'
@@ -201,7 +204,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
                 key={route.path}
                 id={`nav-${route.moduleId}`}
                 type="button"
-                onClick={() => onNavigate(route.path)}
+                onClick={() => {
+                  onNavigate(route.path);
+                  soundEngine.playTap();
+                }}
                 className={`px-3 py-1.5 rounded-sm border flex items-center gap-1.5 cursor-pointer transition-colors ${
                   isActive
                     ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-semibold'
@@ -302,7 +308,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
       <div className="md:hidden border-t border-stone-200 px-4 py-2 flex items-center gap-1 overflow-x-auto text-xs font-mono bg-[#faf8f1]">
         <button
           type="button"
-          onClick={() => onNavigate('/')}
+          onClick={() => {
+            onNavigate('/');
+            soundEngine.playTap();
+          }}
           className={`px-2.5 py-1 border rounded-sm shrink-0 ${
             currentPath === '/' ? 'bg-[#211d19] text-white border-[#211d19]' : 'bg-white border-stone-300'
           }`}
@@ -313,7 +322,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
           <button
             key={route.path}
             type="button"
-            onClick={() => onNavigate(route.path)}
+            onClick={() => {
+              onNavigate(route.path);
+              soundEngine.playTap();
+            }}
             className={`px-2.5 py-1 border rounded-sm shrink-0 ${
               currentPath === route.path ? 'bg-[#211d19] text-white border-[#211d19]' : 'bg-white border-stone-300'
             }`}
