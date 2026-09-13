@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { soundEngine } from './sound';
 
 interface KeyboardShortcutsOptions {
   onToggleCommandBar: () => void;
@@ -39,6 +40,7 @@ export function useKeyboardShortcuts({
       // Cmd+K o Ctrl+K funciona SIEMPRE, incluso dentro de inputs
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
+        soundEngine.playTap();
         onToggleCommandBar();
         return;
       }
@@ -50,6 +52,7 @@ export function useKeyboardShortcuts({
 
       // Escape cierra modales
       if (e.key === 'Escape') {
+        soundEngine.playTap();
         onCloseModals();
         return;
       }
@@ -57,6 +60,7 @@ export function useKeyboardShortcuts({
       // Zen mode toggle: tecla 'z' o 'Z'
       if (e.key.toLowerCase() === 'z') {
         e.preventDefault();
+        soundEngine.playTap();
         onToggleZenMode();
         return;
       }
@@ -64,6 +68,7 @@ export function useKeyboardShortcuts({
       // Sonido toggle: tecla 'm' o 'M' (Mute) cuando no viene de secuencia 'g'
       if (e.key.toLowerCase() === 'm' && prevKey.key.toLowerCase() !== 'g') {
         e.preventDefault();
+        soundEngine.playTap();
         onToggleSound?.();
         return;
       }
@@ -71,6 +76,7 @@ export function useKeyboardShortcuts({
       // Ayuda: tecla '?'
       if (e.key === '?') {
         e.preventDefault();
+        soundEngine.playTap();
         onToggleShortcutsModal();
         return;
       }
@@ -78,6 +84,7 @@ export function useKeyboardShortcuts({
       // '/' abre el CommandBar
       if (e.key === '/') {
         e.preventDefault();
+        soundEngine.playTap();
         onToggleCommandBar();
         return;
       }
@@ -85,27 +92,38 @@ export function useKeyboardShortcuts({
       // Manejo de secuencias de 2 teclas que empiezan por 'g' (Go to...)
       if (prevKey.key.toLowerCase() === 'g' && now - prevKey.time < 800) {
         const k = e.key.toLowerCase();
+        let navigated = false;
         if (k === 'd') {
           e.preventDefault();
           onNavigate('/');
+          navigated = true;
         } else if (k === 'h') {
           e.preventDefault();
           onNavigate('/habits');
+          navigated = true;
         } else if (k === 'f') {
           e.preventDefault();
           onNavigate('/projects');
+          navigated = true;
         } else if (k === 'g') {
           e.preventDefault();
           onNavigate('/gym');
+          navigated = true;
         } else if (k === 'r') {
           e.preventDefault();
           onNavigate('/reading');
+          navigated = true;
         } else if (k === 'b') {
           e.preventDefault();
           onNavigate('/finance');
+          navigated = true;
         } else if (k === 'm') {
           e.preventDefault();
           onNavigate('/modules');
+          navigated = true;
+        }
+        if (navigated) {
+          soundEngine.playTap();
         }
         lastKeyRef.current = { key: '', time: 0 };
         return;
@@ -120,6 +138,7 @@ export function useKeyboardShortcuts({
     onToggleCommandBar,
     onToggleZenMode,
     onToggleShortcutsModal,
+    onToggleSound,
     onNavigate,
     onCloseModals,
   ]);
