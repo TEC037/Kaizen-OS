@@ -13,7 +13,9 @@ import {
   X,
   History,
   Code2,
+  Download,
 } from 'lucide-react';
+import { exportKaizenBackup } from '../../core/backup';
 import { DAILY_1_PERCENT_TARGET } from '../../core/scoring';
 import { ModuleManifest, KaizenScoreState } from '../../core/types';
 import { ShellCommandBar } from './ShellCommandBar';
@@ -242,15 +244,26 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
             </div>
 
             {/* Acciones del Modal */}
-            <div className="flex items-center justify-between pt-3 border-t border-stone-200 text-xs">
-              <button
-                type="button"
-                onClick={onResetScore}
-                className="px-3 py-1.5 border border-stone-300 text-stone-600 hover:text-red-700 hover:border-red-300 rounded-sm cursor-pointer"
-                title="Restablece la puntuación a 0 para pruebas de verificación"
-              >
-                Reiniciar puntuación a 0 pts
-              </button>
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-stone-200 text-xs">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={onResetScore}
+                  className="px-3 py-1.5 border border-stone-300 text-stone-600 hover:text-red-700 hover:border-red-300 rounded-sm cursor-pointer"
+                  title="Restablece la puntuación a 0 para pruebas de verificación"
+                >
+                  Reiniciar puntos
+                </button>
+                <button
+                  type="button"
+                  onClick={() => exportKaizenBackup()}
+                  className="px-3 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-sm cursor-pointer"
+                  title="Descargar copia de seguridad en JSON con todos los datos"
+                >
+                  <Download size={13} />
+                  <span>Descargar Respaldo JSON</span>
+                </button>
+              </div>
 
               <button
                 type="button"

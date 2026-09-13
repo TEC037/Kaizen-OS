@@ -22,9 +22,12 @@ import {
   SlidersHorizontal,
   Star,
   Code2,
+  Download,
+  Upload,
 } from 'lucide-react';
 import { KzHotKey } from '../../components/ui/KzHotKey';
 import { soundEngine } from '../../core/sound';
+import { exportKaizenBackup, importKaizenBackup } from '../../core/backup';
 
 export interface CommandItem {
   id: string;
@@ -61,6 +64,7 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Leer hábitos pendientes de hoy para ofrecer marcación instantánea
   const pendingHabits = useMemo(() => {
@@ -251,6 +255,25 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
           onOpenInspector();
           onClose();
         },
+      },
+      {
+        id: 'sys-backup-export',
+        title: 'Exportar respaldo de datos (Descargar JSON)',
+        category: 'Sistema',
+        icon: <Download size={15} className="text-stone-700" />,
+        action: () => {
+          exportKaizenBackup();
+          onClose();
+        },
+      },
+      {
+        id: 'sys-backup-import',
+        title: 'Restaurar respaldo de datos (Subir JSON)',
+        category: 'Sistema',
+        icon: <Upload size={15} className="text-stone-700" />,
+        action: () => {
+          fileInputRef.current?.click();
+        },
       }
     );
 
@@ -380,6 +403,27 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
           </div>
           <span>KAIZEN OS OMNIBAR</span>
         </div>
+
+        {/* Input oculto para restauración de copia de seguridad */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            importKaizenBackup(file).then((res) => {
+              if (res.success) {
+                alert(`Copia de seguridad restaurada exitosamente (${res.count} registros).`);
+                window.location.reload();
+              } else {
+                alert(`Error al restaurar respaldo: ${res.error || 'Formato no reconocido'}`);
+              }
+            });
+            onClose();
+          }}
+        />
       </div>
     </div>
   );
