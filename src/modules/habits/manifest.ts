@@ -1,6 +1,7 @@
 /**
  * @file src/modules/habits/manifest.ts
- * @description Manifiesto declarativo del módulo de Hábitos para Kaizen OS.
+ * @description Manifiesto declarativo del módulo TRANSMUTE para Kaizen OS.
+ * TRANSMUTE: gestión de hábitos con narrativa alquímica y progresión RPG, 100% local.
  */
 
 import { ModuleManifest } from '../../core/types';
@@ -9,15 +10,15 @@ import { HabitsWidget } from './HabitsWidget';
 
 export const habitsManifest: ModuleManifest = {
   id: 'habits',
-  name: 'Hábitos',
-  description: 'Seguimiento de hábitos diarios, checklist interactivo y progreso semanal.',
+  name: 'TRANSMUTE',
+  description: 'Grand Obra de hábitos: forja disciplinas diarias con narrativa alquímica, rachas y progresión RPG, en modo 100% local.',
   category: 'Productividad',
   iconName: 'CheckSquare',
-  defaultStatus: 'enabled', // Inicialmente habilitado según la especificación
+  defaultStatus: 'enabled',
   routes: [
     {
       path: '/habits',
-      label: 'Hábitos',
+      label: 'TRANSMUTE',
       iconName: 'CheckSquare',
       component: HabitsPage,
     },
@@ -32,5 +33,5 @@ export const habitsManifest: ModuleManifest = {
   ],
   permissions: ['storage:local', 'reminders:daily'],
   optionalDependencies: [],
-  version: '1.0.0',
+  version: '2.0.0',
 };
