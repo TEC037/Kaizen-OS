@@ -43,8 +43,17 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="border border-stone-300 bg-[#fffdf8] w-full max-w-lg p-6 font-mono shadow-2xl rounded-sm space-y-5">
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
+      onClick={() => {
+        onClose();
+        soundEngine.playTap();
+      }}
+    >
+      <div
+        className="border border-stone-300 bg-[#fffdf8] w-full max-w-lg p-6 font-mono shadow-2xl rounded-sm space-y-5"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-stone-200 pb-3">
           <div className="flex items-center gap-2">
             <Keyboard size={18} className="text-stone-700" />
