@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Minimize2, Check, Flame, ArrowRight, Sparkles, Play, Pause, RotateCcw, Clock, CloudRain } from 'lucide-react';
+import { Minimize2, Check, Flame, ArrowRight, Sparkles, Play, Pause, RotateCcw, Clock, CloudRain, RefreshCw } from 'lucide-react';
 import { KzRingProgress } from './ui/KzRingProgress';
 import { KzButton } from './ui/KzButton';
 import { KzCard } from './ui/KzCard';
@@ -92,7 +92,21 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
   };
 
   const activeProjects = projects.filter((p) => p.status !== 'Completado');
-  const activeProject = activeProjects.find((p) => p.status === 'En progreso') || activeProjects[0] || projects[0];
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+  const activeProject =
+    (selectedProjectId ? activeProjects.find((p) => p.id === selectedProjectId) : null) ||
+    activeProjects.find((p) => p.status === 'En progreso') ||
+    activeProjects[0] ||
+    projects[0];
+
+  const handleCycleProject = () => {
+    if (activeProjects.length <= 1) return;
+    const currentIndex = activeProjects.findIndex((p) => p.id === activeProject?.id);
+    const nextIndex = (currentIndex + 1) % activeProjects.length;
+    setSelectedProjectId(activeProjects[nextIndex].id);
+    soundEngine.playTap();
+  };
 
   const handleCompleteAction = () => {
     if (!activeProject) return;
@@ -235,7 +249,20 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
               <KzBadge variant="accent">FOCO INMEDIATO</KzBadge>
               <span className="text-xs font-mono text-stone-600">FORJA · Taller de Proyectos</span>
             </div>
-            <Sparkles size={14} className="text-amber-600" />
+            <div className="flex items-center gap-2">
+              {activeProjects.length > 1 && (
+                <button
+                  type="button"
+                  onClick={handleCycleProject}
+                  className="flex items-center gap-1 text-[11px] font-mono text-stone-600 hover:text-stone-900 border border-stone-300 bg-white px-1.5 py-0.5 rounded-xs cursor-pointer hover:border-stone-400"
+                  title="Cambiar al siguiente proyecto activo"
+                >
+                  <RefreshCw size={11} className="text-stone-500" />
+                  <span>Otro proyecto ({activeProjects.length})</span>
+                </button>
+              )}
+              <Sparkles size={14} className="text-amber-600" />
+            </div>
           </div>
 
           {activeProject ? (
