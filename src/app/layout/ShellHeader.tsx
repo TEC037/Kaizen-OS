@@ -30,6 +30,7 @@ import {
 import { KzScorePill } from '../../components/ui/KzScorePill';
 import { KzHotKey } from '../../components/ui/KzHotKey';
 import { ModuleRoute } from '../../core/types';
+import { soundEngine } from '../../core/sound';
 import { DashboardContextMode } from '../providers/ShellLayoutProvider';
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -111,7 +112,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
             <div className="hidden lg:flex items-center gap-1 border border-stone-200 bg-[#faf8f1] p-0.5 rounded-sm text-[11px] font-mono">
               <button
                 type="button"
-                onClick={() => onSelectContextMode('all')}
+                onClick={() => {
+                  onSelectContextMode('all');
+                  soundEngine.playTap();
+                }}
                 className={`px-2 py-0.5 rounded-sm transition-colors cursor-pointer ${
                   contextMode === 'all'
                     ? 'bg-[#211d19] text-[#faf8f1] font-bold'
@@ -123,7 +127,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onSelectContextMode('morning')}
+                onClick={() => {
+                  onSelectContextMode('morning');
+                  soundEngine.playTap();
+                }}
                 className={`px-2 py-0.5 rounded-sm flex items-center gap-1 transition-colors cursor-pointer ${
                   contextMode === 'morning'
                     ? 'bg-amber-700 text-white font-bold'
@@ -136,7 +143,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onSelectContextMode('deepwork')}
+                onClick={() => {
+                  onSelectContextMode('deepwork');
+                  soundEngine.playTap();
+                }}
                 className={`px-2 py-0.5 rounded-sm flex items-center gap-1 transition-colors cursor-pointer ${
                   contextMode === 'deepwork'
                     ? 'bg-amber-900 text-white font-bold'
@@ -149,7 +159,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onSelectContextMode('evening')}
+                onClick={() => {
+                  onSelectContextMode('evening');
+                  soundEngine.playTap();
+                }}
                 className={`px-2 py-0.5 rounded-sm flex items-center gap-1 transition-colors cursor-pointer ${
                   contextMode === 'evening'
                     ? 'bg-indigo-900 text-white font-bold'
