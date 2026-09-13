@@ -128,6 +128,101 @@ class SoundEngine {
       osc.stop(t + idx * 0.07 + 0.85);
     });
   }
+
+  /**
+   * Generador de Ruido Rosa / Lluvia Zen sutil para trabajo profundo.
+   */
+  private ambientSource: AudioBufferSourceNode | null = null;
+  private ambientGain: GainNode | null = null;
+  private ambientPlaying: boolean = false;
+
+  public isAmbientActive(): boolean {
+    return this.ambientPlaying;
+  }
+
+  public startAmbientRain() {
+    if (!this.enabled || this.ambientPlaying) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    // Buffer de 3 segundos de ruido rosa looping
+    const bufferSize = ctx.sampleRate * 3;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.035;
+      b6 = white * 0.115926;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    // Filtro pasa bajos para emular lluvia suave en tejado de madera
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, ctx.currentTime);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 1.2);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    source.start();
+    this.ambientSource = source;
+    this.ambientGain = gain;
+    this.ambientPlaying = true;
+  }
+
+  public stopAmbientRain() {
+    if (!this.ambientPlaying || !this.ambientGain || !this.ambientSource) return;
+    const ctx = this.getContext();
+    if (ctx) {
+      this.ambientGain.gain.setValueAtTime(this.ambientGain.gain.value, ctx.currentTime);
+      this.ambientGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
+      const source = this.ambientSource;
+      setTimeout(() => {
+        try {
+          source.stop();
+          source.disconnect();
+        } catch {
+          // ignore
+        }
+      }, 850);
+    } else {
+      try {
+        this.ambientSource.stop();
+        this.ambientSource.disconnect();
+      } catch {
+        // ignore
+      }
+    }
+    this.ambientSource = null;
+    this.ambientGain = null;
+    this.ambientPlaying = false;
+  }
+
+  public toggleAmbientRain(): boolean {
+    if (this.ambientPlaying) {
+      this.stopAmbientRain();
+      return false;
+    } else {
+      this.startAmbientRain();
+      return true;
+    }
+  }
 }
 
 export const soundEngine = new SoundEngine();

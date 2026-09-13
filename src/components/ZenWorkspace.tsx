@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Minimize2, Check, Flame, ArrowRight, Sparkles, Play, Pause, RotateCcw, Clock } from 'lucide-react';
+import { Minimize2, Check, Flame, ArrowRight, Sparkles, Play, Pause, RotateCcw, Clock, CloudRain } from 'lucide-react';
 import { KzRingProgress } from './ui/KzRingProgress';
 import { KzButton } from './ui/KzButton';
 import { KzCard } from './ui/KzCard';
@@ -49,6 +49,14 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
   const FOCUS_SECONDS = 25 * 60;
   const [secondsLeft, setSecondsLeft] = useState(FOCUS_SECONDS);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [isRainActive, setIsRainActive] = useState(() => soundEngine.isAmbientActive());
+
+  // Cleanup de sonido ambiente al desmontar o salir
+  useEffect(() => {
+    return () => {
+      soundEngine.stopAmbientRain();
+    };
+  }, []);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
@@ -166,7 +174,25 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
               <Clock size={13} className="text-amber-700" />
               <span className="font-bold uppercase tracking-wider">Bloque de Foco Profundo</span>
             </div>
-            <span className="text-[10px] font-mono text-stone-500">25 minutos</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = soundEngine.toggleAmbientRain();
+                  setIsRainActive(next);
+                }}
+                className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono border rounded-xs transition-colors cursor-pointer ${
+                  isRainActive
+                    ? 'border-cyan-400 bg-cyan-50 text-cyan-900 font-semibold'
+                    : 'border-stone-300 bg-stone-50 text-stone-600 hover:text-stone-900 hover:border-stone-400'
+                }`}
+                title={isRainActive ? 'Desactivar lluvia relajante' : 'Activar sonido de lluvia relajante para foco'}
+              >
+                <CloudRain size={11} className={isRainActive ? 'text-cyan-600' : 'text-stone-400'} />
+                <span>{isRainActive ? 'Lluvia Zen: On' : 'Lluvia Zen'}</span>
+              </button>
+              <span className="text-[10px] font-mono text-stone-500">25 min</span>
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-4 pt-1">
