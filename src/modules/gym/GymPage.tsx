@@ -9,6 +9,8 @@ import React, { useEffect } from 'react';
 import FitAiApp from './fitai/src/App';
 import './fitai/src/index.css';
 import { awardKaizenPoints } from '../../core/scoring';
+import { kaizenBus } from '../../sdk/bus';
+import { KaizenContracts } from '../../sdk/contracts';
 import { WorkoutSummary, recordWorkoutSession } from './sessions';
 
 interface GymPageProps {
@@ -28,6 +30,11 @@ export const GymPage: React.FC<GymPageProps> = () => {
         `Entrenamiento completado en Punto Fuerte (${durationMin} min)`
       );
       recordWorkoutSession(detail ?? {});
+      kaizenBus.emit(KaizenContracts.GymSessionCompleted, {
+        durationMinutes: durationMin,
+        intensity: 'mid',
+        volumeKg: detail?.volumeKg,
+      });
     };
 
     window.addEventListener(WORKOUT_COMPLETED_EVENT, handleWorkoutCompleted);

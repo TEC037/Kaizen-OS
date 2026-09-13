@@ -10,6 +10,9 @@ import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
 import { createModuleStorage } from '../../sdk/storage';
 import { Check, Square, ArrowRight } from 'lucide-react';
+import { soundEngine } from '../../core/sound';
+import { kaizenBus } from '../../sdk/bus';
+import { KaizenContracts } from '../../sdk/contracts';
 
 interface TransmuteHabit {
   id: string;
@@ -65,9 +68,34 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
     const shallow = localStorage.getItem('transmute-storage');
     if (!shallow) return;
     import('./transmute/src/store/useStore').then(({ useStore }) => {
-      const { toggleHabit } = useStore.getState();
-      toggleHabit(id, state.selectedDate);
-      setState(loadTransmuteState());
+      const store = useStore.getState();
+      const habit = (state.habits ?? []).find((h) => h.id === id);
+      const willBeDone = !habit?.completedDays?.[state.selectedDate];
+
+      store.toggleHabit(id, state.selectedDate);
+      soundEngine.playComplete();
+
+      if (habit) {
+        kaizenBus.emit(KaizenContracts.HabitToggled, {
+          habitId: id,
+          habitTitle: habit.name,
+          completed: willBeDone,
+          streak: 1,
+        });
+      }
+
+      const nextState = loadTransmuteState();
+      setState(nextState);
+
+      // Si todos los hábitos quedaron completados, emitir hito de día dorado
+      const nextHabits = nextState.habits ?? [];
+      const allDone = nextHabits.length > 0 && nextHabits.every((h) => h.completedDays?.[nextState.selectedDate]);
+      if (allDone && willBeDone) {
+        kaizenBus.emit(KaizenContracts.HabitsAllDailyDone, {
+          date: nextState.selectedDate,
+          count: nextHabits.length,
+        });
+      }
     });
   };
 

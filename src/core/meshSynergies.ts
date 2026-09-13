@@ -1,0 +1,95 @@
+/**
+ * @file src/core/meshSynergies.ts
+ * @description Malla Entramada de Sinergias Cruzadas (Cross-Module Synergies).
+ * Conecta los eventos de un módulo para provocar efectos cascada beneficiosos en otros:
+ * - Sesión de Gym completada -> Auto-marca el hábito de entrenamiento en TRANSMUTE.
+ * - Próxima acción en FORJA completada -> Avanza hábito de enfoque/trabajo profundo.
+ * - Todos los hábitos completados -> Dispara hito Kaizen con feedback sonoro y visual.
+ */
+
+import { useEffect } from 'react';
+import { kaizenBus } from '../sdk/bus';
+import { KaizenContracts } from '../sdk/contracts';
+import { soundEngine } from './sound';
+import { awardKaizenPoints } from './scoring';
+
+export function initializeMeshSynergies(): () => void {
+  const cleanups: Array<() => void> = [];
+
+  // 1. Gym -> Hábitos (TRANSMUTE)
+  const unsubGym = kaizenBus.on(KaizenContracts.GymSessionCompleted, (payload) => {
+    soundEngine.playComplete();
+
+    // Intentar auto-marcar hábito relacionado con gym o ejercicio en TRANSMUTE
+    try {
+      const raw = localStorage.getItem('transmute-storage');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const habits: Array<{ id: string; name: string; completedDays?: Record<string, boolean> }> =
+          parsed?.state?.habits ?? [];
+        const today = new Date().toISOString().split('T')[0];
+
+        // Buscar un hábito que contenga palabras clave de entrenamiento
+        const gymHabit = habits.find((h) => {
+          const name = (h.name || '').toLowerCase();
+          return (
+            name.includes('gym') ||
+            name.includes('entrena') ||
+            name.includes('ejercicio') ||
+            name.includes('fuerza') ||
+            name.includes('deporte') ||
+            name.includes('pesas')
+          );
+        });
+
+        if (gymHabit && !gymHabit.completedDays?.[today]) {
+          import('../modules/habits/transmute/src/store/useStore')
+            .then(({ useStore }) => {
+              const { toggleHabit } = useStore.getState();
+              toggleHabit(gymHabit.id, today);
+              console.info(
+                `[MeshSynergy] Hábito "${gymHabit.name}" auto-completado tras entrenamiento en Punto Fuerte.`
+              );
+            })
+            .catch(() => {});
+        }
+      }
+    } catch (err) {
+      console.warn('[MeshSynergy] Error intentando sinergia Gym -> Hábitos:', err);
+    }
+  });
+  cleanups.push(unsubGym);
+
+  // 2. FORJA -> Sonido y registro de avance
+  const unsubForjaAction = kaizenBus.on(KaizenContracts.ForjaNextActionDone, (_payload) => {
+    soundEngine.playTap();
+  });
+  cleanups.push(unsubForjaAction);
+
+  const unsubForjaProject = kaizenBus.on(KaizenContracts.ForjaProjectCompleted, (payload) => {
+    soundEngine.playMilestone();
+    awardKaizenPoints(50, 'projects', `Hito Forjado: Proyecto "${payload.name}" completado`);
+  });
+  cleanups.push(unsubForjaProject);
+
+  // 3. Hábitos perfectos -> Hito
+  const unsubHabits = kaizenBus.on(KaizenContracts.HabitsAllDailyDone, (payload) => {
+    soundEngine.playMilestone();
+    awardKaizenPoints(30, 'habits', `Día Dorado: ${payload.count} hábitos completados al 100%`);
+  });
+  cleanups.push(unsubHabits);
+
+  return () => {
+    cleanups.forEach((fn) => fn());
+  };
+}
+
+/**
+ * Hook de React para activar la malla entramada en el ciclo de vida del Kernel
+ */
+export function useMeshSynergies(): void {
+  useEffect(() => {
+    const cleanup = initializeMeshSynergies();
+    return cleanup;
+  }, []);
+}

@@ -1,11 +1,13 @@
 /**
  * @file src/components/EmptyState.tsx
- * @description Componente de estado vacío con estética deliberadamente de baja fidelidad (wireframe).
- * Explica con claridad qué ocurrió y qué acción puede realizar el usuario.
+ * @description Componente de estado vacío con estética Wabi-Sabi unificada.
+ * Explica con claridad la situación y ofrece acciones de recuperación sin fricción.
  */
 
 import React from 'react';
 import { AlertCircle, Plus, RefreshCw } from 'lucide-react';
+import { KzCard } from './ui/KzCard';
+import { KzButton } from './ui/KzButton';
 
 interface EmptyStateProps {
   id?: string;
@@ -28,50 +30,53 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   onSecondaryAction,
   variant = 'neutral',
 }) => {
-  const borderStyles = {
-    neutral: 'border-zinc-300 bg-zinc-50',
-    warning: 'border-amber-300 bg-amber-50/50',
-    alert: 'border-red-300 bg-red-50/40',
+  const iconColor = {
+    neutral: 'text-stone-500',
+    warning: 'text-amber-700',
+    alert: 'text-red-700',
   }[variant];
 
   return (
-    <div
+    <KzCard
       id={id}
-      className={`border border-dashed ${borderStyles} p-8 text-center rounded-none my-4 flex flex-col items-center justify-center`}
+      variant="dashed"
+      className="p-8 text-center my-4 flex flex-col items-center justify-center font-mono"
     >
-      <div className="w-10 h-10 border border-zinc-400 bg-white flex items-center justify-center mb-3 text-zinc-600">
-        <AlertCircle size={20} />
+      <div className="w-10 h-10 border border-stone-300 bg-white flex items-center justify-center mb-3 rounded-sm shadow-2xs">
+        <AlertCircle size={20} className={iconColor} />
       </div>
-      <h3 className="text-base font-semibold text-zinc-900 tracking-tight mb-1">
+
+      <h3 className="text-sm sm:text-base font-bold text-stone-900 tracking-tight mb-1 font-mono uppercase">
         {title}
       </h3>
-      <p className="text-sm text-zinc-600 max-w-md mx-auto mb-5 leading-relaxed">
+
+      <p className="text-xs text-stone-600 max-w-md mx-auto mb-5 leading-relaxed font-sans">
         {description}
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
         {actionLabel && onAction && (
-          <button
-            type="button"
+          <KzButton
+            variant="primary"
+            size="sm"
             onClick={onAction}
-            className="px-4 py-2 text-sm font-medium border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 transition-colors flex items-center gap-1.5 cursor-pointer"
+            icon={<Plus size={14} />}
           >
-            <Plus size={16} />
-            <span>{actionLabel}</span>
-          </button>
+            {actionLabel}
+          </KzButton>
         )}
 
         {secondaryActionLabel && onSecondaryAction && (
-          <button
-            type="button"
+          <KzButton
+            variant="craft"
+            size="sm"
             onClick={onSecondaryAction}
-            className="px-4 py-2 text-sm font-medium border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 transition-colors flex items-center gap-1.5 cursor-pointer"
+            icon={<RefreshCw size={13} />}
           >
-            <RefreshCw size={14} />
-            <span>{secondaryActionLabel}</span>
-          </button>
+            {secondaryActionLabel}
+          </KzButton>
         )}
       </div>
-    </div>
+    </KzCard>
   );
 };

@@ -109,11 +109,13 @@ export function getDynamicNavRoutes(statusResolver: (id: string) => ModuleStatus
   );
 }
 
+export type DynamicWidgetDef = ModuleWidgetDef & { moduleId: string };
+
 /**
  * Genera de forma puramente dinámica todos los widgets para el dashboard
  * a partir de los módulos habilitados.
  */
-export function getDynamicWidgets(statusResolver: (id: string) => ModuleStatus): (ModuleWidgetDef & { moduleId: string })[] {
+export function getDynamicWidgets(statusResolver: (id: string) => ModuleStatus): DynamicWidgetDef[] {
   const enabled = getEnabledManifests(statusResolver);
   return enabled.flatMap((m) =>
     m.widgets.map((w) => ({

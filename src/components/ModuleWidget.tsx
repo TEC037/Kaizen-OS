@@ -1,10 +1,12 @@
 /**
  * @file src/components/ModuleWidget.tsx
- * @description Contenedor estándar de baja fidelidad para los widgets renderizados en el dashboard.
+ * @description Contenedor atómico unificado para los widgets renderizados en el Dashboard de Kaizen OS.
+ * Aplica la superficie Wabi-Sabi KzCard y tipografía editorial.
  */
 
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
+import { KzCard } from './ui/KzCard';
 
 interface ModuleWidgetProps {
   id: string;
@@ -24,19 +26,20 @@ export const ModuleWidget: React.FC<ModuleWidgetProps> = ({
   children,
 }) => {
   return (
-    <div
+    <KzCard
       id={`dashboard-widget-${id}`}
-      className="border border-zinc-300 bg-white p-4 flex flex-col justify-between"
+      variant="surface"
+      className="p-4 sm:p-5 flex flex-col justify-between border-stone-300 shadow-[0_1px_3px_rgba(33,29,25,0.04)]"
     >
       <div>
         {/* Cabecera del widget con identificador de módulo */}
-        <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-200">
+        <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-stone-200 font-mono">
           <div className="flex items-center gap-2">
-            <h4 className="text-sm font-semibold text-zinc-900 tracking-tight">
+            <h4 className="text-xs sm:text-sm font-bold text-stone-900 tracking-tight uppercase">
               {title}
             </h4>
-            <span className="text-[10px] font-mono px-1 py-0.2 bg-zinc-100 text-zinc-600 border border-zinc-200">
-              módulo: {moduleId}
+            <span className="text-[10px] px-1.5 py-0.2 bg-[#faf8f1] text-stone-600 border border-stone-200 rounded-xs">
+              {moduleId}
             </span>
           </div>
 
@@ -45,7 +48,7 @@ export const ModuleWidget: React.FC<ModuleWidgetProps> = ({
               type="button"
               onClick={() => onNavigate(targetPath)}
               title={`Ver módulo completo en ${targetPath}`}
-              className="text-xs text-zinc-500 hover:text-zinc-900 flex items-center gap-1 font-mono cursor-pointer"
+              className="text-xs text-stone-600 hover:text-stone-950 flex items-center gap-1 cursor-pointer transition-colors"
             >
               <span>Abrir</span>
               <ExternalLink size={12} />
@@ -54,8 +57,8 @@ export const ModuleWidget: React.FC<ModuleWidgetProps> = ({
         </div>
 
         {/* Contenido del widget */}
-        <div className="text-sm">{children}</div>
+        <div>{children}</div>
       </div>
-    </div>
+    </KzCard>
   );
 };

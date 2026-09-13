@@ -57,6 +57,7 @@ export function recordWorkoutSession(summary: WorkoutSummary): void {
     const session = buildSessionFromSummary(summary);
     const next = [session, ...readKaizenSessions()].slice(0, 12);
     localStorage.setItem(KAIZEN_GYM_SESSIONS_KEY, JSON.stringify(next));
+    window.dispatchEvent(new Event('storage_gym_updated'));
   } catch {
     /* almacenamiento no disponible */
   }

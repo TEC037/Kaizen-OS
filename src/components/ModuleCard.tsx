@@ -1,11 +1,15 @@
 /**
  * @file src/components/ModuleCard.tsx
- * @description Tarjeta de baja fidelidad (wireframe) para la gestión del ciclo de vida de un módulo.
- * Muestra el manifiesto, permisos, capacidades y acciones contextuales (instalar, suspender, reactivar, desinstalar).
+ * @description Tarjeta de gestión del ciclo de vida de un módulo en Kaizen OS.
+ * Integra componentes atómicos KzCard, KzButton, KzBadge y feedback auditivo táctil.
  */
 
 import React from 'react';
 import { ModuleManifest, ModuleStatus } from '../core/types';
+import { soundEngine } from '../core/sound';
+import { KzCard } from './ui/KzCard';
+import { KzButton } from './ui/KzButton';
+import { KzBadge } from './ui/KzBadge';
 import { CheckCircle2, PauseCircle, Download, Trash2, ArrowRight, ShieldCheck, Box } from 'lucide-react';
 
 interface ModuleCardProps {
@@ -27,61 +31,46 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
   onUninstall,
   onNavigateToModule,
 }) => {
-  // Estado visual sobrio
   const getStatusBadge = () => {
     switch (status) {
       case 'enabled':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-mono font-medium border border-emerald-400 bg-emerald-50 text-emerald-800">
-            <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full inline-block"></span>
-            Habilitado
-          </span>
-        );
+        return <KzBadge variant="success">Habilitado</KzBadge>;
       case 'suspended':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-mono font-medium border border-zinc-400 bg-zinc-100 text-zinc-700">
-            <span className="w-1.5 h-1.5 bg-zinc-500 rounded-full inline-block"></span>
-            Suspendido
-          </span>
-        );
+        return <KzBadge variant="dim">Suspendido</KzBadge>;
       case 'installed':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-mono font-medium border border-sky-400 bg-sky-50 text-sky-800">
-            <span className="w-1.5 h-1.5 bg-sky-600 rounded-full inline-block"></span>
-            Instalado
-          </span>
-        );
+        return <KzBadge variant="info">Instalado</KzBadge>;
       case 'available':
       default:
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-mono font-medium border border-amber-300 bg-amber-50 text-amber-900">
-            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full inline-block"></span>
-            Disponible
-          </span>
-        );
+        return <KzBadge variant="accent">Disponible</KzBadge>;
     }
   };
 
   const primaryRoute = manifest.routes[0]?.path;
 
+  const handleAction = (action: () => void) => {
+    soundEngine.playTap();
+    action();
+  };
+
   return (
-    <div
+    <KzCard
       id={`module-card-${manifest.id}`}
-      className="border border-zinc-300 bg-white p-5 flex flex-col justify-between hover:border-zinc-400 transition-colors shadow-none"
+      variant="surface"
+      className="p-5 flex flex-col justify-between border-stone-300 font-mono text-xs"
     >
       <div>
         {/* Cabecera de la tarjeta: Título, categoría y estado */}
-        <div className="flex items-start justify-between gap-2 pb-3 mb-3 border-b border-zinc-200">
+        <div className="flex items-start justify-between gap-2 pb-3 mb-3 border-b border-stone-200">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-semibold text-zinc-900 tracking-tight">
+              <h3 className="text-sm sm:text-base font-bold text-stone-900 tracking-tight font-mono">
                 {manifest.name}
               </h3>
-              <span className="text-[11px] font-mono text-zinc-500 border border-zinc-200 px-1.5 py-0.2 bg-zinc-50">
-                id: {manifest.id}
+              <span className="text-[10px] text-stone-500 border border-stone-200 px-1.5 py-0.2 bg-[#faf8f1] rounded-xs">
+                {manifest.id}
               </span>
             </div>
-            <p className="text-xs font-medium text-zinc-500 mt-0.5">
+            <p className="text-[11px] text-stone-500 mt-0.5">
               Categoría: {manifest.category}
             </p>
           </div>
@@ -89,28 +78,28 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
         </div>
 
         {/* Descripción del módulo */}
-        <p className="text-sm text-zinc-700 mb-4 leading-relaxed">
+        <p className="text-xs text-stone-700 mb-4 leading-relaxed font-sans">
           {manifest.description}
         </p>
 
         {/* Capacidades que aporta el módulo */}
-        <div className="mb-4 bg-zinc-50 border border-zinc-200 p-3 space-y-2 text-xs">
-          <div className="font-mono font-semibold text-zinc-700 text-[11px] uppercase tracking-wider flex items-center gap-1">
-            <Box size={13} className="text-zinc-500" />
-            Capacidades aportadas
+        <div className="mb-4 bg-[#faf8f1] border border-stone-200 p-3 space-y-2 rounded-sm text-xs">
+          <div className="font-semibold text-stone-700 text-[10px] uppercase tracking-wider flex items-center gap-1">
+            <Box size={13} className="text-stone-500" />
+            <span>Capacidades aportadas</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-zinc-600">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-stone-600">
             <div>
-              <span className="font-semibold text-zinc-800">Rutas ({manifest.routes.length}):</span>
-              <ul className="list-disc list-inside mt-0.5 font-mono text-[11px] text-zinc-700">
+              <span className="font-bold text-stone-800 text-[11px]">Rutas ({manifest.routes.length}):</span>
+              <ul className="list-disc list-inside mt-0.5 text-[10px] text-stone-600">
                 {manifest.routes.map((r) => (
                   <li key={r.path}>{r.path}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <span className="font-semibold text-zinc-800">Widgets ({manifest.widgets.length}):</span>
-              <ul className="list-disc list-inside mt-0.5 text-[11px] text-zinc-700">
+              <span className="font-bold text-stone-800 text-[11px]">Widgets ({manifest.widgets.length}):</span>
+              <ul className="list-disc list-inside mt-0.5 text-[10px] text-stone-600">
                 {manifest.widgets.map((w) => (
                   <li key={w.id}>{w.title}</li>
                 ))}
@@ -120,13 +109,13 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
 
           {/* Permisos simulados */}
           {manifest.permissions.length > 0 && (
-            <div className="pt-2 border-t border-zinc-200 mt-2 flex items-center gap-1.5 flex-wrap">
-              <ShieldCheck size={13} className="text-zinc-500 shrink-0" />
-              <span className="font-semibold text-zinc-800 text-[11px]">Permisos:</span>
+            <div className="pt-2 border-t border-stone-200/70 mt-2 flex items-center gap-1.5 flex-wrap">
+              <ShieldCheck size={13} className="text-stone-500 shrink-0" />
+              <span className="font-bold text-stone-800 text-[10px]">Permisos:</span>
               {manifest.permissions.map((p) => (
                 <span
                   key={p}
-                  className="font-mono text-[10px] bg-zinc-200/80 px-1 py-0.5 text-zinc-700 border border-zinc-300"
+                  className="text-[9px] bg-white px-1 py-0.2 text-stone-600 border border-stone-300 rounded-xs"
                 >
                   {p}
                 </span>
@@ -137,107 +126,100 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
       </div>
 
       {/* Botonera de acciones según el estado del ciclo de vida */}
-      <div className="pt-3 border-t border-zinc-200 flex flex-wrap items-center justify-between gap-2">
+      <div className="pt-3 border-t border-stone-200 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           {status === 'available' && (
-            <button
-              id={`btn-install-${manifest.id}`}
-              type="button"
-              onClick={() => onInstall(manifest.id)}
-              className="px-3.5 py-1.5 text-xs font-semibold border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 cursor-pointer flex items-center gap-1.5 transition-colors"
+            <KzButton
+              variant="primary"
+              size="sm"
+              onClick={() => handleAction(() => onInstall(manifest.id))}
+              icon={<Download size={13} />}
             >
-              <Download size={14} />
               Instalar módulo
-            </button>
+            </KzButton>
           )}
 
           {status === 'enabled' && (
             <>
-              <button
-                id={`btn-suspend-${manifest.id}`}
-                type="button"
-                onClick={() => onSuspend(manifest.id)}
-                className="px-3 py-1.5 text-xs font-medium border border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-100 cursor-pointer flex items-center gap-1.5 transition-colors"
+              <KzButton
+                variant="craft"
+                size="sm"
+                onClick={() => handleAction(() => onSuspend(manifest.id))}
+                icon={<PauseCircle size={13} />}
                 title="Desactiva temporalmente el módulo del menú y dashboard"
               >
-                <PauseCircle size={14} className="text-zinc-600" />
                 Suspender
-              </button>
+              </KzButton>
 
-              <button
-                id={`btn-uninstall-${manifest.id}`}
-                type="button"
-                onClick={() => onUninstall(manifest.id)}
-                className="px-3 py-1.5 text-xs font-medium border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 cursor-pointer flex items-center gap-1.5 transition-colors"
-                title="Desinstala el módulo y lo devuelve a disponibles"
+              <KzButton
+                variant="destructive"
+                size="sm"
+                onClick={() => handleAction(() => onUninstall(manifest.id))}
+                icon={<Trash2 size={13} />}
+                title="Desinstala el módulo y lo devuelve al catálogo"
               >
-                <Trash2 size={14} />
                 Desinstalar
-              </button>
+              </KzButton>
             </>
           )}
 
           {status === 'suspended' && (
             <>
-              <button
-                id={`btn-activate-${manifest.id}`}
-                type="button"
-                onClick={() => onActivate(manifest.id)}
-                className="px-3.5 py-1.5 text-xs font-semibold border border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer flex items-center gap-1.5 transition-colors"
+              <KzButton
+                variant="primary"
+                size="sm"
+                onClick={() => handleAction(() => onActivate(manifest.id))}
+                icon={<CheckCircle2 size={13} />}
               >
-                <CheckCircle2 size={14} />
-                Reactivar / Habilitar
-              </button>
+                Reactivar módulo
+              </KzButton>
 
-              <button
-                id={`btn-uninstall-suspended-${manifest.id}`}
-                type="button"
-                onClick={() => onUninstall(manifest.id)}
-                className="px-3 py-1.5 text-xs font-medium border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 cursor-pointer flex items-center gap-1.5 transition-colors"
+              <KzButton
+                variant="destructive"
+                size="sm"
+                onClick={() => handleAction(() => onUninstall(manifest.id))}
+                icon={<Trash2 size={13} />}
               >
-                <Trash2 size={14} />
                 Desinstalar
-              </button>
+              </KzButton>
             </>
           )}
 
           {status === 'installed' && (
             <>
-              <button
-                id={`btn-enable-installed-${manifest.id}`}
-                type="button"
-                onClick={() => onActivate(manifest.id)}
-                className="px-3.5 py-1.5 text-xs font-semibold border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 cursor-pointer flex items-center gap-1.5 transition-colors"
+              <KzButton
+                variant="primary"
+                size="sm"
+                onClick={() => handleAction(() => onActivate(manifest.id))}
+                icon={<CheckCircle2 size={13} />}
               >
-                <CheckCircle2 size={14} />
                 Habilitar módulo
-              </button>
+              </KzButton>
 
-              <button
-                id={`btn-uninstall-installed-${manifest.id}`}
-                type="button"
-                onClick={() => onUninstall(manifest.id)}
-                className="px-3 py-1.5 text-xs font-medium border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 cursor-pointer flex items-center gap-1.5 transition-colors"
+              <KzButton
+                variant="destructive"
+                size="sm"
+                onClick={() => handleAction(() => onUninstall(manifest.id))}
+                icon={<Trash2 size={13} />}
               >
-                <Trash2 size={14} />
                 Desinstalar
-              </button>
+              </KzButton>
             </>
           )}
         </div>
 
-        {/* Si está habilitado, acceso directo opcional para inspeccionar */}
+        {/* Si está habilitado, acceso directo opcional */}
         {status === 'enabled' && primaryRoute && onNavigateToModule && (
           <button
             type="button"
             onClick={() => onNavigateToModule(primaryRoute)}
-            className="text-xs text-zinc-600 hover:text-zinc-900 font-mono flex items-center gap-1 cursor-pointer underline underline-offset-2"
+            className="text-xs text-stone-600 hover:text-stone-900 flex items-center gap-1 cursor-pointer underline underline-offset-2"
           >
             <span>Ir a {primaryRoute}</span>
             <ArrowRight size={12} />
           </button>
         )}
       </div>
-    </div>
+    </KzCard>
   );
 };
