@@ -4,7 +4,7 @@
  * Gestiona libros en progreso, pendientes y registro rápido de páginas leídas.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookItem, INITIAL_BOOKS } from '../../data/demoData';
 import { loadCustomData, saveCustomData } from '../../core/storage';
 import { awardKaizenPoints } from '../../core/scoring';
@@ -21,6 +21,19 @@ export const ReadingPage: React.FC = () => {
   const [newTitle, setNewTitle] = useState('');
   const [newAuthor, setNewAuthor] = useState('');
   const [totalPages, setTotalPages] = useState(250);
+
+  useEffect(() => {
+    if (!showAddModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        soundEngine.playTap();
+        setShowAddModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showAddModal]);
 
   const updateBooks = (newBooks: BookItem[]) => {
     setBooks(newBooks);
