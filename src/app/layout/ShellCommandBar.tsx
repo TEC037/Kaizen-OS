@@ -324,10 +324,12 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
         e.preventDefault();
         const selected = filteredCommands[selectedIndex];
         if (selected) {
+          soundEngine.playTap();
           selected.action();
         }
       } else if (e.key === 'Escape') {
         e.preventDefault();
+        soundEngine.playTap();
         onClose();
       }
     };
@@ -373,7 +375,10 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
               return (
                 <div
                   key={command.id}
-                  onClick={() => command.action()}
+                  onClick={() => {
+                    soundEngine.playTap();
+                    command.action();
+                  }}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between px-3 py-2 rounded-sm cursor-pointer transition-colors ${
                     isSelected ? 'bg-amber-100/70 text-amber-950 font-semibold' : 'text-stone-700 hover:bg-stone-100'
