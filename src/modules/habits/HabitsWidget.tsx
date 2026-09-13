@@ -243,6 +243,7 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
             <button
               type="button"
               onClick={() => {
+                soundEngine.playTap();
                 setIsAdding(false);
                 setNewHabitName('');
               }}
@@ -255,7 +256,10 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
           <div className="pt-2 flex items-center justify-between">
             <button
               type="button"
-              onClick={() => setIsAdding(true)}
+              onClick={() => {
+                soundEngine.playTap();
+                setIsAdding(true);
+              }}
               className="text-[11px] font-mono text-stone-600 hover:text-stone-900 flex items-center gap-1 cursor-pointer"
             >
               <Plus size={12} />
@@ -264,7 +268,10 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
 
             <button
               type="button"
-              onClick={() => onNavigate('/habits')}
+              onClick={() => {
+                soundEngine.playTap();
+                onNavigate('/habits');
+              }}
               className="text-xs font-mono text-zinc-800 hover:text-zinc-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
             >
               <span>Gestionar todos</span>
