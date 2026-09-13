@@ -23,6 +23,7 @@ function loadProjects(): ProjectItem[] {
 
 export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const [projects, setProjects] = useState<ProjectItem[]>(loadProjects);
+  const [recentlyDoneId, setRecentlyDoneId] = useState<string | null>(null);
 
   useEffect(() => {
     const handleStorage = () => setProjects(loadProjects());
@@ -32,29 +33,42 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
 
   const completeNextAction = (e: React.MouseEvent, projectId: string) => {
     e.stopPropagation();
+    const targetProject = projects.find((p) => p.id === projectId);
+    if (!targetProject) return;
+
+    const nextProgress = Math.min(100, (targetProject.progressPercent || 10) + 25);
+    const isCompleted = nextProgress >= 100;
+    const newStatus: ProjectItem['status'] = isCompleted ? 'Completado' : 'En progreso';
+
     const updated = projects.map((p) => {
       if (p.id === projectId) {
-        const nextProgress = Math.min(100, (p.progressPercent || 10) + 20);
-        const newStatus: ProjectItem['status'] = nextProgress >= 100 ? 'Completado' : 'En progreso';
         return {
           ...p,
           progressPercent: nextProgress,
           status: newStatus,
           nextActionDoneAt: new Date().toISOString(),
+          nextAction: isCompleted ? 'Pieza forjada y finalizada' : p.nextAction,
         };
       }
       return p;
     });
 
-    const targetProject = projects.find((p) => p.id === projectId);
     setProjects(updated);
     saveCustomData('forja_projects_v1', updated);
     window.dispatchEvent(new Event('storage_projects_updated'));
 
-    soundEngine.playComplete();
-    awardKaizenPoints(5, 'projects', `Próxima acción completada: "${targetProject?.nextAction || 'Acción en FORJA'}"`);
+    setRecentlyDoneId(projectId);
+    setTimeout(() => setRecentlyDoneId(null), 2500);
 
-    if (targetProject) {
+    if (isCompleted) {
+      soundEngine.playMilestone();
+      kaizenBus.emit(KaizenContracts.ForjaProjectCompleted, {
+        projectId,
+        name: targetProject.title,
+      });
+    } else {
+      soundEngine.playComplete();
+      awardKaizenPoints(5, 'projects', `Próxima acción completada: "${targetProject.nextAction || 'Acción en FORJA'}"`);
       kaizenBus.emit(KaizenContracts.ForjaNextActionDone, {
         projectId,
         projectName: targetProject.title,
@@ -105,11 +119,16 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
                   <button
                     type="button"
                     onClick={(e) => completeNextAction(e, project.id)}
-                    className="px-2 py-1 bg-amber-50 hover:bg-emerald-50 text-amber-950 hover:text-emerald-900 border border-amber-300 hover:border-emerald-300 rounded-xs text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+                    disabled={recentlyDoneId === project.id}
+                    className={`px-2 py-1 rounded-xs text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 ${
+                      recentlyDoneId === project.id
+                        ? 'bg-emerald-100 text-emerald-900 border border-emerald-400'
+                        : 'bg-amber-50 hover:bg-emerald-50 text-amber-950 hover:text-emerald-900 border border-amber-300 hover:border-emerald-300'
+                    }`}
                     title="Completar esta próxima acción ahora (+5 pts Kaizen)"
                   >
                     <Check size={11} />
-                    <span>Hecho</span>
+                    <span>{recentlyDoneId === project.id ? '¡Forjado!' : 'Hecho'}</span>
                   </button>
                 </div>
 
