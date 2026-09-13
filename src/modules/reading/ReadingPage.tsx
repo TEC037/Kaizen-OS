@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { BookItem, INITIAL_BOOKS } from '../../data/demoData';
 import { loadCustomData, saveCustomData } from '../../core/storage';
 import { awardKaizenPoints } from '../../core/scoring';
+import { soundEngine } from '../../core/sound';
 import { BookOpen, Plus, Check, Bookmark, ArrowUpRight } from 'lucide-react';
 
 export const ReadingPage: React.FC = () => {
@@ -44,8 +45,10 @@ export const ReadingPage: React.FC = () => {
     updateBooks(updated);
 
     if (becameFinished) {
+      soundEngine.playMilestone();
       awardKaizenPoints(45, 'reading', `¡Hito intelectual! Libro concluido: ${bookTitle}`);
     } else {
+      soundEngine.playComplete();
       awardKaizenPoints(15, 'reading', `Lectura activa: +${pagesToAdd} págs en ${bookTitle}`);
     }
   };
@@ -63,6 +66,7 @@ export const ReadingPage: React.FC = () => {
       totalPages: Math.max(10, totalPages),
     };
 
+    soundEngine.playTap();
     updateBooks([newBook, ...books]);
     setNewTitle('');
     setNewAuthor('');
@@ -96,7 +100,10 @@ export const ReadingPage: React.FC = () => {
         <div>
           <button
             type="button"
-            onClick={() => setShowAddModal(!showAddModal)}
+            onClick={() => {
+              soundEngine.playTap();
+              setShowAddModal(!showAddModal);
+            }}
             className="px-3.5 py-1.5 text-xs font-semibold border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 flex items-center gap-1.5 cursor-pointer"
           >
             <Plus size={14} />
@@ -156,7 +163,10 @@ export const ReadingPage: React.FC = () => {
           <div className="flex justify-end gap-2 pt-1">
             <button
               type="button"
-              onClick={() => setShowAddModal(false)}
+              onClick={() => {
+                soundEngine.playTap();
+                setShowAddModal(false);
+              }}
               className="px-3 py-1.5 text-xs border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 cursor-pointer"
             >
               Cancelar
