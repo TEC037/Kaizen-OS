@@ -14,6 +14,7 @@ import {
 } from '../../data/demoData';
 import { loadCustomData, saveCustomData } from '../../core/storage';
 import { awardKaizenPoints } from '../../core/scoring';
+import { soundEngine } from '../../core/sound';
 import { Wallet, Plus, Target, DollarSign, AlertCircle } from 'lucide-react';
 
 export const FinancePage: React.FC = () => {
@@ -30,6 +31,7 @@ export const FinancePage: React.FC = () => {
   const updateCategories = (cats: ExpenseCategoryItem[]) => {
     setCategories(cats);
     saveCustomData('finance_cats', cats);
+    window.dispatchEvent(new Event('storage_finance_updated'));
   };
 
   const handleAddExpense = (e: React.FormEvent) => {
@@ -38,6 +40,7 @@ export const FinancePage: React.FC = () => {
     const updated = categories.map((c) =>
       c.id === selectedCategory ? { ...c, spent: c.spent + expenseAmount } : c
     );
+    soundEngine.playComplete();
     updateCategories(updated);
     awardKaizenPoints(10, 'finance', `Control presupuestario: $${expenseAmount} registrado en ${targetCat?.category || 'gastos'}`);
     setShowExpenseModal(false);
@@ -71,7 +74,10 @@ export const FinancePage: React.FC = () => {
         <div>
           <button
             type="button"
-            onClick={() => setShowExpenseModal(!showExpenseModal)}
+            onClick={() => {
+              soundEngine.playTap();
+              setShowExpenseModal(!showExpenseModal);
+            }}
             className="px-3.5 py-1.5 text-xs font-semibold border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 flex items-center gap-1.5 cursor-pointer"
           >
             <Plus size={14} />
@@ -122,7 +128,10 @@ export const FinancePage: React.FC = () => {
           <div className="flex justify-end gap-2 pt-1">
             <button
               type="button"
-              onClick={() => setShowExpenseModal(false)}
+              onClick={() => {
+                soundEngine.playTap();
+                setShowExpenseModal(false);
+              }}
               className="px-3 py-1.5 text-xs border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 cursor-pointer"
             >
               Cancelar
