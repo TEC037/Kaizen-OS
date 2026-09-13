@@ -7,6 +7,7 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { KzCard } from './ui/KzCard';
+import { soundEngine } from '../core/sound';
 
 interface ModuleWidgetProps {
   id: string;
@@ -46,7 +47,10 @@ export const ModuleWidget: React.FC<ModuleWidgetProps> = ({
           {targetPath && onNavigate && (
             <button
               type="button"
-              onClick={() => onNavigate(targetPath)}
+              onClick={() => {
+                soundEngine.playTap();
+                onNavigate(targetPath);
+              }}
               title={`Ver módulo completo en ${targetPath}`}
               className="text-xs text-stone-600 hover:text-stone-950 flex items-center gap-1 cursor-pointer transition-colors"
             >
