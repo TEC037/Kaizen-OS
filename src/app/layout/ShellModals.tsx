@@ -74,6 +74,11 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
   onOpenInspector,
 }) => {
   const [manualRouteInput, setManualRouteInput] = useState<string>('/gym');
+  const [historyFilter, setHistoryFilter] = useState<string>('all');
+
+  const filteredHistory = historyFilter === 'all'
+    ? scoreState.history
+    : scoreState.history.filter((item) => item.sourceModule === historyFilter);
 
   return (
     <>
@@ -207,20 +212,57 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
 
             {/* Historial de Puntos */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between border-b border-stone-200 pb-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-1.5">
                 <h3 className="text-xs font-bold uppercase text-stone-900 flex items-center gap-1.5">
                   <History size={13} />
-                  <span>Historial de Puntos Registrados ({scoreState.history.length})</span>
+                  <span>Historial de Puntos ({filteredHistory.length})</span>
                 </h3>
+
+                {/* Micro-filtros por módulo */}
+                <div className="flex items-center gap-1 text-[10px]">
+                  {(['all', 'habits', 'projects', 'gym', 'reading', 'finance', 'system'] as const).map((mod) => {
+                    const count = mod === 'all'
+                      ? scoreState.history.length
+                      : scoreState.history.filter((h) => h.sourceModule === mod).length;
+                    if (count === 0 && mod !== 'all') return null;
+                    const labels: Record<string, string> = {
+                      all: 'Todos',
+                      habits: 'Hábitos',
+                      projects: 'FORJA',
+                      gym: 'Gym',
+                      reading: 'Lectura',
+                      finance: 'Finanzas',
+                      system: 'Hito',
+                    };
+                    return (
+                      <button
+                        key={mod}
+                        type="button"
+                        onClick={() => setHistoryFilter(mod)}
+                        className={`px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
+                          historyFilter === mod
+                            ? 'bg-stone-900 text-stone-100 font-bold'
+                            : 'bg-stone-100 text-stone-600 hover:text-stone-900'
+                        }`}
+                      >
+                        {labels[mod]} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {scoreState.history.length === 0 ? (
                 <div className="p-4 border border-dashed border-stone-300 text-center text-xs text-stone-500 rounded-sm">
                   Aún no has registrado acciones hoy. Tu puntuación actual es de 0 puntos. ¡Completa tu primer hábito o proyecto para comenzar a sumar!
                 </div>
+              ) : filteredHistory.length === 0 ? (
+                <div className="p-4 border border-dashed border-stone-300 text-center text-xs text-stone-500 rounded-sm">
+                  No hay acciones registradas en esta categoría.
+                </div>
               ) : (
                 <div className="max-h-48 overflow-y-auto space-y-1.5 text-xs">
-                  {scoreState.history.map((item) => (
+                  {filteredHistory.map((item) => (
                     <div
                       key={item.id}
                       className="p-2 border border-stone-200 bg-[#faf8f1] flex items-center justify-between gap-2 rounded-sm"
