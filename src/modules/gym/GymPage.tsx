@@ -9,6 +9,7 @@ import React, { useEffect } from 'react';
 import FitAiApp from './fitai/src/App';
 import './fitai/src/index.css';
 import { awardKaizenPoints } from '../../core/scoring';
+import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
 import { WorkoutSummary, recordWorkoutSession } from './sessions';
@@ -24,6 +25,7 @@ export const GymPage: React.FC<GymPageProps> = () => {
     const handleWorkoutCompleted = (e: Event) => {
       const detail = (e as CustomEvent<WorkoutSummary>).detail;
       const durationMin = Math.max(1, Math.round((detail?.durationSeconds ?? 0) / 60));
+      soundEngine.playMilestone();
       awardKaizenPoints(
         30,
         'gym',
