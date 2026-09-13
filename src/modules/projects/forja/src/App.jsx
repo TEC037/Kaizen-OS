@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { Hammer, Plus, RotateCcw, Trash2, Search } from 'lucide-react';
+import { Hammer, Plus, RotateCcw, Trash2, Search, X } from 'lucide-react';
 import { useProjectsStore } from './store/useProjectsStore';
 import StatsBar from './components/StatsBar';
 import Board from './components/Board';
@@ -88,9 +88,26 @@ export default function ForjaApp() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && query) {
+                e.stopPropagation();
+                setQuery('');
+              }
+            }}
             placeholder="Buscar pieza o próxima acción…"
             aria-label="Buscar"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--fj-ink-soft)' }}
+              title="Limpiar búsqueda"
+              aria-label="Limpiar búsqueda"
+            >
+              <X size={12} />
+            </button>
+          )}
         </div>
         {['Todos', ...STATUSES].map((s) => (
           <button
