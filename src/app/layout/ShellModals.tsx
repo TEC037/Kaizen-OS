@@ -19,6 +19,7 @@ import {
 import { exportKaizenBackup, importKaizenBackup } from '../../core/backup';
 import { DAILY_1_PERCENT_TARGET } from '../../core/scoring';
 import { ModuleManifest, KaizenScoreState } from '../../core/types';
+import { soundEngine } from '../../core/sound';
 import { ShellCommandBar } from './ShellCommandBar';
 import { ShortcutsModal } from '../../components/ShortcutsModal';
 
@@ -129,7 +130,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
               </div>
               <button
                 type="button"
-                onClick={onCloseScoreModal}
+                onClick={() => {
+                  onCloseScoreModal();
+                  soundEngine.playTap();
+                }}
                 className="text-stone-500 hover:text-stone-900 border border-stone-300 px-2 py-0.5 rounded-sm cursor-pointer"
               >
                 <X size={14} />
@@ -253,7 +257,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                       <button
                         key={mod}
                         type="button"
-                        onClick={() => setHistoryFilter(mod)}
+                        onClick={() => {
+                          setHistoryFilter(mod);
+                          soundEngine.playTap();
+                        }}
                         className={`px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
                           historyFilter === mod
                             ? 'bg-stone-900 text-stone-100 font-bold'
@@ -305,7 +312,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={onResetScore}
+                  onClick={() => {
+                    onResetScore();
+                    soundEngine.playTap();
+                  }}
                   className="px-3 py-1.5 border border-stone-300 text-stone-600 hover:text-red-700 hover:border-red-300 rounded-sm cursor-pointer"
                   title="Restablece la puntuación a 0 para pruebas de verificación"
                 >
@@ -313,7 +323,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => exportKaizenBackup()}
+                  onClick={() => {
+                    soundEngine.playTap();
+                    exportKaizenBackup();
+                  }}
                   className="px-3 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-sm cursor-pointer"
                   title="Descargar copia de seguridad en JSON con todos los datos"
                 >
@@ -322,7 +335,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    soundEngine.playTap();
+                    fileInputRef.current?.click();
+                  }}
                   className="px-3 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-sm cursor-pointer"
                   title="Restaurar copia de seguridad desde un archivo JSON"
                 >
@@ -340,7 +356,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
 
               <button
                 type="button"
-                onClick={onCloseScoreModal}
+                onClick={() => {
+                  onCloseScoreModal();
+                  soundEngine.playTap();
+                }}
                 className="px-4 py-1.5 border border-[#211d19] bg-[#211d19] text-[#faf8f1] font-bold rounded-sm cursor-pointer hover:bg-stone-800"
               >
                 Entendido
