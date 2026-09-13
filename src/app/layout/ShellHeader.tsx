@@ -86,7 +86,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
         <div className="flex items-center gap-4">
           <button
             type="button"
-            onClick={() => onNavigate('/')}
+            onClick={() => {
+              onNavigate('/');
+              soundEngine.playTap();
+            }}
             className="flex items-center gap-2.5 text-left cursor-pointer group select-none"
           >
             <div className="w-7 h-7 rounded-sm border border-[#211d19] bg-[#211d19] text-[#faf8f1] flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#3d372e] transition-colors">
@@ -273,7 +276,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
           <button
             type="button"
             id="nav-modules"
-            onClick={() => onNavigate('/modules')}
+            onClick={() => {
+              onNavigate('/modules');
+              soundEngine.playTap();
+            }}
             className={`px-2.5 py-1.5 text-xs font-mono border rounded-sm flex items-center gap-1.5 cursor-pointer transition-colors ${
               currentPath === '/modules'
                 ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-semibold'
