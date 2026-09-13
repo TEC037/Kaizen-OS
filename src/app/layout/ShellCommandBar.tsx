@@ -231,6 +231,7 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
         title: soundEnabled ? 'Silenciar sonidos de feedback' : 'Activar paisajes sonoros',
         category: 'Sistema',
         icon: soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />,
+        shortcut: ['M'],
         action: () => {
           onToggleSound();
           onClose();
