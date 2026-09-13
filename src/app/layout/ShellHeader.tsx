@@ -230,7 +230,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
           <button
             type="button"
             id="btn-trigger-commandbar"
-            onClick={onOpenCommandBar}
+            onClick={() => {
+              soundEngine.playTap();
+              onOpenCommandBar();
+            }}
             className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 text-xs font-mono border border-stone-300 bg-[#faf8f1] hover:bg-white text-stone-700 rounded-sm cursor-pointer transition-colors"
             title="Abrir Centro de Mando / Omnibar (Cmd+K)"
           >
@@ -260,7 +263,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
           {/* Alternar Modo Zen */}
           <button
             type="button"
-            onClick={onToggleZenMode}
+            onClick={() => {
+              soundEngine.playTap();
+              onToggleZenMode();
+            }}
             className={`px-2 py-1.5 text-xs font-mono border rounded-sm flex items-center gap-1 cursor-pointer transition-colors ${
               zenMode
                 ? 'border-amber-400 bg-amber-100 text-amber-950 font-bold'
@@ -296,7 +302,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
           {/* Inspector de Arquitectura */}
           <button
             type="button"
-            onClick={onOpenInspector}
+            onClick={() => {
+              soundEngine.playTap();
+              onOpenInspector();
+            }}
             className={`p-1.5 text-xs font-mono border rounded-sm cursor-pointer transition-colors ${
               isInspectorOpen
                 ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
