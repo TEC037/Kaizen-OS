@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+.vitest/
+scratch_*
+script.py
+.env
+.env.*
+!.env.example
+!.env.test
+.dev.vars
+.wrangler/

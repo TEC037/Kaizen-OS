@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #101319;
+  --color-surface-dim: #101319;
+  --color-surface-bright: #363940;
+  --color-surface-container-lowest: #0b0e14;
+  --color-surface-container-low: #191c22;
+  --color-surface-container: #1d2026;
+  --color-surface-container-high: #272a31;
+  --color-surface-container-highest: #32353c;
+  --color-surface-variant: #32353c;
+  --color-on-surface: #e1e2eb;
+  --color-on-surface-variant: #c4c9ac;
+  --color-primary: #ffffff;
+  --color-on-primary: #283500;
+  --color-primary-fixed: #c3f400;
+  --color-primary-fixed-dim: #abd600;
+  --color-on-primary-fixed: #161e00;
+  --color-on-primary-fixed-variant: #3c4d00;
+  --color-primary-container: #c3f400;
+  --color-on-primary-container: #556d00;
+  --color-secondary: #4ae176;
+  --color-secondary-fixed: #6bff8f;
+  --color-secondary-fixed-dim: #4ae176;
+  --color-secondary-container: #00b954;
+  --color-on-secondary: #003915;
+  --color-on-secondary-container: #004119;
+  --color-tertiary-fixed: #c4e7ff;
+  --color-tertiary-fixed-dim: #7bd0ff;
+  --color-tertiary-container: #c4e7ff;
+  --color-error: #ffb4ab;
+  --color-outline: #8e9379;
+  --color-outline-variant: #444933;
+
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+  --font-body: "Lexend", sans-serif;
+}
+
+@layer base {
+  /*
+   * Estilos base scopeados para no interferir con la app host:
+   * - En la edición standalone, FitAi avisa con `html.dark` (ver index.html).
+   * - Cuando se embebe como módulo en un host (p.ej. Kaizen OS), el contenedor
+   *   raíz lleva la clase `.punto-fuerte-app` y los estilos quedan aislados.
+   */
+  html.dark,
+  html.dark body,
+  .punto-fuerte-app {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #101319;
+    color: #e1e2eb;
+    font-family: "Lexend", sans-serif;
+  }
+
+  html.dark h1,
+  html.dark h2,
+  html.dark h3,
+  html.dark h4,
+  html.dark h5,
+  html.dark h6,
+  html.dark .font-space,
+  .punto-fuerte-app h1,
+  .punto-fuerte-app h2,
+  .punto-fuerte-app h3,
+  .punto-fuerte-app h4,
+  .punto-fuerte-app h5,
+  .punto-fuerte-app h6,
+  .punto-fuerte-app .font-space {
+    font-family: "Space Grotesk", sans-serif;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

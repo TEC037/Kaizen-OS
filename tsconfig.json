@@ -27,6 +27,12 @@
   "exclude": [
     "node_modules",
     "dist",
-    "src/modules/gym/fitai"
+    "src/modules/gym/fitai/node_modules",
+    "src/modules/gym/fitai/dist",
+    "src/modules/gym/fitai/vite.config.ts",
+    "src/modules/gym/fitai/src/**/*.test.ts",
+    "src/modules/gym/fitai/src/**/*.test.tsx",
+    "src/modules/gym/fitai/src/test",
+    "src/modules/gym/fitai/functions/**/*.test.ts"
   ]
 }
