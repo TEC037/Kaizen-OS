@@ -60,7 +60,10 @@ export const AppRouter: React.FC<RouterProps> = ({
           <KzButton
             variant="primary"
             size="sm"
-            onClick={() => onNavigate('/')}
+            onClick={() => {
+              soundEngine.playTap();
+              onNavigate('/');
+            }}
             icon={<ArrowLeft size={13} />}
           >
             Volver al Dashboard
@@ -129,7 +132,10 @@ export const AppRouter: React.FC<RouterProps> = ({
           <KzButton
             variant="craft"
             size="sm"
-            onClick={() => onNavigate('/modules')}
+            onClick={() => {
+              soundEngine.playTap();
+              onNavigate('/modules');
+            }}
             icon={<Layers size={13} />}
           >
             Gestionar módulos
@@ -178,7 +184,10 @@ export const AppRouter: React.FC<RouterProps> = ({
         <KzButton
           variant="craft"
           size="sm"
-          onClick={() => onNavigate('/modules')}
+          onClick={() => {
+            soundEngine.playTap();
+            onNavigate('/modules');
+          }}
           icon={<Layers size={13} />}
         >
           Configuración de módulos
@@ -187,7 +196,10 @@ export const AppRouter: React.FC<RouterProps> = ({
         <KzButton
           variant="ghost"
           size="sm"
-          onClick={() => onNavigate('/')}
+          onClick={() => {
+            soundEngine.playTap();
+            onNavigate('/');
+          }}
         >
           Volver al Dashboard
         </KzButton>
