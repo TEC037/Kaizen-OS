@@ -108,6 +108,7 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
 
   const handleExportCard = async () => {
     if (!exportCardRef.current) return;
+    soundEngine.playTap();
     try {
       setIsExporting(true);
       const dataUrl = await toPng(exportCardRef.current, { cacheBust: true, pixelRatio: 2 });
@@ -115,6 +116,7 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
       link.download = `kaizen-avance-${todayStr}.png`;
       link.href = dataUrl;
       link.click();
+      soundEngine.playComplete();
     } catch (err) {
       console.error('Error exportando tarjeta Kaizen:', err);
     } finally {
