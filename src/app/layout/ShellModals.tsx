@@ -14,8 +14,9 @@ import {
   History,
   Code2,
   Download,
+  Upload,
 } from 'lucide-react';
-import { exportKaizenBackup } from '../../core/backup';
+import { exportKaizenBackup, importKaizenBackup } from '../../core/backup';
 import { DAILY_1_PERCENT_TARGET } from '../../core/scoring';
 import { ModuleManifest, KaizenScoreState } from '../../core/types';
 import { ShellCommandBar } from './ShellCommandBar';
@@ -75,6 +76,20 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
 }) => {
   const [manualRouteInput, setManualRouteInput] = useState<string>('/gym');
   const [historyFilter, setHistoryFilter] = useState<string>('all');
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleRestoreFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const res = await importKaizenBackup(file);
+    if (res.success) {
+      window.alert(`¡Respaldo restaurado con éxito! Se sincronizaron ${res.count} claves. La aplicación se recargará para aplicar los cambios.`);
+      window.location.reload();
+    } else {
+      window.alert(`Error al restaurar: ${res.error || 'Archivo inválido'}`);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const filteredHistory = historyFilter === 'all'
     ? scoreState.history
@@ -303,8 +318,24 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                   title="Descargar copia de seguridad en JSON con todos los datos"
                 >
                   <Download size={13} />
-                  <span>Descargar Respaldo JSON</span>
+                  <span>Descargar Respaldo</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-3 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-sm cursor-pointer"
+                  title="Restaurar copia de seguridad desde un archivo JSON"
+                >
+                  <Upload size={13} />
+                  <span>Restaurar</span>
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleRestoreFile}
+                  className="hidden"
+                />
               </div>
 
               <button
