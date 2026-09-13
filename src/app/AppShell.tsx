@@ -33,6 +33,7 @@ import { ShellHeader } from './layout/ShellHeader';
 import { ShellModals } from './layout/ShellModals';
 import { DashboardView } from './views/DashboardView';
 import { ModulesManagerView } from './views/ModulesManagerView';
+import { soundEngine } from '../core/sound';
 import { Star } from 'lucide-react';
 
 const InnerShell: React.FC = () => {
@@ -251,28 +252,40 @@ const InnerShell: React.FC = () => {
             <div className="flex items-center gap-4">
               <button
                 type="button"
-                onClick={() => setShowShortcutsModal(true)}
+                onClick={() => {
+                  setShowShortcutsModal(true);
+                  soundEngine.playTap();
+                }}
                 className="hover:text-stone-900 underline underline-offset-2 cursor-pointer"
               >
                 Atajos [?]
               </button>
               <button
                 type="button"
-                onClick={() => setShowScoreModal(true)}
+                onClick={() => {
+                  setShowScoreModal(true);
+                  soundEngine.playTap();
+                }}
                 className="hover:text-stone-900 underline underline-offset-2 cursor-pointer"
               >
                 Puntos: {scoreState.totalPoints} pts
               </button>
               <button
                 type="button"
-                onClick={() => navigate('/modules')}
+                onClick={() => {
+                  navigate('/modules');
+                  soundEngine.playTap();
+                }}
                 className="hover:text-stone-900 underline underline-offset-2 cursor-pointer"
               >
                 Módulos
               </button>
               <button
                 type="button"
-                onClick={handleFullReset}
+                onClick={() => {
+                  soundEngine.playTap();
+                  handleFullReset();
+                }}
                 className="hover:text-stone-900 underline underline-offset-2 cursor-pointer"
               >
                 Restablecer sistema
