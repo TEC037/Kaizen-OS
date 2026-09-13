@@ -92,7 +92,10 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
           <KzButton
             variant="craft"
             size="sm"
-            onClick={onFullReset}
+            onClick={() => {
+              soundEngine.playTap();
+              onFullReset();
+            }}
             icon={<RotateCcw size={13} />}
             title="Restablece la configuración inicial: Hábitos y Proyectos habilitados, otros disponibles"
           >
