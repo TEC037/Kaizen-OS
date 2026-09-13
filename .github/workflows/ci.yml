@@ -34,3 +34,27 @@ jobs:
 
       - name: Build production bundle
         run: npm run build
+
+  fitai-tests:
+    name: Tests de Punto Fuerte (submódulo)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (incluye submódulo Punto Fuerte)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/modules/gym/fitai/package-lock.json
+
+      - name: Install dependencies del submódulo
+        working-directory: src/modules/gym/fitai
+        run: npm ci
+
+      - name: Run tests de Punto Fuerte
+        working-directory: src/modules/gym/fitai
+        run: npm test
