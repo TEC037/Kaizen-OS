@@ -33,6 +33,18 @@ export default function ProjectForm({ form, editing = null, onClose, onSubmit })
     }
   }, [form.open, editing?.id]);
 
+  useEffect(() => {
+    if (!form.open) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [form.open, onClose]);
+
   if (!form.open) return null;
 
   const handleSubmit = (e) => {
