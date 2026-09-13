@@ -341,7 +341,13 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50 flex items-start justify-center pt-16 sm:pt-24 p-4 animate-in fade-in duration-100">
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50 flex items-start justify-center pt-16 sm:pt-24 p-4 animate-in fade-in duration-100"
+      onClick={() => {
+        soundEngine.playTap();
+        onClose();
+      }}
+    >
       <div
         className="w-full max-w-xl bg-[#fffdf8] border border-stone-300 shadow-2xl rounded-sm overflow-hidden font-mono text-xs flex flex-col max-h-[75vh]"
         onClick={(e) => e.stopPropagation()}
