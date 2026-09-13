@@ -153,7 +153,10 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
         <div className="pt-2 flex justify-end">
           <button
             type="button"
-            onClick={() => onNavigate('/projects')}
+            onClick={() => {
+              soundEngine.playTap();
+              onNavigate('/projects');
+            }}
             className="text-xs font-mono text-stone-700 hover:text-stone-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
             <span>Abrir taller FORJA</span>
