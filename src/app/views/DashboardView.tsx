@@ -305,12 +305,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 strokeWidth={6}
                 onClick={onOpenScoreModal}
               />
-              <div className="flex-1 space-y-1.5">
+              <div
+                onClick={() => {
+                  onOpenScoreModal();
+                  soundEngine.playTap();
+                }}
+                className="flex-1 space-y-1.5 cursor-pointer group select-none"
+                title="Ver detalle del sistema de puntos e historial Kaizen"
+              >
                 <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-stone-600">Avance de hoy:</span>
+                  <span className="text-stone-600 group-hover:text-stone-900 transition-colors">Avance de hoy:</span>
                   <span className="font-bold text-stone-900">{dailyPercent}%</span>
                 </div>
-                <div className="w-full h-2.5 border border-stone-300 bg-stone-100 p-0.5 rounded-xs">
+                <div className="w-full h-2.5 border border-stone-300 group-hover:border-stone-400 bg-stone-100 p-0.5 rounded-xs transition-colors">
                   <div
                     className={`h-full transition-all duration-300 rounded-xs ${
                       isDailyGoalAchieved ? 'bg-emerald-700' : 'bg-amber-700'
