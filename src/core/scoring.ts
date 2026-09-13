@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { KaizenScoreState, ScoreLogEntry } from './types';
 import { kaizenBus } from '../sdk/bus';
+import { soundEngine } from './sound';
 
 const STORAGE_KEY_SCORE = 'kaizen_os_score_v1';
 const SCORE_EVENT_NAME = 'kaizen_os_score_event';
@@ -106,6 +107,7 @@ export function awardKaizenPoints(points: number, sourceModule: string, reason: 
       sourceModule: 'system',
       reason: '¡Hito Kaizen alcanzado! Completaste el 1% de mejora de hoy',
     };
+    soundEngine.playMilestone();
   }
 
   const updatedHistory = bonusEntry
