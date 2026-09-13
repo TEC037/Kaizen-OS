@@ -23,6 +23,7 @@ export const KzScorePill: React.FC<KzScorePillProps> = ({
   size = 'md',
 }) => {
   const isClickable = Boolean(onClick);
+  const isGoalDone = typeof dailyPercent === 'number' && dailyPercent >= 100;
 
   return (
     <motion.button
@@ -30,17 +31,26 @@ export const KzScorePill: React.FC<KzScorePillProps> = ({
       whileHover={isClickable ? { scale: 1.02 } : undefined}
       whileTap={isClickable ? { scale: 0.97 } : undefined}
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 font-mono border border-amber-300/80 bg-amber-50/70 hover:bg-amber-100/70 text-amber-950 rounded-sm select-none transition-colors ${
+      className={`inline-flex items-center gap-1.5 font-mono border rounded-sm select-none transition-all ${
+        isGoalDone
+          ? 'border-emerald-400 bg-emerald-50/90 text-emerald-950 hover:bg-emerald-100/90 shadow-[0_0_8px_rgba(16,185,129,0.15)]'
+          : 'border-amber-300/80 bg-amber-50/70 hover:bg-amber-100/70 text-amber-950'
+      } ${
         size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs'
       } ${isClickable ? 'cursor-pointer' : 'cursor-default'} ${className}`}
       title="Puntos Kaizen acumulados y avance diario"
     >
-      <Star size={13} className="text-amber-600 fill-amber-500 shrink-0" />
+      <Star
+        size={13}
+        className={isGoalDone ? 'text-emerald-600 fill-emerald-500 shrink-0' : 'text-amber-600 fill-amber-500 shrink-0'}
+      />
       <span className="font-bold tracking-tight">{points} pts</span>
       {typeof dailyPercent === 'number' && (
         <>
-          <span className="text-amber-400/80 font-normal">|</span>
-          <span className="text-amber-800 text-[11px] font-medium">+1%: {dailyPercent}%</span>
+          <span className={isGoalDone ? 'text-emerald-400' : 'text-amber-400/80'}>|</span>
+          <span className={`${isGoalDone ? 'text-emerald-800' : 'text-amber-800'} text-[11px] font-medium`}>
+            +1%: {dailyPercent}% {isGoalDone && '✓'}
+          </span>
         </>
       )}
     </motion.button>

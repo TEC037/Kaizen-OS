@@ -267,11 +267,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Mensaje de estado */}
           <div className="flex items-center justify-between pt-2 border-t border-stone-200 text-xs font-mono">
-            <span className="text-[11px] text-stone-600">
+            <span className="text-[11px] text-stone-600 flex items-center gap-2">
               {isDailyGoalAchieved ? (
-                <span className="text-emerald-800 font-semibold">
-                  ✓ ¡Meta del 1% alcanzada hoy! Bono de consistencia acreditado.
-                </span>
+                <>
+                  <span className="border border-red-800/40 bg-red-50 text-red-900 px-1.5 py-0.2 rounded-xs font-mono text-[9px] uppercase tracking-wider font-bold shadow-xs shrink-0">
+                    印 1% CONSOLIDADO
+                  </span>
+                  <span className="text-emerald-800 font-semibold">
+                    ¡Meta del día lograda! Bono acreditado.
+                  </span>
+                </>
               ) : (
                 <span>
                   Faltan <strong>{Math.max(0, scoreState.dailyGoalPoints - scoreState.todayPoints)} pts</strong> para tu 1% de hoy.
