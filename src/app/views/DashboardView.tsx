@@ -494,6 +494,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             onSecondaryAction={onFullReset}
             variant="warning"
           />
+        ) : filteredPlacements.length === 0 ? (
+          <div className="border border-dashed border-stone-300 bg-[#faf8f1] p-8 text-center text-xs text-stone-600 font-mono rounded-sm space-y-3">
+            <p>No hay widgets activos para el contexto seleccionado ({contextMode}).</p>
+            {onSelectContextMode && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectContextMode('all');
+                  soundEngine.playTap();
+                }}
+                className="px-3 py-1.5 border border-stone-400 bg-white hover:bg-stone-50 text-stone-800 rounded-sm font-bold cursor-pointer"
+              >
+                Ver todos los widgets
+              </button>
+            )}
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredPlacements.map((placement) => {
