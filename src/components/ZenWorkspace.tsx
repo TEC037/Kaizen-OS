@@ -51,9 +51,12 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isRainActive, setIsRainActive] = useState(() => soundEngine.isAmbientActive());
 
-  // Cleanup de sonido ambiente al desmontar o salir
+  // Sincronización reactiva y cleanup de sonido ambiente al desmontar o salir
   useEffect(() => {
+    const handleStorage = () => setProjects(loadProjects(seedProjects));
+    window.addEventListener('storage_projects_updated', handleStorage);
     return () => {
+      window.removeEventListener('storage_projects_updated', handleStorage);
       soundEngine.stopAmbientRain();
     };
   }, []);
@@ -111,10 +114,12 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
   const handleCompleteAction = () => {
     if (!activeProject) return;
 
+    let isCompleted = false;
     const updated = projects.map((p) => {
       if (p.id === activeProject.id) {
         const nextProgress = Math.min(100, (p.progressPercent || 10) + 20);
-        const newStatus = nextProgress >= 100 ? 'Completado' : 'En progreso';
+        isCompleted = nextProgress >= 100;
+        const newStatus = isCompleted ? 'Completado' : 'En progreso';
         return {
           ...p,
           progressPercent: nextProgress,
@@ -127,15 +132,24 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
 
     setProjects(updated);
     saveProjects(updated);
+    window.dispatchEvent(new Event('storage_projects_updated'));
 
-    soundEngine.playComplete();
-    awardKaizenPoints(5, 'projects', `Próxima acción completada en Modo Zen: "${activeProject.nextAction || 'Acción en FORJA'}"`);
-
-    kaizenBus.emit(KaizenContracts.ForjaNextActionDone, {
-      projectId: activeProject.id,
-      projectName: activeProject.title,
-      taskTitle: activeProject.nextAction || 'Próxima acción',
-    });
+    if (isCompleted) {
+      soundEngine.playMilestone();
+      awardKaizenPoints(50, 'projects', `¡Hito de proyecto concluido en Modo Zen!: "${activeProject.title}"`);
+      kaizenBus.emit(KaizenContracts.ForjaProjectCompleted, {
+        projectId: activeProject.id,
+        name: activeProject.title,
+      });
+    } else {
+      soundEngine.playComplete();
+      awardKaizenPoints(5, 'projects', `Próxima acción completada en Modo Zen: "${activeProject.nextAction || 'Acción en FORJA'}"`);
+      kaizenBus.emit(KaizenContracts.ForjaNextActionDone, {
+        projectId: activeProject.id,
+        projectName: activeProject.title,
+        taskTitle: activeProject.nextAction || 'Próxima acción',
+      });
+    }
 
     setJustCompletedAction(true);
     setTimeout(() => setJustCompletedAction(false), 3000);
