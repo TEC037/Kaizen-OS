@@ -147,7 +147,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onChange={(e) => setTempName(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleSaveName();
-                      if (e.key === 'Escape') setIsEditingName(false);
+                      if (e.key === 'Escape') {
+                        soundEngine.playTap();
+                        setIsEditingName(false);
+                      }
                     }}
                     autoFocus
                     className="text-xl sm:text-2xl font-bold text-stone-900 font-mono bg-white border border-stone-400 px-1.5 py-0 rounded-xs w-36 outline-none shadow-inner"
@@ -532,7 +535,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                   <select
                     value={placement.gridSpan}
-                    onChange={(e) => setPlacement(placement.widgetId, { gridSpan: e.target.value as WidgetSpan })}
+                    onChange={(e) => {
+                      soundEngine.playTap();
+                      setPlacement(placement.widgetId, { gridSpan: e.target.value as WidgetSpan });
+                    }}
                     className="px-1.5 py-1 border border-stone-300 bg-white text-xs text-stone-700 rounded-sm"
                   >
                     <option value="half">Media columna</option>
