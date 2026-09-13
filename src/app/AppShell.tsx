@@ -219,6 +219,7 @@ const InnerShell: React.FC = () => {
               zenMode={zenMode}
               onExitZen={() => setZenMode(false)}
               contextMode={contextMode}
+              onSelectContextMode={setContextMode}
             />
           }
           modulesManagerComponent={

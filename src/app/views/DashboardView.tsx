@@ -5,7 +5,7 @@
  */
 
 import React, { Suspense } from 'react';
-import { LayoutGrid, ChevronUp, ChevronDown, Eye, EyeOff, TrendingUp, Flame, Award, SlidersHorizontal, Info, Pencil, Check, RotateCcw } from 'lucide-react';
+import { LayoutGrid, ChevronUp, ChevronDown, Eye, EyeOff, TrendingUp, Flame, Award, SlidersHorizontal, Info, Pencil, Check, RotateCcw, Sun, Moon } from 'lucide-react';
 import { DAILY_1_PERCENT_TARGET } from '../../core/scoring';
 import { DynamicWidgetDef } from '../moduleRegistry';
 import { WidgetLayout, WidgetSpan, SPAN_CLASSES } from '../../core/widgetLayout';
@@ -37,6 +37,7 @@ interface DashboardViewProps {
   zenMode: boolean;
   onExitZen: () => void;
   contextMode: DashboardContextMode;
+  onSelectContextMode?: (mode: DashboardContextMode) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -56,6 +57,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   zenMode,
   onExitZen,
   contextMode,
+  onSelectContextMode,
 }) => {
   if (zenMode) {
     return (
@@ -307,14 +309,77 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Grid de Widgets Dinámicos del Dashboard */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-800 flex items-center gap-2">
-              <span>Widgets activos ({filteredPlacements.length})</span>
+              <span>Widgets ({filteredPlacements.length})</span>
             </h2>
-            {contextMode !== 'all' && (
-              <KzBadge variant="accent">
-                Filtrado por: {contextMode}
-              </KzBadge>
+
+            {onSelectContextMode && (
+              <div className="flex items-center gap-1 border border-stone-300 bg-[#faf8f1] p-0.5 rounded-sm text-[11px] font-mono">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectContextMode('all');
+                    soundEngine.playTap();
+                  }}
+                  className={`px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
+                    contextMode === 'all'
+                      ? 'bg-stone-900 text-stone-100 font-bold'
+                      : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                  title="Mostrar todos los widgets"
+                >
+                  Todos
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectContextMode('morning');
+                    soundEngine.playTap();
+                  }}
+                  className={`px-1.5 py-0.5 rounded-xs flex items-center gap-1 transition-colors cursor-pointer ${
+                    contextMode === 'morning'
+                      ? 'bg-amber-700 text-white font-bold'
+                      : 'text-stone-600 hover:text-amber-800'
+                  }`}
+                  title="Modo Mañana: Hábitos y Rutina de Fuerza"
+                >
+                  <Sun size={10} />
+                  <span>Mañana</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectContextMode('deepwork');
+                    soundEngine.playTap();
+                  }}
+                  className={`px-1.5 py-0.5 rounded-xs flex items-center gap-1 transition-colors cursor-pointer ${
+                    contextMode === 'deepwork'
+                      ? 'bg-amber-900 text-white font-bold'
+                      : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                  title="Modo Foco Profundo: Taller FORJA y Hábitos"
+                >
+                  <Flame size={10} />
+                  <span>Foco</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectContextMode('evening');
+                    soundEngine.playTap();
+                  }}
+                  className={`px-1.5 py-0.5 rounded-xs flex items-center gap-1 transition-colors cursor-pointer ${
+                    contextMode === 'evening'
+                      ? 'bg-indigo-900 text-white font-bold'
+                      : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                  title="Modo Cierre: Lectura y Finanzas"
+                >
+                  <Moon size={10} />
+                  <span>Cierre</span>
+                </button>
+              </div>
             )}
           </div>
 
