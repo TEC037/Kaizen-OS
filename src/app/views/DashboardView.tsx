@@ -194,7 +194,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <KzButton
               variant="primary"
               size="sm"
-              onClick={() => onNavigate('/modules')}
+              onClick={() => {
+                onNavigate('/modules');
+                soundEngine.playTap();
+              }}
               icon={<SlidersHorizontal size={13} />}
             >
               Configurar módulos
