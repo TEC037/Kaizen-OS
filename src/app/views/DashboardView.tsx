@@ -18,6 +18,7 @@ import { KzCard } from '../../components/ui/KzCard';
 import { KzButton } from '../../components/ui/KzButton';
 import { KzBadge } from '../../components/ui/KzBadge';
 import { KzRingProgress } from '../../components/ui/KzRingProgress';
+import { KzScorePill } from '../../components/ui/KzScorePill';
 import { soundEngine } from '../../core/sound';
 
 interface DashboardViewProps {
@@ -183,14 +184,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <KzButton
-              variant="craft"
-              size="sm"
+            <KzScorePill
+              points={scoreState.totalPoints}
+              dailyPercent={dailyPercent}
               onClick={onOpenScoreModal}
-              title="Ver detalle del sistema de puntos e historial Kaizen"
-            >
-              ★ {scoreState.totalPoints} pts | +1%: {dailyPercent}%
-            </KzButton>
+              size="sm"
+            />
 
             <KzButton
               variant="primary"
