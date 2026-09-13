@@ -237,38 +237,48 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
 
               <div className="flex items-center gap-2 text-xs font-mono">
-                <span
-                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-colors ${
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenScoreModal();
+                    soundEngine.playTap();
+                  }}
+                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-all cursor-pointer ${
                     scoreState.currentStreakDays >= 7
-                      ? 'border-amber-400 bg-amber-100/80 text-amber-950 font-semibold'
-                      : 'border-stone-200 bg-[#faf8f1] text-stone-700'
+                      ? 'border-amber-400 bg-amber-100/80 text-amber-950 font-semibold hover:bg-amber-200/80'
+                      : 'border-stone-200 bg-[#faf8f1] text-stone-700 hover:bg-stone-100 hover:border-stone-300'
                   }`}
                   title={
                     scoreState.currentStreakDays >= 7
-                      ? `¡Gran racha de constancia!: ${scoreState.currentStreakDays} días consecutivos`
-                      : `Racha actual: ${scoreState.currentStreakDays} días`
+                      ? `¡Gran racha de constancia!: ${scoreState.currentStreakDays} días consecutivos (clic para ver historial)`
+                      : `Racha actual: ${scoreState.currentStreakDays} días (clic para ver historial)`
                   }
                 >
                   <Flame
                     size={12}
                     className={
-                      scoreState.currentStreakDays >= 7
-                        ? 'text-amber-600 fill-amber-500'
-                        : 'text-amber-600'
+                    scoreState.currentStreakDays >= 7
+                      ? 'text-amber-600 fill-amber-500'
+                      : 'text-amber-600'
                     }
                   />
                   <span><strong>{scoreState.currentStreakDays} {scoreState.currentStreakDays === 1 ? 'día' : 'días'}</strong></span>
-                </span>
-                <span
-                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-colors ${
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenScoreModal();
+                    soundEngine.playTap();
+                  }}
+                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-all cursor-pointer ${
                     isDailyGoalAchieved
-                      ? 'border-emerald-400 bg-emerald-100/80 text-emerald-950 font-semibold'
-                      : 'border-stone-200 bg-[#faf8f1] text-stone-700'
+                      ? 'border-emerald-400 bg-emerald-100/80 text-emerald-950 font-semibold hover:bg-emerald-200/80'
+                      : 'border-stone-200 bg-[#faf8f1] text-stone-700 hover:bg-stone-100 hover:border-stone-300'
                   }`}
                   title={
                     isDailyGoalAchieved
-                      ? `¡Meta del 1% diario alcanzada! (${scoreState.todayPoints}/${scoreState.dailyGoalPoints} pts)`
-                      : `Progreso de puntos de hoy: ${scoreState.todayPoints} de ${scoreState.dailyGoalPoints} pts`
+                      ? `¡Meta del 1% diario alcanzada! (${scoreState.todayPoints}/${scoreState.dailyGoalPoints} pts) (clic para ver desglose)`
+                      : `Progreso de puntos de hoy: ${scoreState.todayPoints} de ${scoreState.dailyGoalPoints} pts (clic para ver desglose)`
                   }
                 >
                   <Award
@@ -280,7 +290,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     }
                   />
                   <span><strong>{scoreState.todayPoints}/{scoreState.dailyGoalPoints}</strong></span>
-                </span>
+                </button>
               </div>
             </div>
 
@@ -324,7 +334,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </span>
             <button
               type="button"
-              onClick={onOpenScoreModal}
+              onClick={() => {
+                onOpenScoreModal();
+                soundEngine.playTap();
+              }}
               className="text-[11px] underline text-stone-800 hover:text-stone-950 cursor-pointer"
             >
               Ver reglas &rarr;
