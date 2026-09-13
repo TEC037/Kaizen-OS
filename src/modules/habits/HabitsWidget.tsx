@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
 import { createModuleStorage } from '../../sdk/storage';
-import { Check, Square, ArrowRight } from 'lucide-react';
+import { Check, Square, ArrowRight, Flame } from 'lucide-react';
 import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
@@ -28,6 +28,23 @@ interface TransmuteState {
 const todayLocal = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const computeStreak = (completedDays?: Record<string, boolean>): number => {
+  if (!completedDays) return 0;
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date();
+    d.setDate(today.getDate() - i);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    if (completedDays[dateStr]) {
+      streak++;
+    } else if (i > 0) {
+      break;
+    }
+  }
+  return streak;
 };
 
 /**
@@ -76,11 +93,13 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
       soundEngine.playComplete();
 
       if (habit) {
+        const updatedDays = { ...(habit.completedDays || {}), [state.selectedDate]: willBeDone };
+        const streak = computeStreak(updatedDays);
         kaizenBus.emit(KaizenContracts.HabitToggled, {
           habitId: id,
           habitTitle: habit.name,
           completed: willBeDone,
-          streak: 1,
+          streak,
         });
       }
 
@@ -132,14 +151,15 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
           <div className="space-y-1.5 pt-1">
             {habits.slice(0, 4).map((habit) => {
               const done = !!habit.completedDays?.[state.selectedDate];
+              const streak = computeStreak(habit.completedDays);
               return (
                 <div
                   key={habit.id}
                   onClick={() => toggleFromWidget(habit.id)}
-                  className="flex items-center justify-between p-2 border border-zinc-200 hover:border-zinc-400 bg-zinc-50/50 cursor-pointer transition-colors text-xs"
+                  className="flex items-center justify-between p-2 border border-zinc-200 hover:border-zinc-400 bg-zinc-50/50 cursor-pointer transition-colors text-xs group"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-700">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-zinc-700 shrink-0">
                       {done ? (
                         <span className="w-4 h-4 flex items-center justify-center bg-zinc-900 text-white">
                           <Check size={12} />
@@ -150,10 +170,24 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
                         </span>
                       )}
                     </span>
-                    <span className={done ? 'line-through text-zinc-400' : 'text-zinc-800'}>
+                    <span className={`truncate ${done ? 'line-through text-zinc-400' : 'text-zinc-800'}`}>
                       {habit.name}
                     </span>
                   </div>
+
+                  {streak > 0 && (
+                    <div
+                      className={`flex items-center gap-0.5 text-[10px] font-mono px-1.5 py-0.5 shrink-0 border transition-colors ${
+                        streak >= 7
+                          ? 'bg-amber-100/70 border-amber-300 text-amber-900 font-semibold'
+                          : 'bg-stone-100 border-stone-200 text-stone-600'
+                      }`}
+                      title={`Racha: ${streak} día${streak > 1 ? 's' : ''} consecutivos`}
+                    >
+                      <Flame size={11} className={streak >= 7 ? 'text-amber-600 fill-amber-500' : 'text-stone-400'} />
+                      <span>{streak}d</span>
+                    </div>
+                  )}
                 </div>
               );
             })}

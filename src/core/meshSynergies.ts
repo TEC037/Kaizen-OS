@@ -72,7 +72,20 @@ export function initializeMeshSynergies(): () => void {
   });
   cleanups.push(unsubForjaProject);
 
-  // 3. Hábitos perfectos -> Hito
+  // 3. Hábitos: Hito de rachas consecutivas (3, 7, 14, 21, 30 días)
+  const unsubHabitToggled = kaizenBus.on(KaizenContracts.HabitToggled, (payload) => {
+    if (payload.completed && [3, 7, 14, 21, 30].includes(payload.streak)) {
+      soundEngine.playMilestone();
+      awardKaizenPoints(
+        payload.streak * 5,
+        'habits',
+        `Racha Forjada: ${payload.streak} días seguidos en "${payload.habitTitle}"`
+      );
+    }
+  });
+  cleanups.push(unsubHabitToggled);
+
+  // 4. Hábitos perfectos -> Día Dorado
   const unsubHabits = kaizenBus.on(KaizenContracts.HabitsAllDailyDone, (payload) => {
     soundEngine.playMilestone();
     awardKaizenPoints(30, 'habits', `Día Dorado: ${payload.count} hábitos completados al 100%`);
