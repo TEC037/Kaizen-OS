@@ -382,7 +382,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
               </div>
               <button
                 type="button"
-                onClick={onCloseArchInspector}
+                onClick={() => {
+                  onCloseArchInspector();
+                  soundEngine.playTap();
+                }}
                 className="text-stone-400 hover:text-white px-2 py-0.5 border border-stone-700 rounded-sm cursor-pointer"
               >
                 Cerrar [×]
@@ -408,7 +411,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                   />
                   <button
                     type="button"
-                    onClick={() => onNavigate(manualRouteInput)}
+                    onClick={() => {
+                      soundEngine.playTap();
+                      onNavigate(manualRouteInput);
+                    }}
                     className="px-2.5 py-1 bg-stone-200 text-stone-950 font-bold hover:bg-white rounded-sm cursor-pointer shrink-0"
                   >
                     Ir
@@ -417,21 +423,33 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                 <div className="flex gap-1 flex-wrap pt-1 text-[10px]">
                   <button
                     type="button"
-                    onClick={() => { setManualRouteInput('/gym'); onNavigate('/gym'); }}
+                    onClick={() => {
+                      setManualRouteInput('/gym');
+                      soundEngine.playTap();
+                      onNavigate('/gym');
+                    }}
                     className="underline text-stone-300 hover:text-white"
                   >
                     /gym
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setManualRouteInput('/reading'); onNavigate('/reading'); }}
+                    onClick={() => {
+                      setManualRouteInput('/reading');
+                      soundEngine.playTap();
+                      onNavigate('/reading');
+                    }}
                     className="underline text-stone-300 hover:text-white"
                   >
                     /reading
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setManualRouteInput('/finance'); onNavigate('/finance'); }}
+                    onClick={() => {
+                      setManualRouteInput('/finance');
+                      soundEngine.playTap();
+                      onNavigate('/finance');
+                    }}
                     className="underline text-stone-300 hover:text-white"
                   >
                     /finance
