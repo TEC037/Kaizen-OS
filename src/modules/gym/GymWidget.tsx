@@ -9,7 +9,7 @@ import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
 import { STORAGE_KEYS } from './fitai/src/config/constants';
 import { WorkoutSessionLog, UserProfile } from './fitai/src/types';
-import { readKaizenSessions, recordWorkoutSession } from './sessions';
+import { todayStamp, readKaizenSessions, recordWorkoutSession } from './sessions';
 import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
@@ -79,6 +79,11 @@ export const GymWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const weeklyCompliance =
     typeof profile?.weeklyCompliance === 'number' ? profile.weeklyCompliance : null;
 
+  const today = todayStamp();
+  const trainedToday =
+    (history.length > 0 && history.some((s) => s.date === today)) ||
+    (sessions.length > 0 && sessions.some((s) => s.date === today));
+
   return (
     <ModuleWidget
       id="gym-overview"
@@ -131,22 +136,41 @@ export const GymWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
           </p>
         )}
 
-        {/* Botón de micro-acción: Registrar sesión rápida de 20 min */}
-        <div className="flex items-center justify-between p-2 border border-red-200 bg-red-50/50 rounded-sm">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <Zap size={13} className="text-red-600 shrink-0" />
-            <span className="text-[11px] text-red-950 font-bold">¿Entrenaste hoy?</span>
+        {/* Botón de micro-acción contextual */}
+        {trainedToday ? (
+          <div className="flex items-center justify-between p-2.5 border border-emerald-300 bg-emerald-50/80 rounded-sm">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <CheckCircle2 size={14} className="text-emerald-700 shrink-0" />
+              <span className="text-[11px] text-emerald-950 font-bold">
+                Entrenamiento de hoy completado (+30 pts)
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={quickLogWorkout}
+              className="px-2 py-0.5 border border-emerald-300 hover:bg-emerald-100 text-emerald-900 rounded-xs text-[10px] font-mono cursor-pointer transition-colors"
+              title="Registrar sesión extra o estiramiento"
+            >
+              + Extra 15m
+            </button>
           </div>
+        ) : (
+          <div className="flex items-center justify-between p-2 border border-red-200 bg-red-50/50 rounded-sm">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Zap size={13} className="text-red-600 shrink-0" />
+              <span className="text-[11px] text-red-950 font-bold">¿Entrenaste hoy?</span>
+            </div>
 
-          <button
-            type="button"
-            onClick={quickLogWorkout}
-            className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-xs text-[10px] font-bold cursor-pointer transition-colors shadow-xs"
-            title="Registrar sesión de 20 min (+30 pts Kaizen y auto-marca hábito)"
-          >
-            + Registrar 20 min
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={quickLogWorkout}
+              className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-xs text-[10px] font-bold cursor-pointer transition-colors shadow-xs"
+              title="Registrar sesión de 20 min (+30 pts Kaizen y auto-marca hábito)"
+            >
+              + Registrar 20 min
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between pt-1">
           {weeklyCompliance !== null ? (
