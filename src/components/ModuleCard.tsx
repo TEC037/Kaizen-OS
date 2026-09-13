@@ -212,7 +212,10 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
         {status === 'enabled' && primaryRoute && onNavigateToModule && (
           <button
             type="button"
-            onClick={() => onNavigateToModule(primaryRoute)}
+            onClick={() => {
+              soundEngine.playTap();
+              onNavigateToModule(primaryRoute);
+            }}
             className="text-xs text-stone-600 hover:text-stone-900 flex items-center gap-1 cursor-pointer underline underline-offset-2"
           >
             <span>Ir a {primaryRoute}</span>
