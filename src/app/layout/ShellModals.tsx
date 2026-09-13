@@ -119,8 +119,17 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
 
       {/* Modal de Detalle del Sistema de Puntuación Kaizen */}
       {showScoreModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="border border-stone-300 bg-[#fffdf8] w-full max-w-2xl p-6 font-mono max-h-[90vh] overflow-y-auto space-y-5 rounded-sm shadow-2xl">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => {
+            onCloseScoreModal();
+            soundEngine.playTap();
+          }}
+        >
+          <div
+            className="border border-stone-300 bg-[#fffdf8] w-full max-w-2xl p-6 font-mono max-h-[90vh] overflow-y-auto space-y-5 rounded-sm shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div className="flex items-center gap-2">
                 <Star size={18} className="text-amber-500 fill-amber-500" />
