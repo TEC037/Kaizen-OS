@@ -12,6 +12,7 @@ import TransmuteApp from './transmute/src/App';
 import './transmute/src/index.css';
 import { setThemeOnRoot } from './transmute/src/lib/themeRoot';
 import { awardKaizenPoints } from '../../core/scoring';
+import { soundEngine } from '../../core/sound';
 
 const TRANSMUTE_COMPLETED_EVENT = 'transmute:habit-completed';
 
@@ -32,6 +33,7 @@ export const HabitsPage: React.FC = () => {
 
     const handleCompleted = (e: Event) => {
       const detail = (e as CustomEvent<{ name?: string }>).detail;
+      soundEngine.playComplete();
       awardKaizenPoints(10, 'habits', `Hábito transmutado: ${detail?.name ?? 'la Gran Obra'}`);
     };
     window.addEventListener(TRANSMUTE_COMPLETED_EVENT, handleCompleted);
