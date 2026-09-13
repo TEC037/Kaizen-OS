@@ -104,6 +104,18 @@ export const FinanceWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
               style={{ width: `${Math.min(100, budgetPercent)}%` }}
             />
           </div>
+          <div className="flex items-center justify-between text-[10px] text-stone-500 pt-0.5">
+            <span>
+              {totalAllocated >= totalSpent ? (
+                <>Disponible: <strong className="text-emerald-800 font-semibold">${(totalAllocated - totalSpent).toLocaleString()}</strong></>
+              ) : (
+                <>Excedente: <strong className="text-amber-700 font-semibold">+${(totalSpent - totalAllocated).toLocaleString()}</strong></>
+              )}
+            </span>
+            <span className={budgetPercent >= 100 ? 'text-amber-700 font-semibold' : 'text-stone-500'}>
+              {budgetPercent >= 100 ? 'Límite alcanzado' : `${100 - budgetPercent}% restante`}
+            </span>
+          </div>
         </div>
 
         {/* Meta destacada con aporte rápido en 1 click */}
