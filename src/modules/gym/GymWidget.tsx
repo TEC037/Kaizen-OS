@@ -184,7 +184,10 @@ export const GymWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
           )}
           <button
             type="button"
-            onClick={() => onNavigate('/gym')}
+            onClick={() => {
+              soundEngine.playTap();
+              onNavigate('/gym');
+            }}
             className="text-xs font-mono text-stone-700 hover:text-stone-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
             <span>Abrir Punto Fuerte</span>
