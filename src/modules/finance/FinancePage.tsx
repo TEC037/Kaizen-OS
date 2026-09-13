@@ -15,6 +15,8 @@ import {
 import { loadCustomData, saveCustomData } from '../../core/storage';
 import { awardKaizenPoints } from '../../core/scoring';
 import { soundEngine } from '../../core/sound';
+import { kaizenBus } from '../../sdk/bus';
+import { KaizenContracts } from '../../sdk/contracts';
 import { Wallet, Plus, Target, DollarSign, AlertCircle } from 'lucide-react';
 
 export const FinancePage: React.FC = () => {
@@ -43,6 +45,11 @@ export const FinancePage: React.FC = () => {
     soundEngine.playComplete();
     updateCategories(updated);
     awardKaizenPoints(10, 'finance', `Control presupuestario: $${expenseAmount} registrado en ${targetCat?.category || 'gastos'}`);
+    kaizenBus.emit(KaizenContracts.FinanceExpenseLogged, {
+      category: targetCat?.category || 'General',
+      amount: expenseAmount,
+      description: `Registro presupuestario en ${targetCat?.category || 'gastos'}`,
+    });
     setShowExpenseModal(false);
   };
 

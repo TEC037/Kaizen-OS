@@ -167,7 +167,46 @@ export function initializeMeshSynergies(): () => void {
       console.warn('[MeshSynergy] Error intentando sinergia Lectura -> Hábitos:', err);
     }
   });
-  cleanups.push(unsubReading);
+  // 6. Finanzas -> Hábitos (TRANSMUTE)
+  const unsubFinance = kaizenBus.on(KaizenContracts.FinanceExpenseLogged, (_payload) => {
+    try {
+      const raw = localStorage.getItem('transmute-storage');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const habits: Array<{ id: string; name: string; completedDays?: Record<string, boolean> }> =
+          parsed?.state?.habits ?? [];
+        const today = new Date().toISOString().split('T')[0];
+
+        // Buscar un hábito que contenga palabras clave de finanzas o ahorro
+        const financeHabit = habits.find((h) => {
+          const name = (h.name || '').toLowerCase();
+          return (
+            name.includes('finanza') ||
+            name.includes('ahorr') ||
+            name.includes('gasto') ||
+            name.includes('presupuesto') ||
+            name.includes('dinero') ||
+            name.includes('finance')
+          );
+        });
+
+        if (financeHabit && !financeHabit.completedDays?.[today]) {
+          import('../modules/habits/transmute/src/store/useStore')
+            .then(({ useStore }) => {
+              const { toggleHabit } = useStore.getState();
+              toggleHabit(financeHabit.id, today);
+              console.info(
+                `[MeshSynergy] Hábito "${financeHabit.name}" auto-completado tras registro financiero.`
+              );
+            })
+            .catch(() => {});
+        }
+      }
+    } catch (err) {
+      console.warn('[MeshSynergy] Error intentando sinergia Finanzas -> Hábitos:', err);
+    }
+  });
+  cleanups.push(unsubFinance);
 
   return () => {
     cleanups.forEach((fn) => fn());
