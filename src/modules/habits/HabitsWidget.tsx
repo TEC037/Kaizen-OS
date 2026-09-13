@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
 import { createModuleStorage } from '../../sdk/storage';
-import { Check, Square, ArrowRight, Flame } from 'lucide-react';
+import { Check, Square, ArrowRight, Flame, Plus } from 'lucide-react';
 import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
@@ -70,6 +70,33 @@ const loadTransmuteState = () => transmuteStorage.load();
 
 export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const [state, setState] = useState(loadTransmuteState);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newHabitName, setNewHabitName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleCreateHabit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newHabitName.trim();
+    if (!trimmed || isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+      const { useStore } = await import('./transmute/src/store/useStore');
+      await useStore.getState().addHabit({
+        name: trimmed,
+        area: 'Dominio del Ser',
+      });
+      soundEngine.playTap();
+      const next = loadTransmuteState();
+      setState(next);
+      setNewHabitName('');
+      setIsAdding(false);
+    } catch {
+      // ignore
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const refresh = () => setState(loadTransmuteState());
@@ -194,16 +221,57 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
           </div>
         )}
 
-        <div className="pt-2 flex justify-end">
-          <button
-            type="button"
-            onClick={() => onNavigate('/habits')}
-            className="text-xs font-mono text-zinc-800 hover:text-zinc-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
-          >
-            <span>Gestionar todos los hábitos</span>
-            <ArrowRight size={12} />
-          </button>
-        </div>
+        {/* Quick add inline habit */}
+        {isAdding ? (
+          <form onSubmit={handleCreateHabit} className="flex items-center gap-1.5 pt-1">
+            <input
+              type="text"
+              autoFocus
+              value={newHabitName}
+              onChange={(e) => setNewHabitName(e.target.value)}
+              placeholder="Nombre del nuevo hábito..."
+              disabled={isSubmitting}
+              className="flex-1 text-xs px-2 py-1 border border-stone-400 bg-white font-mono placeholder:text-stone-400 focus:outline-none focus:border-stone-900"
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting || !newHabitName.trim()}
+              className="px-2 py-1 text-[11px] font-mono bg-stone-900 text-stone-100 hover:bg-stone-800 disabled:opacity-40 cursor-pointer"
+            >
+              Guardar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsAdding(false);
+                setNewHabitName('');
+              }}
+              className="px-1.5 py-1 text-[11px] font-mono text-stone-500 hover:text-stone-800 cursor-pointer"
+            >
+              ✕
+            </button>
+          </form>
+        ) : (
+          <div className="pt-2 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setIsAdding(true)}
+              className="text-[11px] font-mono text-stone-600 hover:text-stone-900 flex items-center gap-1 cursor-pointer"
+            >
+              <Plus size={12} />
+              <span>Nuevo hábito</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigate('/habits')}
+              className="text-xs font-mono text-zinc-800 hover:text-zinc-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
+            >
+              <span>Gestionar todos</span>
+              <ArrowRight size={12} />
+            </button>
+          </div>
+        )}
       </div>
     </ModuleWidget>
   );
