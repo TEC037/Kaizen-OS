@@ -60,9 +60,45 @@ export function initializeMeshSynergies(): () => void {
   });
   cleanups.push(unsubGym);
 
-  // 2. FORJA -> Sonido y registro de avance
+  // 2. FORJA -> Auto-marca hábito de enfoque/trabajo profundo y feedback
   const unsubForjaAction = kaizenBus.on(KaizenContracts.ForjaNextActionDone, (_payload) => {
-    soundEngine.playTap();
+    try {
+      const raw = localStorage.getItem('transmute-storage');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const habits: Array<{ id: string; name: string; completedDays?: Record<string, boolean> }> =
+          parsed?.state?.habits ?? [];
+        const today = new Date().toISOString().split('T')[0];
+
+        // Buscar un hábito que contenga palabras clave de foco, proyecto o trabajo profundo
+        const focusHabit = habits.find((h) => {
+          const name = (h.name || '').toLowerCase();
+          return (
+            name.includes('foco') ||
+            name.includes('focus') ||
+            name.includes('profundo') ||
+            name.includes('forja') ||
+            name.includes('proyecto') ||
+            name.includes('trabajo') ||
+            name.includes('estudio')
+          );
+        });
+
+        if (focusHabit && !focusHabit.completedDays?.[today]) {
+          import('../modules/habits/transmute/src/store/useStore')
+            .then(({ useStore }) => {
+              const { toggleHabit } = useStore.getState();
+              toggleHabit(focusHabit.id, today);
+              console.info(
+                `[MeshSynergy] Hábito "${focusHabit.name}" auto-completado tras avanzar acción en FORJA.`
+              );
+            })
+            .catch(() => {});
+        }
+      }
+    } catch (err) {
+      console.warn('[MeshSynergy] Error intentando sinergia FORJA -> Hábitos:', err);
+    }
   });
   cleanups.push(unsubForjaAction);
 
