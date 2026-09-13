@@ -299,7 +299,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
             {/* Anillo y barra de progreso */}
             <div className="flex items-center gap-4 pt-1">
-              <KzRingProgress percent={dailyPercent} size={68} strokeWidth={6} />
+              <KzRingProgress
+                percent={dailyPercent}
+                size={68}
+                strokeWidth={6}
+                onClick={onOpenScoreModal}
+              />
               <div className="flex-1 space-y-1.5">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-stone-600">Avance de hoy:</span>
