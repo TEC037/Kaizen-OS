@@ -229,8 +229,8 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
             type="button"
             onClick={onToggleSound}
             className="p-1.5 text-stone-600 hover:text-stone-900 border border-stone-300 bg-[#faf8f1] hover:bg-white rounded-sm cursor-pointer transition-colors"
-            title={soundEnabled ? 'Silenciar sonidos' : 'Activar sonidos de feedback'}
-            aria-label="Alternar sonido"
+            title={soundEnabled ? 'Silenciar sonidos [M]' : 'Activar sonidos de feedback [M]'}
+            aria-label="Alternar sonido (M)"
           >
             {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} className="text-stone-400" />}
           </button>
