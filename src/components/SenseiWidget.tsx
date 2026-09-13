@@ -5,8 +5,8 @@
  * Incluye exportación visual de la Carta Diaria de Avance mediante html-to-image.
  */
 
-import React, { useState, useRef } from 'react';
-import { Sparkles, Download, RefreshCw, Quote, Flame, CheckCircle2 } from 'lucide-react';
+import React, { useState, useRef, useEffect, useTransition } from 'react';
+import { Sparkles, Download, RefreshCw, Quote, Key } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { KzCard } from './ui/KzCard';
 import { KzButton } from './ui/KzButton';
@@ -14,6 +14,14 @@ import { KzBadge } from './ui/KzBadge';
 import { readKaizenSessions } from '../modules/gym/sessions';
 import { loadProjects } from '../modules/projects/forja/src/storage/forjaStorage';
 import { seedProjects } from '../modules/projects/forja/src/data/seed';
+import { soundEngine } from '../core/sound';
+import {
+  generateSenseiInsight,
+  getFallbackInsights,
+  getGeminiApiKey,
+  setGeminiApiKey,
+  SenseiInsight,
+} from '../core/senseiAI';
 
 interface SenseiWidgetProps {
   scorePoints: number;
@@ -30,6 +38,8 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
 }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [insightIndex, setInsightIndex] = useState(0);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiInsight, setAiInsight] = useState<SenseiInsight | null>(null);
   const exportCardRef = useRef<HTMLDivElement>(null);
 
   // Leer estado real de los módulos para correlación holística
@@ -40,37 +50,57 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
   const projects = loadProjects(seedProjects);
   const activeProject = projects.find((p) => p.status === 'En progreso') || projects[0];
 
-  // Heurísticas sabias de Kaizen basadas en la situación real
-  const insights = [
-    {
-      title: trainedToday
-        ? 'Sinergia Físico-Cognitiva Activa'
-        : 'Micro-disciplina del 1%',
-      body: trainedToday
-        ? `Has registrado entrenamiento físico hoy. Tu claridad dopaminérgica está en su pico: es el momento idóneo para abordar la próxima acción en FORJA: "${activeProject?.nextAction || 'Estructurar proyecto'}" sin postergación.`
-        : dailyPercent >= 100
-        ? `¡Has alcanzado la meta del 1% hoy! En Kaizen, la moderación es virtud: no te satures. Consolida lo ganado y prepara el terreno para mañana.`
-        : `Tienes un avance del ${dailyPercent}% hacia tu meta del día. Recuerda: una sola acción de 2 minutos basta para mantener el impulso. Lo compuesto vence a lo heroico.`,
-      principio: '“Mejorar un 1% cada día es multiplicar por 37 tus capacidades en un año.”',
-    },
-    {
-      title: 'Enfoque Monotarea',
-      body: activeProject
-        ? `En el taller FORJA tienes "${activeProject.title}". En lugar de dispersarte en 10 tareas, enfoca tu siguiente bloque de 25 minutos exclusivamente en: "${activeProject.nextAction}".`
-        : 'Simplifica tu entorno. Identifica tu única próxima acción inmediata y ejecútala antes de abrir más frentes.',
-      principio: '“El artesano no forja diez espadas a la vez; golpea un solo hierro con total presencia.”',
-    },
-    {
-      title: 'Consistencia y No-Culpa',
-      body: `Tu racha actual es de ${streakDays} ${streakDays === 1 ? 'día' : 'días'}. Si hoy tu energía es baja, haz una pausa consciente o realiza un micro-hábito mínimo. En Kaizen, el descanso reflexivo también es progreso.`,
-      principio: '“El agua suave desgasta la roca dura, no por fuerza, sino por perseverancia.”',
-    },
-  ];
+  const userName = (typeof window !== 'undefined' && localStorage.getItem('kz:user_name')) || 'Artesano';
 
-  const currentInsight = insights[insightIndex % insights.length];
+  const contextData = {
+    userName,
+    trainedToday,
+    dailyPercent,
+    scorePoints,
+    streakDays,
+    activeProjectTitle: activeProject?.title,
+    activeProjectNextAction: activeProject?.nextAction,
+  };
 
-  const handleNextInsight = () => {
-    setInsightIndex((prev) => prev + 1);
+  const fallbackInsights = getFallbackInsights(contextData);
+  const currentInsight = aiInsight || fallbackInsights[insightIndex % fallbackInsights.length];
+
+  const handleNextInsight = async () => {
+    soundEngine.playTap();
+    const hasKey = Boolean(getGeminiApiKey());
+
+    if (hasKey) {
+      try {
+        setIsAiLoading(true);
+        const generated = await generateSenseiInsight(contextData);
+        setAiInsight(generated);
+        soundEngine.playComplete();
+      } catch {
+        setAiInsight(null);
+        setInsightIndex((prev) => prev + 1);
+      } finally {
+        setIsAiLoading(false);
+      }
+    } else {
+      setAiInsight(null);
+      setInsightIndex((prev) => prev + 1);
+    }
+  };
+
+  const handleConfigureKey = () => {
+    soundEngine.playTap();
+    const current = getGeminiApiKey() || '';
+    const input = window.prompt(
+      'Configura tu API Key de Google Gemini para reflexiones del Sensei en vivo (o déjala vacía para usar sabiduría local):',
+      current
+    );
+    if (input !== null) {
+      setGeminiApiKey(input);
+      if (input.trim()) {
+        soundEngine.playComplete();
+        handleNextInsight();
+      }
+    }
   };
 
   const handleExportCard = async () => {
@@ -108,14 +138,24 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleConfigureKey}
+            className="p-1.5 border border-stone-300 bg-white hover:bg-stone-100 text-stone-600 rounded-sm cursor-pointer"
+            title="Configurar API Key de Gemini para reflexiones de IA"
+          >
+            <Key size={12} />
+          </button>
+
           <KzButton
             variant="craft"
             size="sm"
             onClick={handleNextInsight}
-            icon={<RefreshCw size={11} />}
-            title="Siguiente consejo reflexivo"
+            disabled={isAiLoading}
+            icon={<RefreshCw size={11} className={isAiLoading ? 'animate-spin' : ''} />}
+            title="Siguiente consejo reflexivo del Sensei"
           >
-            Reflexión
+            {isAiLoading ? 'Consultando…' : 'Reflexión'}
           </KzButton>
 
           <KzButton
@@ -137,8 +177,9 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
         className="bg-[#faf8f1] border border-stone-200/80 p-4 rounded-sm space-y-3 font-mono text-xs"
       >
         <div className="flex items-center justify-between border-b border-stone-200/60 pb-2">
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <KzBadge variant="accent">{currentInsight.title}</KzBadge>
+            {currentInsight.isAiGenerated && <KzBadge variant="info">Gemini IA</KzBadge>}
             {trainedToday && <KzBadge variant="success">Físico Entrenado</KzBadge>}
             {dailyPercent >= 100 && <KzBadge variant="success">Meta 1% Lista</KzBadge>}
           </div>
