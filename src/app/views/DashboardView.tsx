@@ -5,7 +5,7 @@
  */
 
 import React, { Suspense } from 'react';
-import { LayoutGrid, ChevronUp, ChevronDown, Eye, EyeOff, TrendingUp, Flame, Award, SlidersHorizontal, Info } from 'lucide-react';
+import { LayoutGrid, ChevronUp, ChevronDown, Eye, EyeOff, TrendingUp, Flame, Award, SlidersHorizontal, Info, Pencil, Check } from 'lucide-react';
 import { DAILY_1_PERCENT_TARGET } from '../../core/scoring';
 import { DynamicWidgetDef } from '../moduleRegistry';
 import { WidgetLayout, WidgetSpan, SPAN_CLASSES } from '../../core/widgetLayout';
@@ -18,6 +18,7 @@ import { KzCard } from '../../components/ui/KzCard';
 import { KzButton } from '../../components/ui/KzButton';
 import { KzBadge } from '../../components/ui/KzBadge';
 import { KzRingProgress } from '../../components/ui/KzRingProgress';
+import { soundEngine } from '../../core/sound';
 
 interface DashboardViewProps {
   scoreState: KaizenScoreState;
@@ -66,6 +67,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     );
   }
 
+  const [userName, setUserName] = React.useState(() => {
+    return localStorage.getItem('kz:user_name') || 'Alex';
+  });
+  const [isEditingName, setIsEditingName] = React.useState(false);
+  const [tempName, setTempName] = React.useState(userName);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Buenos días';
+    if (hour >= 12 && hour < 20) return 'Buenas tardes';
+    return 'Buenas noches';
+  };
+
+  const handleSaveName = () => {
+    const trimmed = tempName.trim() || 'Alex';
+    setUserName(trimmed);
+    localStorage.setItem('kz:user_name', trimmed);
+    setIsEditingName(false);
+    soundEngine.playTap();
+  };
+
   const todayFormatted = new Intl.DateTimeFormat('es-ES', {
     weekday: 'long',
     day: 'numeric',
@@ -107,9 +129,52 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 {enabledManifests.length} módulos activos
               </KzBadge>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight mt-0.5 font-mono">
-              Hola, Alex
-            </h1>
+
+            <div className="flex items-center gap-2 mt-0.5">
+              {isEditingName ? (
+                <div className="flex items-center gap-1.5 py-0.5">
+                  <span className="text-xl sm:text-2xl font-bold text-stone-900 font-mono">
+                    {getGreeting()},
+                  </span>
+                  <input
+                    type="text"
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveName();
+                      if (e.key === 'Escape') setIsEditingName(false);
+                    }}
+                    autoFocus
+                    className="text-xl sm:text-2xl font-bold text-stone-900 font-mono bg-white border border-stone-400 px-1.5 py-0 rounded-xs w-36 outline-none shadow-inner"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveName}
+                    className="p-1 border border-stone-400 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xs cursor-pointer"
+                    title="Guardar nombre"
+                  >
+                    <Check size={14} />
+                  </button>
+                </div>
+              ) : (
+                <h1 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight font-mono flex items-center gap-1.5 group">
+                  <span>{getGreeting()}, {userName}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTempName(userName);
+                      setIsEditingName(true);
+                      soundEngine.playTap();
+                    }}
+                    className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-stone-700 transition-opacity p-0.5 cursor-pointer"
+                    title="Editar tu nombre"
+                  >
+                    <Pencil size={13} />
+                  </button>
+                </h1>
+              )}
+            </div>
+
             <p className="text-xs text-stone-600 capitalize font-mono">{todayFormatted}</p>
           </div>
 
