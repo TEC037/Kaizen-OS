@@ -8,9 +8,15 @@
  * - Cero referencias cableadas o condicionales como `if (gymEnabled)`.
  */
 
-import React, { useState } from 'react';
+import React, { useState, Suspense, useMemo } from 'react';
 import { useModuleLifecycle } from '../core/moduleLifecycle';
-import { useKaizenScore, DAILY_1_PERCENT_TARGET } from '../core/scoring';
+import {
+  useKaizenScore,
+  DAILY_1_PERCENT_TARGET,
+  collectScoringRules,
+  useDeclarativeScoring,
+} from '../core/scoring';
+import { useWidgetLayout, SPAN_CLASSES, WidgetSpan } from '../core/widgetLayout';
 import {
   getAllManifests,
   getEnabledManifests,
@@ -22,6 +28,7 @@ import {
 import { AppRouter } from './router';
 import { ModuleCard } from '../components/ModuleCard';
 import { EmptyState } from '../components/EmptyState';
+import { ModuleSettings } from '../components/ModuleSettings';
 import {
   LayoutDashboard,
   Layers,
@@ -31,6 +38,7 @@ import {
   Dumbbell,
   BookOpen,
   Wallet,
+  Hammer,
   Code2,
   SlidersHorizontal,
   ChevronRight,
@@ -41,6 +49,11 @@ import {
   TrendingUp,
   History,
   X,
+  Eye,
+  EyeOff,
+  ChevronUp,
+  ChevronDown,
+  LayoutGrid,
 } from 'lucide-react';
 
 /**
@@ -52,12 +65,14 @@ const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: 
   Dumbbell,
   BookOpen,
   Wallet,
+  Hammer,
 };
 
 export const AppShell: React.FC = () => {
   const [currentPath, setCurrentPath] = useState<string>('/');
   const [showArchInspector, setShowArchInspector] = useState<boolean>(false);
   const [showScoreModal, setShowScoreModal] = useState<boolean>(false);
+  const [showDashboardCustomize, setShowDashboardCustomize] = useState<boolean>(false);
   const [manualRouteInput, setManualRouteInput] = useState<string>('/gym');
 
   const {
@@ -83,11 +98,38 @@ export const AppShell: React.FC = () => {
   // Widgets generados PURAMENTE desde manifiestos habilitados
   const dynamicWidgets = getDynamicWidgets(getStatus);
 
+  // Layout configurable del dashboard (visibilidad, tamaño y orden por widget)
+  const { layout: widgetLayout, setPlacement, movePlacement } = useWidgetLayout(dynamicWidgets);
+
   // Catálogos para la pantalla de gestión de módulos
   const allManifests = getAllManifests();
   const installedManifests = getInstalledManifests(getStatus);
   const availableManifests = getAvailableManifests(getStatus);
   const enabledManifests = getEnabledManifests(getStatus);
+
+  // Scoring declarativo (Fase 5): reglas derivadas del spec de cada módulo
+  // habilitado (events.emits[].points). El hook se mantiene suscrito al bus y
+  // otorga puntos cuando un módulo emite uno de sus eventos declarados.
+  // `enabledManifests` es una array nueva por render, así que la clave de la
+  // memoización se deriva de los ids y specs habilitados (estable en el tiempo).
+  const enabledModuleSpecsKey = enabledManifests
+    .map(
+      (m) =>
+        `${m.id}::${(m.spec?.events?.emits ?? [])
+          .map((e) => `${e.name}:${e.points}`)
+          .join(',')}`
+    )
+    .sort()
+    .join('|');
+  const scoringRules = useMemo(
+    () =>
+      enabledManifests.flatMap((m) =>
+        collectScoringRules(m.id, m.spec?.events?.emits)
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [enabledModuleSpecsKey]
+  );
+  useDeclarativeScoring(scoringRules);
 
   const navigate = (path: string) => {
     setCurrentPath(path);
@@ -248,12 +290,96 @@ export const AppShell: React.FC = () => {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-800 flex items-center gap-2">
-              <span>Widgets activos en el Dashboard ({dynamicWidgets.length})</span>
+              <span>Widgets activos en el Dashboard ({widgetLayout.placements.length})</span>
             </h2>
-            <span className="text-xs text-zinc-500 font-mono">
-              Generados a partir de los módulos habilitados
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-zinc-500 font-mono hidden sm:inline">
+                {widgetLayout.placements.filter((p) => p.visible).length} visibles
+              </span>
+              <button
+                type="button"
+                id="btn-dashboard-customize"
+                onClick={() => setShowDashboardCustomize((v) => !v)}
+                className="px-2.5 py-1 text-xs font-mono border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-700 flex items-center gap-1.5 cursor-pointer"
+                title="Personalizar widgets: visibilidad, tamaño y orden"
+              >
+                <LayoutGrid size={13} />
+                <span>Personalizar</span>
+              </button>
+            </div>
           </div>
+
+          {showDashboardCustomize && widgetLayout.placements.length > 0 && (
+            <div className="border border-zinc-300 bg-white p-3 mb-4 space-y-2">
+              <div className="flex items-center justify-between border-b border-zinc-200 pb-1.5">
+                <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-zinc-800">
+                  Personalización del Dashboard
+                </span>
+                <span className="text-[10px] font-mono text-zinc-500">Se guarda automáticamente</span>
+              </div>
+              {widgetLayout.placements.map((placement, index) => {
+                const widget = dynamicWidgets.find((w) => w.id === placement.widgetId);
+                if (!widget) return null;
+                return (
+                  <div
+                    key={placement.widgetId}
+                    className="flex flex-wrap items-center gap-2 border border-zinc-200 bg-zinc-50/50 p-2 text-xs"
+                  >
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => movePlacement(placement.widgetId, -1)}
+                        disabled={index === 0}
+                        className="p-1 border border-zinc-300 bg-white text-zinc-600 hover:text-zinc-900 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                        title="Mover arriba"
+                        aria-label={`Mover ${widget.title} arriba`}
+                      >
+                        <ChevronUp size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => movePlacement(placement.widgetId, 1)}
+                        disabled={index === widgetLayout.placements.length - 1}
+                        className="p-1 border border-zinc-300 bg-white text-zinc-600 hover:text-zinc-900 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                        title="Mover abajo"
+                        aria-label={`Mover ${widget.title} abajo`}
+                      >
+                        <ChevronDown size={13} />
+                      </button>
+                    </div>
+
+                    <span className="font-semibold text-zinc-900 flex-1 min-w-[140px]">{widget.title}</span>
+                    <span className="text-[10px] font-mono text-zinc-500">módulo: {widget.moduleId}</span>
+
+                    <select
+                      value={placement.gridSpan}
+                      onChange={(e) => setPlacement(placement.widgetId, { gridSpan: e.target.value as WidgetSpan })}
+                      className="px-1.5 py-1 border border-zinc-300 bg-white text-xs font-mono text-zinc-700"
+                      aria-label={`Tamaño de ${widget.title}`}
+                    >
+                      <option value="half">Media columna</option>
+                      <option value="full">Ancho completo</option>
+                      <option value="third">Tercio</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={() => setPlacement(placement.widgetId, { visible: !placement.visible })}
+                      className={`px-2 py-1 border flex items-center gap-1 cursor-pointer font-mono text-[11px] ${
+                        placement.visible
+                          ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
+                          : 'border-zinc-300 bg-white text-zinc-500'
+                      }`}
+                      title={placement.visible ? 'Ocultar este widget' : 'Mostrar este widget'}
+                    >
+                      {placement.visible ? <Eye size={12} /> : <EyeOff size={12} />}
+                      <span>{placement.visible ? 'Visible' : 'Oculto'}</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {dynamicWidgets.length === 0 ? (
             <EmptyState
@@ -268,14 +394,26 @@ export const AppShell: React.FC = () => {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {dynamicWidgets.map((widget) => {
-                const WidgetComponent = widget.component;
-                return (
-                  <div key={widget.id} className="w-full">
-                    <WidgetComponent onNavigate={navigate} />
-                  </div>
-                );
-              })}
+              {widgetLayout.placements
+                .filter((p) => p.visible)
+                .map((placement) => {
+                  const widget = dynamicWidgets.find((w) => w.id === placement.widgetId);
+                  if (!widget) return null;
+                  const WidgetComponent = widget.component;
+                  return (
+                    <div key={placement.widgetId} className={`w-full ${SPAN_CLASSES[placement.gridSpan]}`}>
+                      <Suspense
+                        fallback={
+                          <div className="border border-zinc-300 bg-white p-6 text-xs font-mono text-zinc-500 animate-pulse">
+                            Cargando widget… {widget.title}
+                          </div>
+                        }
+                      >
+                        <WidgetComponent onNavigate={navigate} />
+                      </Suspense>
+                    </div>
+                  );
+                })}
             </div>
           )}
         </div>
@@ -361,6 +499,49 @@ export const AppShell: React.FC = () => {
                   onNavigateToModule={navigate}
                 />
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Grupo 1.5: Ajustes declarativos por módulo (Fase 6) */}
+        <div className="space-y-3 pt-4">
+          <div className="border-b border-zinc-300 pb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-zinc-900 tracking-tight uppercase font-mono">
+                Ajustes por Módulo ({enabledManifests.filter((m) => (m.spec?.settings ?? []).length > 0).length})
+              </h2>
+              <span className="text-xs text-zinc-500">
+                Generados desde el spec declarativo de cada módulo
+              </span>
+            </div>
+            <span className="text-[11px] font-mono text-zinc-500">
+              Persisten en tu navegador
+            </span>
+          </div>
+
+          {enabledManifests.filter((m) => (m.spec?.settings ?? []).length > 0).length === 0 ? (
+            <div className="border border-dashed border-zinc-300 bg-zinc-50 p-6 text-center text-xs text-zinc-600 font-mono">
+              Ningún módulo habilitado declara ajustes. Declara <span className="font-bold">spec.settings</span> en el manifiesto para habilitar este panel.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {enabledManifests
+                .filter((m) => (m.spec?.settings ?? []).length > 0)
+                .map((manifest) => (
+                  <div key={manifest.id} className="border border-zinc-300 bg-white p-4">
+                    <div className="flex items-center justify-between border-b border-zinc-200 pb-2 mb-3">
+                      <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-800">
+                        {manifest.name}
+                      </span>
+                      <span className="text-[10px] font-mono text-zinc-500">{manifest.id}</span>
+                    </div>
+                    <ModuleSettings
+                      moduleId={manifest.id}
+                      moduleName={manifest.name}
+                      settings={manifest.spec?.settings ?? []}
+                    />
+                  </div>
+                ))}
             </div>
           )}
         </div>
@@ -640,6 +821,10 @@ export const AppShell: React.FC = () => {
                 <div className="flex justify-between border-b border-zinc-100 py-1">
                   <span>Proyectos: Avanzar el estado de un proyecto</span>
                   <span className="font-bold text-zinc-900">+15 pts</span>
+                </div>
+                <div className="flex justify-between border-b border-zinc-100 py-1">
+                  <span>Proyectos: Completar la próxima acción inmediata</span>
+                  <span className="font-bold text-zinc-900">+5 pts</span>
                 </div>
                 <div className="flex justify-between border-b border-zinc-100 py-1">
                   <span>Proyectos: Hito de finalizar un proyecto por completo</span>

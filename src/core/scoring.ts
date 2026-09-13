@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { KaizenScoreState, ScoreLogEntry } from './types';
+import { kaizenBus } from '../sdk/bus';
 
 const STORAGE_KEY_SCORE = 'kaizen_os_score_v1';
 const SCORE_EVENT_NAME = 'kaizen_os_score_event';
@@ -143,6 +144,56 @@ export function resetScoreState(): void {
   } catch (e) {
     console.error('[KaizenScore] Error al reiniciar puntuación', e);
   }
+}
+
+/* ============================================================================
+ * Scoring declarativo (Fase 5)
+ * ----------------------------------------------------------------------------
+ * Los módulos declaran `events.emits[].points` en su `spec`; el shell escucha
+ * esos eventos por el bus y otorga puntos automáticamente, SIN que el código
+ * del módulo llame a `awardKaizenPoints`. La regla vive en el manifiesto.
+ * ========================================================================= */
+
+/** Regla de puntuación derivada del spec declarativo de un módulo. */
+export interface ScoringRule {
+  eventName: string;
+  moduleId: string;
+  points: number;
+  reason: string;
+}
+
+/** Deriva las reglas de puntos desde `spec.events.emits` de un módulo. */
+export function collectScoringRules(
+  moduleId: string,
+  emits?: ReadonlyArray<{ name: string; points?: number; reason?: string }>
+): ScoringRule[] {
+  return (emits ?? [])
+    .filter((e) => typeof e.points === 'number' && e.points > 0)
+    .map((e) => ({
+      eventName: e.name,
+      moduleId,
+      points: e.points as number,
+      reason: e.reason ?? `Acción declarada ${e.name} en ${moduleId}`,
+    }));
+}
+
+/**
+ * Hook del shell: se suscribe al bus por cada regla declarada y otorga puntos
+ * cuando un módulo emite el evento correspondiente. El llamador debe pasar la
+ * lista memoizada para que solo se re-suscriba cuando cambian las reglas
+ * (StrictMode re-ejecuta efectos: la suscripción debe ser simétrica).
+ */
+export function useDeclarativeScoring(rules: readonly ScoringRule[]): void {
+  useEffect(() => {
+    const cleanups = rules.map((rule) =>
+      kaizenBus.on(
+        { name: rule.eventName },
+        () => awardKaizenPoints(rule.points, rule.moduleId, rule.reason)
+      )
+    );
+    return () => cleanups.forEach((unsub) => unsub());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rules]);
 }
 
 /**

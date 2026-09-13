@@ -10,12 +10,13 @@
  */
 
 .transmute-app {
-  /* CITRINITAS: GOLDEN QUANTUM */
-  --bg-porcelain: #fdfdfd;
-  --color-gold: #a16207;
-  --color-gold-rgb: 161, 98, 7;
-  --color-midnight: #020617;
-  --color-muted: #475569;
+  /* CITRINITAS: GOLDEN QUANTUM — mapeado a tokens unificados de Kaizen OS
+     (src/design/tokens.css) con fallback standalone. */
+  --bg-porcelain: var(--color-kz-bg, #fdfdfd);
+  --color-gold: var(--color-kz-accent, #a16207);
+  --color-gold-rgb: var(--color-kz-accent-rgb, 161, 98, 7);
+  --color-midnight: var(--color-kz-ink, #020617);
+  --color-muted: var(--color-kz-ink-soft, #475569);
   --opacity-muted: 0.7;
   --opacity-dim: 0.55;
   

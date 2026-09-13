@@ -1,7 +1,8 @@
 /**
  * @file src/modules/projects/ProjectsWidget.tsx
- * @description Widget de Proyectos para el Dashboard de Kaizen OS.
- * Muestra las próximas acciones inmediatas de los proyectos en curso.
+ * @description Widget de FORJA para el Dashboard de Kaizen OS.
+ * Muestra las próximas acciones inmediatas de las piezas en curso,
+ * leyendo la nueva capa de almacenamiento de FORJA (con respaldo del wireframe).
  */
 
 import React, { useState, useEffect } from 'react';
@@ -9,17 +10,19 @@ import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
 import { ProjectItem, INITIAL_PROJECTS } from '../../data/demoData';
 import { loadCustomData } from '../../core/storage';
-import { ArrowRight, PlayCircle, Clock } from 'lucide-react';
+import { ArrowRight, PlayCircle } from 'lucide-react';
+
+function loadProjects(): ProjectItem[] {
+  const fromForja = loadCustomData<ProjectItem[] | null>('forja_projects_v1', null);
+  if (fromForja) return fromForja;
+  return loadCustomData<ProjectItem[]>('projects_list', INITIAL_PROJECTS);
+}
 
 export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
-  const [projects, setProjects] = useState<ProjectItem[]>(() =>
-    loadCustomData<ProjectItem[]>('projects_list', INITIAL_PROJECTS)
-  );
+  const [projects, setProjects] = useState<ProjectItem[]>(loadProjects);
 
   useEffect(() => {
-    const handleStorage = () => {
-      setProjects(loadCustomData<ProjectItem[]>('projects_list', INITIAL_PROJECTS));
-    };
+    const handleStorage = () => setProjects(loadProjects());
     window.addEventListener('storage_projects_updated', handleStorage);
     return () => window.removeEventListener('storage_projects_updated', handleStorage);
   }, []);
@@ -28,16 +31,16 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
 
   return (
     <ModuleWidget
-      id="projects-summary"
+      id="projects-next-actions"
       moduleId="projects"
-      title="Próximas Acciones de Proyectos"
+      title="FORJA · Próximas Acciones"
       targetPath="/projects"
       onNavigate={onNavigate}
     >
       <div className="space-y-3">
         {activeProjects.length === 0 ? (
           <p className="text-xs text-zinc-500 italic py-2">
-            No hay proyectos activos con acciones pendientes.
+            No hay piezas activas con acciones pendientes.
           </p>
         ) : (
           <div className="space-y-2">
@@ -65,7 +68,6 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
                 <div className="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
                   <span>Avance: {project.progressPercent}%</span>
                   <span className="flex items-center gap-1 font-mono">
-                    <Clock size={10} />
                     {project.dueDate}
                   </span>
                 </div>
@@ -80,7 +82,7 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('/projects')}
             className="text-xs font-mono text-zinc-800 hover:text-zinc-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
-            <span>Ver todos los proyectos</span>
+            <span>Abrir taller FORJA</span>
             <ArrowRight size={12} />
           </button>
         </div>

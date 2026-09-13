@@ -5,6 +5,15 @@
  */
 
 import React from 'react';
+import type { ModuleSpec } from '../sdk/schema';
+
+/**
+ * Componente de un módulo. Puede ser una función/clase normal o un componente
+ * cargado de forma diferida (React.lazy) para code-splitting (Fase 3).
+ */
+export type ModuleComponent =
+  | React.ComponentType
+  | React.LazyExoticComponent<React.ComponentType<any>>;
 
 /**
  * Estados posibles del ciclo de vida de un módulo:
@@ -27,7 +36,7 @@ export interface ModuleRoute {
   path: string;            // Ruta relativa (ej: '/habits', '/gym')
   label: string;           // Etiqueta para el menú de navegación
   iconName: string;        // Identificador visual de icono
-  component: React.ComponentType; // Componente de la vista completa
+  component: ModuleComponent; // Componente de la vista completa (puede ser lazy)
   exact?: boolean;
 }
 
@@ -45,7 +54,7 @@ export interface ModuleWidgetDef {
   id: string;
   title: string;
   gridSpan?: 'full' | 'half' | 'third'; // Distribución en el wireframe
-  component: React.ComponentType<ModuleWidgetProps>;
+  component: React.ComponentType<ModuleWidgetProps> | React.LazyExoticComponent<React.ComponentType<ModuleWidgetProps>>;
 }
 
 /**
@@ -65,6 +74,12 @@ export interface ModuleManifest {
   optionalDependencies?: string[];
   version?: string;
   author?: string;
+  /**
+   * Especificación declarativa (Module Spec v2). Los campos opcionales se
+   * completan con defaults al validar (ver `parseModuleSpec`). Incluye
+   * `events.emits[].points` para el scoring declarativo (Fase 5).
+   */
+  spec?: Partial<ModuleSpec>;
 }
 
 /**

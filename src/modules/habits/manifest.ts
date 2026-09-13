@@ -5,8 +5,11 @@
  */
 
 import { ModuleManifest } from '../../core/types';
-import { HabitsPage } from './HabitsPage';
-import { HabitsWidget } from './HabitsWidget';
+import { lazy } from 'react';
+
+// Carga diferida: TRANSMUTE solo se descarga al habilitar el módulo.
+const HabitsPage = lazy(() => import('./HabitsPage').then((m) => ({ default: m.HabitsPage })));
+const HabitsWidget = lazy(() => import('./HabitsWidget').then((m) => ({ default: m.HabitsWidget })));
 
 export const habitsManifest: ModuleManifest = {
   id: 'habits',
@@ -34,4 +37,36 @@ export const habitsManifest: ModuleManifest = {
   permissions: ['storage:local', 'reminders:daily'],
   optionalDependencies: [],
   version: '2.0.0',
+  // Especificación declarativa (v2) + ajustes personalizables (Fase 6).
+  spec: {
+    theme: {
+      accent: '#0f6b6b', // Verdigris alquímico
+      bg: '#f4f2ec',
+    },
+    storage: {
+      scope: 'habits',
+      version: 1,
+      defaults: {},
+    },
+    events: {
+      emits: [],
+      listens: [],
+    },
+    settings: [
+      {
+        id: 'metasTransmutacion',
+        label: 'Metas de transmutación diarias',
+        type: 'number',
+        default: 3,
+        help: 'Hábitos a transmutar por día para mantener la Gran Obra',
+      },
+      {
+        id: 'temaObscuro',
+        label: 'Variante Nigredo (tema oscuro)',
+        type: 'boolean',
+        default: false,
+        help: 'Activa la fase de putrefacción: interfaz en tonos oscuros',
+      },
+    ],
+  },
 };

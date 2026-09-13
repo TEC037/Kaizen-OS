@@ -6,8 +6,11 @@
  */
 
 import { ModuleManifest } from '../../core/types';
-import { GymPage } from './GymPage';
-import { GymWidget } from './GymWidget';
+import { lazy } from 'react';
+
+// Carga diferida: el sub-app completo de FitAi solo se descarga al habilitarse.
+const GymPage = lazy(() => import('./GymPage').then((m) => ({ default: m.GymPage })));
+const GymWidget = lazy(() => import('./GymWidget').then((m) => ({ default: m.GymWidget })));
 
 export const gymManifest: ModuleManifest = {
   id: 'gym',

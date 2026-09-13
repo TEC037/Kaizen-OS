@@ -5,7 +5,7 @@
  * se muestra una advertencia visual de acceso no permitido con opción de instalarlo o redirigir a módulos.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { getManifestByRoutePath } from './moduleRegistry';
 import { ModuleStatus } from '../core/types';
 import { ShieldAlert, Download, CheckCircle2, ArrowLeft, Layers } from 'lucide-react';
@@ -73,7 +73,17 @@ export const AppRouter: React.FC<RouterProps> = ({
   // 4. Comprobación de acceso / Route Guard según estado del ciclo de vida
   if (moduleStatus === 'enabled' && matchedRoute) {
     const Component = matchedRoute.component;
-    return <Component />;
+    return (
+      <Suspense
+        fallback={
+          <div className="border border-zinc-300 bg-white p-8 text-center text-xs font-mono text-zinc-500 animate-pulse">
+            Cargando {manifest.name}…
+          </div>
+        }
+      >
+        <Component />
+      </Suspense>
+    );
   }
 
   // Si el módulo está SUSPENDIDO

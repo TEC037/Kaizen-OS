@@ -1,0 +1,653 @@
+/**
+ * @file forja/src/index.css
+ * @description Estilos del taller de FORJA, scopeados bajo `.forja-app`
+ * para no interferir con el resto de Kaizen OS (mismo patrón que `.transmute-app`).
+ * Variables mapeadas a los tokens unificados de Kaizen OS (src/design/tokens.css)
+ * con fallback para seguir funcionando standalone.
+ */
+
+.forja-app {
+  --fj-bg: var(--color-kz-bg, #f2efe6);
+  --fj-panel: var(--color-kz-surface, #fffdf7);
+  --fj-ink: var(--color-kz-ink, #211d19);
+  --fj-ink-soft: var(--color-kz-ink-soft, #57534e);
+  --fj-line: var(--color-kz-line, #d6d0c0);
+  --fj-line-strong: var(--color-kz-line-strong, #a8a29e);
+  --fj-amber: var(--color-kz-accent, #b45309);
+  --fj-amber-strong: var(--color-kz-accent-strong, #92400e);
+  --fj-cyan: var(--color-kz-info, #0e7490);
+  --fj-green: var(--color-kz-success, #166534);
+  --fj-red: var(--color-kz-danger, #b91c1c);
+
+  font-family: var(--font-kz-sans, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  color: var(--fj-ink);
+  background-color: var(--fj-bg);
+  background-image:
+    linear-gradient(to right, rgba(33, 29, 25, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(33, 29, 25, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  min-height: 100%;
+  padding: 24px;
+}
+
+.forja-app *,
+.forja-app *::before,
+.forja-app *::after {
+  box-sizing: border-box;
+}
+
+.forja-app .fj-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.forja-app .fj-title-block {
+  border-left: 4px solid var(--fj-amber);
+  padding-left: 14px;
+}
+
+.forja-app .fj-kicker {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fj-cyan);
+  margin: 0;
+}
+
+.forja-app .fj-title {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 2px 0 0;
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-subtitle {
+  font-size: 12px;
+  color: var(--fj-ink-soft);
+  margin: 2px 0 0;
+}
+
+.forja-app .fj-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.forja-app .fj-stat {
+  border: 1px solid var(--fj-line);
+  background: var(--fj-panel);
+  padding: 10px 12px;
+  position: relative;
+}
+
+.forja-app .fj-stat::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 14px;
+  height: 14px;
+  border-top: 3px solid var(--fj-amber);
+  border-left: 3px solid var(--fj-amber);
+}
+
+.forja-app .fj-stat-value {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--fj-ink);
+  line-height: 1;
+}
+
+.forja-app .fj-stat-label {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fj-ink-soft);
+  margin-top: 4px;
+}
+
+.forja-app .fj-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--fj-line-strong);
+  background: var(--fj-panel);
+  padding: 10px;
+  margin-bottom: 18px;
+}
+
+.forja-app .fj-search {
+  flex: 1 1 200px;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--fj-line-strong);
+  background: #fff;
+  padding: 6px 10px;
+  color: var(--fj-ink-soft);
+}
+
+.forja-app .fj-search input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 12px;
+  width: 100%;
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-chip {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--fj-line-strong);
+  background: transparent;
+  color: var(--fj-ink-soft);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.forja-app .fj-chip:hover:not(:disabled) {
+  border-color: var(--fj-ink);
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-chip[data-active='true'] {
+  background: var(--fj-ink);
+  border-color: var(--fj-ink);
+  color: #fffdf7;
+}
+
+.forja-app .fj-btn {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--fj-line-strong);
+  padding: 6px 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--fj-ink);
+  transition: all 0.15s ease;
+}
+
+.forja-app .fj-btn-primary {
+  background: var(--fj-amber);
+  border-color: var(--fj-amber);
+  color: #fffdf7;
+  font-weight: 600;
+}
+
+.forja-app .fj-btn-primary:hover:not(:disabled) {
+  background: var(--fj-amber-strong);
+  border-color: var(--fj-amber-strong);
+}
+
+.forja-app .fj-btn-ghost:hover:not(:disabled) {
+  border-color: var(--fj-ink);
+  background: rgba(33, 29, 25, 0.04);
+}
+
+.forja-app .fj-btn-danger:hover:not(:disabled) {
+  border-color: var(--fj-red);
+  color: var(--fj-red);
+}
+
+.forja-app .fj-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.forja-app .fj-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 1100px) {
+  .forja-app .fj-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .forja-app .fj-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.forja-app .fj-col {
+  background: rgba(255, 253, 247, 0.78);
+  border: 1px solid var(--fj-line);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.forja-app .fj-col-head {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--fj-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+}
+
+.forja-app .fj-col-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.forja-app .fj-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.forja-app .fj-col-count {
+  font-size: 11px;
+  color: var(--fj-ink-soft);
+}
+
+.forja-app .fj-col-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.forja-app .fj-col-empty {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  color: var(--fj-ink-soft);
+  font-style: italic;
+  text-align: center;
+  padding: 16px 6px;
+  border: 1px dashed var(--fj-line-strong);
+}
+
+.forja-app .fj-card {
+  border: 1px solid var(--fj-line-strong);
+  background: #fffdf7;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  transition: border-color 0.15s ease;
+}
+
+.forja-app .fj-card:hover {
+  border-color: var(--fj-ink);
+}
+
+.forja-app .fj-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.forja-app .fj-priority {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border: 1px solid var(--fj-line);
+}
+
+.forja-app .fj-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.forja-app .fj-icon-btn {
+  border: 0;
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--fj-ink-soft);
+  transition: color 0.15s ease;
+}
+
+.forja-app .fj-icon-btn:hover {
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-icon-btn[data-danger='true']:hover {
+  color: var(--fj-red);
+}
+
+.forja-app .fj-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-card-desc {
+  font-size: 12px;
+  color: var(--fj-ink-soft);
+  margin: 0;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.forja-app .fj-next-action {
+  border: 1px solid var(--fj-line);
+  background: #f7f4ea;
+  padding: 8px 9px;
+}
+
+.forja-app .fj-next-label {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fj-cyan);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.forja-app .fj-next-text {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+  word-break: break-word;
+}
+
+.forja-app .fj-next-done {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 7px;
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  color: var(--fj-green);
+}
+
+.forja-app .fj-complete-btn {
+  margin-top: 7px;
+  width: 100%;
+}
+
+.forja-app .fj-progress {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  color: var(--fj-ink-soft);
+}
+
+.forja-app .fj-progress-track {
+  height: 7px;
+  border: 1px solid var(--fj-line-strong);
+  background: #ece7da;
+  overflow: hidden;
+}
+
+.forja-app .fj-progress-fill {
+  height: 100%;
+  background: var(--fj-amber);
+  transition: width 0.3s ease;
+}
+
+.forja-app .fj-progress-fill[data-complete='true'] {
+  background: var(--fj-green);
+}
+
+.forja-app .fj-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--fj-line);
+}
+
+.forja-app .fj-state-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.forja-app .fj-state-btn {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  border: 1px solid var(--fj-line-strong);
+  background: transparent;
+  padding: 3px 8px;
+  cursor: pointer;
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-state-btn:hover:not(:disabled) {
+  border-color: var(--fj-ink);
+}
+
+.forja-app .fj-state-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.forja-app .fj-due {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  color: var(--fj-ink-soft);
+}
+
+.forja-app .fj-due[data-overdue='true'] {
+  color: var(--fj-red);
+  font-weight: 600;
+}
+
+.forja-app .fj-log-toggle {
+  border: 0;
+  background: transparent;
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  color: var(--fj-ink-soft);
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.forja-app .fj-log-toggle:hover {
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-log {
+  border: 1px solid var(--fj-line);
+  background: #f7f4ea;
+  padding: 8px 9px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.forja-app .fj-log-entry {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 11px;
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--fj-line);
+}
+
+.forja-app .fj-log-entry:last-child {
+  border-bottom: 0;
+}
+
+.forja-app .fj-log-when {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 9px;
+  color: var(--fj-ink-soft);
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+.forja-app .fj-log-msg {
+  color: var(--fj-ink);
+}
+
+.forja-app .fj-empty {
+  border: 2px dashed var(--fj-line-strong);
+  background: rgba(255, 253, 247, 0.7);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--fj-ink-soft);
+}
+
+.forja-app .fj-empty monospace,
+.forja-app .fj-empty-title {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 14px;
+  color: var(--fj-ink);
+  margin: 0 0 8px;
+}
+
+.forja-app .fj-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  background: rgba(33, 29, 25, 0.5);
+}
+
+.forja-app .fj-drawer {
+  background: var(--fj-panel);
+  width: min(460px, 100vw);
+  border-left: 3px solid var(--fj-amber);
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: -12px 0 30px rgba(33, 29, 25, 0.25);
+}
+
+.forja-app .fj-drawer-title {
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+
+.forja-app .fj-drawer-sub {
+  font-size: 12px;
+  color: var(--fj-ink-soft);
+  margin: 0 0 18px;
+}
+
+.forja-app .fj-field {
+  margin-bottom: 14px;
+}
+
+.forja-app .fj-label {
+  display: block;
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fj-ink-soft);
+  margin-bottom: 5px;
+}
+
+.forja-app .fj-input,
+.forja-app .fj-select,
+.forja-app .fj-textarea {
+  width: 100%;
+  border: 1px solid var(--fj-line-strong);
+  background: #fff;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--fj-ink);
+  outline: none;
+  font-family: inherit;
+}
+
+.forja-app .fj-input:focus,
+.forja-app .fj-select:focus,
+.forja-app .fj-textarea:focus {
+  border-color: var(--fj-amber);
+  box-shadow: 0 0 0 2px rgba(180, 83, 9, 0.15);
+}
+
+.forja-app .fj-textarea {
+  resize: vertical;
+  min-height: 64px;
+}
+
+.forja-app .fj-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.forja-app .fj-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--fj-line);
+}
+
+.forja-app .fj-footer {
+  margin-top: 22px;
+  padding-top: 12px;
+  border-top: 2px solid var(--fj-line-strong);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-kz-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 10px;
+  color: var(--fj-ink-soft);
+  letter-spacing: 0.05em;
+}
+
+.forja-app .fj-empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}

@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
+import { createModuleStorage } from '../../sdk/storage';
 import { Check, Square, ArrowRight } from 'lucide-react';
 
 interface TransmuteHabit {
@@ -16,34 +17,46 @@ interface TransmuteHabit {
   completedDays?: Record<string, boolean>;
 }
 
+interface TransmuteState {
+  habits: TransmuteHabit[];
+  selectedDate: string;
+}
+
 const todayLocal = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-const loadTransmuteState = () => {
-  try {
-    const raw = localStorage.getItem('transmute-storage');
-    if (!raw) return { habits: [] as TransmuteHabit[], selectedDate: todayLocal() };
-    const parsed = JSON.parse(raw) as { state?: { habits?: TransmuteHabit[]; selectedDate?: string } };
+/**
+ * Storage namespaced de hábitos con back-compat de la clave v1 `transmute-storage`.
+ * El widget ya NO lee localStorage directamente: pasa por el SDK.
+ */
+const transmuteStorage = createModuleStorage<TransmuteState>({
+  scope: 'habits',
+  version: 1,
+  defaults: { habits: [], selectedDate: todayLocal() },
+  storageKey: 'transmute-storage',
+  parse: (raw) => {
+    const parsed = raw as { state?: { habits?: TransmuteHabit[]; selectedDate?: string } } | null;
     return {
-      habits: parsed.state?.habits ?? [],
-      selectedDate: parsed.state?.selectedDate ?? todayLocal(),
+      habits: parsed?.state?.habits ?? [],
+      selectedDate: parsed?.state?.selectedDate ?? todayLocal(),
     };
-  } catch {
-    return { habits: [] as TransmuteHabit[], selectedDate: todayLocal() };
-  }
-};
+  },
+  eventName: 'transmute:storage-change',
+});
+
+const loadTransmuteState = () => transmuteStorage.load();
 
 export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const [state, setState] = useState(loadTransmuteState);
 
   useEffect(() => {
     const refresh = () => setState(loadTransmuteState());
-    window.addEventListener('storage', refresh);
+    const unsubscribe = transmuteStorage.subscribe(refresh);
     window.addEventListener('transmute:habit-completed', refresh);
     return () => {
-      window.removeEventListener('storage', refresh);
+      unsubscribe();
       window.removeEventListener('transmute:habit-completed', refresh);
     };
   }, []);
