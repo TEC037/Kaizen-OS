@@ -139,23 +139,26 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
           >
             Todos ({allManifests.length})
           </button>
-          {allCategories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => {
-                setSelectedCategory(cat);
-                soundEngine.playTap();
-              }}
-              className={`px-2 py-1 rounded-xs border text-[11px] cursor-pointer transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-stone-900 border-stone-900 text-stone-100 font-bold'
-                  : 'bg-white border-stone-300 text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+          {allCategories.map((cat) => {
+            const count = allManifests.filter((m) => m.category === cat).length;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  soundEngine.playTap();
+                }}
+                className={`px-2 py-1 rounded-xs border text-[11px] cursor-pointer transition-colors ${
+                  selectedCategory === cat
+                    ? 'bg-stone-900 border-stone-900 text-stone-100 font-bold'
+                    : 'bg-white border-stone-300 text-stone-600 hover:bg-stone-100'
+                }`}
+              >
+                {cat} ({count})
+              </button>
+            );
+          })}
         </div>
       </div>
 
