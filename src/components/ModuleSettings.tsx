@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { RotateCcw } from 'lucide-react';
 import type { ModuleSettingDef } from '../sdk/schema';
 import { useModuleSettings } from '../core/moduleSettings';
 import { soundEngine } from '../core/sound';
@@ -107,9 +108,11 @@ export const ModuleSettings: React.FC<ModuleSettingsProps> = ({
         <button
           type="button"
           onClick={handleReset}
-          className="text-[10px] text-stone-500 hover:text-stone-900 underline cursor-pointer"
+          className="text-[10px] text-stone-500 hover:text-stone-900 underline flex items-center gap-1 cursor-pointer"
+          title={`Restablecer ajustes de ${moduleName} a sus valores por defecto`}
         >
-          Restablecer ajustes de {moduleName} a los valores por defecto
+          <RotateCcw size={10} />
+          <span>Restablecer ajustes de {moduleName} por defecto</span>
         </button>
       </div>
     </div>
