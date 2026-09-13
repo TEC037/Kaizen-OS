@@ -78,7 +78,7 @@ const InnerShell: React.FC = () => {
   // Navegación generada dinámicamente desde manifiestos habilitados
   const dynamicNavRoutes = getDynamicNavRoutes(getStatus);
   const dynamicWidgets = getDynamicWidgets(getStatus);
-  const { layout: widgetLayout, setPlacement, movePlacement } = useWidgetLayout(dynamicWidgets);
+  const { layout: widgetLayout, setPlacement, movePlacement, resetLayout } = useWidgetLayout(dynamicWidgets);
 
   // Catálogos para la pantalla de gestión de módulos
   const allManifests = getAllManifests();
@@ -209,6 +209,7 @@ const InnerShell: React.FC = () => {
               widgetLayout={widgetLayout}
               setPlacement={setPlacement}
               movePlacement={movePlacement}
+              onResetLayout={resetLayout}
               showDashboardCustomize={showDashboardCustomize}
               onToggleDashboardCustomize={() => setShowDashboardCustomize((v) => !v)}
               enabledManifests={enabledManifests}

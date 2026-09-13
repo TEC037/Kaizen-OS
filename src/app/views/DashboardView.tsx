@@ -5,7 +5,7 @@
  */
 
 import React, { Suspense } from 'react';
-import { LayoutGrid, ChevronUp, ChevronDown, Eye, EyeOff, TrendingUp, Flame, Award, SlidersHorizontal, Info, Pencil, Check } from 'lucide-react';
+import { LayoutGrid, ChevronUp, ChevronDown, Eye, EyeOff, TrendingUp, Flame, Award, SlidersHorizontal, Info, Pencil, Check, RotateCcw } from 'lucide-react';
 import { DAILY_1_PERCENT_TARGET } from '../../core/scoring';
 import { DynamicWidgetDef } from '../moduleRegistry';
 import { WidgetLayout, WidgetSpan, SPAN_CLASSES } from '../../core/widgetLayout';
@@ -27,6 +27,7 @@ interface DashboardViewProps {
   widgetLayout: WidgetLayout;
   setPlacement: (widgetId: string, patch: { visible?: boolean; gridSpan?: WidgetSpan }) => void;
   movePlacement: (widgetId: string, direction: -1 | 1) => void;
+  onResetLayout?: () => void;
   showDashboardCustomize: boolean;
   onToggleDashboardCustomize: () => void;
   enabledManifests: ModuleManifest[];
@@ -45,6 +46,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   widgetLayout,
   setPlacement,
   movePlacement,
+  onResetLayout,
   showDashboardCustomize,
   onToggleDashboardCustomize,
   enabledManifests,
@@ -337,7 +339,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <span className="text-[11px] uppercase tracking-wider font-bold text-stone-800">
                 Personalización del Dashboard
               </span>
-              <span className="text-[10px] text-stone-600">Se guarda automáticamente</span>
+              <div className="flex items-center gap-3">
+                {onResetLayout && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onResetLayout();
+                      soundEngine.playTap();
+                    }}
+                    className="text-[10px] text-stone-500 hover:text-stone-900 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
+                    title="Restablecer orden y visibilidad por defecto"
+                  >
+                    <RotateCcw size={10} />
+                    <span>Restablecer por defecto</span>
+                  </button>
+                )}
+                <span className="text-[10px] text-stone-500">Se guarda automáticamente</span>
+              </div>
             </div>
             {widgetLayout.placements.map((placement, index) => {
               const widget = dynamicWidgets.find((w) => w.id === placement.widgetId);

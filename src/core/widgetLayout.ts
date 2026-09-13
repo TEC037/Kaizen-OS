@@ -90,6 +90,7 @@ export function useWidgetLayout(widgets: WidgetLike[]): {
   layout: WidgetLayout;
   setPlacement: (widgetId: string, patch: Partial<Omit<WidgetPlacement, 'widgetId'>>) => void;
   movePlacement: (widgetId: string, direction: -1 | 1) => void;
+  resetLayout: () => void;
 } {
   const [layout, setLayout] = React.useState<WidgetLayout>(() => reconcileWidgetLayout(widgets));
 
@@ -121,5 +122,10 @@ export function useWidgetLayout(widgets: WidgetLike[]): {
     persist({ placements });
   };
 
-  return { layout, setPlacement, movePlacement };
+  const resetLayout = () => {
+    resetWidgetLayout();
+    setLayout(reconcileWidgetLayout(widgets));
+  };
+
+  return { layout, setPlacement, movePlacement, resetLayout };
 }
