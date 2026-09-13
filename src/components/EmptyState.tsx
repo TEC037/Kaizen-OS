@@ -8,6 +8,7 @@ import React from 'react';
 import { AlertCircle, Plus, RefreshCw } from 'lucide-react';
 import { KzCard } from './ui/KzCard';
 import { KzButton } from './ui/KzButton';
+import { soundEngine } from '../core/sound';
 
 interface EmptyStateProps {
   id?: string;
@@ -59,7 +60,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           <KzButton
             variant="primary"
             size="sm"
-            onClick={onAction}
+            onClick={() => {
+              soundEngine.playTap();
+              onAction();
+            }}
             icon={<Plus size={14} />}
           >
             {actionLabel}
@@ -70,7 +74,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           <KzButton
             variant="craft"
             size="sm"
-            onClick={onSecondaryAction}
+            onClick={() => {
+              soundEngine.playTap();
+              onSecondaryAction();
+            }}
             icon={<RefreshCw size={13} />}
           >
             {secondaryActionLabel}
