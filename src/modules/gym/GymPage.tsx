@@ -9,18 +9,13 @@ import React, { useEffect } from 'react';
 import FitAiApp from './fitai/src/App';
 import './fitai/src/index.css';
 import { awardKaizenPoints } from '../../core/scoring';
+import { WorkoutSummary, recordWorkoutSession } from './sessions';
 
 interface GymPageProps {
   onNavigate?: (path: string) => void;
 }
 
 const WORKOUT_COMPLETED_EVENT = 'punto-fuerte:workout-completed';
-
-interface WorkoutSummary {
-  durationSeconds?: number;
-  volumeKg?: number;
-  setsCompleted?: number;
-}
 
 export const GymPage: React.FC<GymPageProps> = () => {
   useEffect(() => {
@@ -32,6 +27,7 @@ export const GymPage: React.FC<GymPageProps> = () => {
         'gym',
         `Entrenamiento completado en Punto Fuerte (${durationMin} min)`
       );
+      recordWorkoutSession(detail ?? {});
     };
 
     window.addEventListener(WORKOUT_COMPLETED_EVENT, handleWorkoutCompleted);

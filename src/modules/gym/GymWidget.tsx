@@ -1,8 +1,10 @@
 /**
  * @file src/modules/gym/GymWidget.tsx
  * @description Widget del módulo "Punto Fuerte" (FitAi) para el Dashboard de Kaizen OS.
- * Lee la persistencia del submódulo (fitai_history_v2 / fitai_user_v2) para mostrar
- * la última sesión y el cumplimiento semanal. Solo aparece cuando el módulo está habilitado.
+ * Muestra la última sesión y el cumplimiento semanal. Fuentes:
+ * - Historial canónico del submódulo (fitai_history_v2) cuando persiste sesiones.
+ * - Registro propio de Kaizen (kaizen_os_gym_sessions_v1), alimentado desde GymPage
+ *   con el evento `punto-fuerte:workout-completed` para el flujo demo sin Supabase.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -10,9 +12,8 @@ import { ModuleWidgetProps } from '../../core/types';
 import { ModuleWidget } from '../../components/ModuleWidget';
 import { STORAGE_KEYS } from './fitai/src/config/constants';
 import { WorkoutSessionLog, UserProfile } from './fitai/src/types';
+import { readKaizenSessions } from './sessions';
 import { Dumbbell, ArrowRight, Flame, CheckCircle2 } from 'lucide-react';
-
-const WORKOUT_COMPLETED_EVENT = 'punto-fuerte:workout-completed';
 
 function readHistory(): WorkoutSessionLog[] {
   try {
@@ -37,26 +38,25 @@ function readProfile(): Partial<UserProfile> | null {
 
 export const GymWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const [history, setHistory] = useState<WorkoutSessionLog[]>(() => readHistory());
-  const [profile, setProfile] = useState<Partial<UserProfile> | null>(() =>
-    readProfile()
-  );
+  const [sessions, setSessions] = useState<WorkoutSessionLog[]>(() => readKaizenSessions());
+  const [profile, setProfile] = useState<Partial<UserProfile> | null>(() => readProfile());
 
   const refresh = useCallback(() => {
     setHistory(readHistory());
+    setSessions(readKaizenSessions());
     setProfile(readProfile());
   }, []);
 
   useEffect(() => {
     const handleStorage = () => refresh();
     window.addEventListener('storage', handleStorage);
-    window.addEventListener(WORKOUT_COMPLETED_EVENT, handleStorage);
     return () => {
       window.removeEventListener('storage', handleStorage);
-      window.removeEventListener(WORKOUT_COMPLETED_EVENT, handleStorage);
     };
   }, [refresh]);
 
-  const lastSession = history[0];
+  const lastSession = history[0] ?? sessions[0];
+  const totalSessions = history.length + sessions.length;
   const weeklyCompliance =
     typeof profile?.weeklyCompliance === 'number' ? profile.weeklyCompliance : null;
 
@@ -120,7 +120,7 @@ export const GymWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
             </span>
           ) : (
             <span className="text-xs font-mono text-zinc-600">
-              Total sesiones: <strong className="text-zinc-900">{history.length}</strong>
+              Total sesiones: <strong className="text-zinc-900">{totalSessions}</strong>
             </span>
           )}
           <button
