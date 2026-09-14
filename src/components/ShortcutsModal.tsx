@@ -51,13 +51,13 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
       }}
     >
       <div
-        className="border border-stone-300 bg-[#fffdf8] w-full max-w-lg p-6 font-mono shadow-2xl rounded-sm space-y-5"
+        className="border-2 border-stone-300 bg-[#fffdf8] w-full max-w-lg p-6 sm:p-7 font-mono shadow-[0_12px_0_#cfc7b6,0_30px_50px_rgba(0,0,0,0.18)] rounded-2xl sm:rounded-3xl space-y-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+        <div className="flex items-center justify-between border-b-2 border-stone-200/80 pb-3">
           <div className="flex items-center gap-2">
             <Keyboard size={18} className="text-stone-700" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-900">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-stone-900">
               Atajos de Teclado del Sistema
             </h2>
           </div>
@@ -67,7 +67,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
               onClose();
               soundEngine.playTap();
             }}
-            className="text-stone-500 hover:text-stone-900 border border-stone-300 px-2 py-0.5 rounded-sm cursor-pointer"
+            className="text-stone-500 hover:text-stone-900 border-2 border-stone-300 bg-white hover:bg-stone-50 px-2.5 py-1 rounded-xl shadow-[0_1.5px_0_#cfc7b6] cursor-pointer transition-all active:translate-y-[1px]"
           >
             <X size={14} />
           </button>
@@ -76,13 +76,13 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
         <div className="space-y-4 text-xs">
           {SHORTCUT_GROUPS.map((group) => (
             <div key={group.title} className="space-y-2">
-              <h3 className="font-bold text-stone-500 uppercase text-[10px] tracking-wider">
+              <h3 className="font-extrabold text-stone-600 uppercase text-[10px] tracking-wider">
                 {group.title}
               </h3>
-              <div className="divide-y divide-stone-200/60 border border-stone-200 rounded-sm bg-[#faf8f1]">
+              <div className="divide-y divide-stone-200/60 border-2 border-stone-200 rounded-2xl bg-[#faf8f1] shadow-[0_2px_0_#d9d3c5] overflow-hidden">
                 {group.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-2">
-                    <span className="text-stone-800">{item.label}</span>
+                  <div key={idx} className="flex items-center justify-between p-2.5">
+                    <span className="text-stone-800 font-medium">{item.label}</span>
                     <KzHotKey keys={item.keys} />
                   </div>
                 ))}
@@ -91,14 +91,14 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
           ))}
         </div>
 
-        <div className="pt-2 border-t border-stone-200 flex justify-end">
+        <div className="pt-2 border-t-2 border-stone-200/80 flex justify-end">
           <button
             type="button"
             onClick={() => {
               onClose();
               soundEngine.playTap();
             }}
-            className="px-4 py-1.5 text-xs font-mono font-bold bg-[#211d19] text-[#faf8f1] rounded-sm cursor-pointer hover:bg-stone-800"
+            className="px-5 py-2 text-xs font-mono font-bold bg-[#211d19] text-[#faf8f1] border-2 border-[#161310] rounded-xl shadow-[0_2.5px_0_#0a0807] cursor-pointer hover:bg-stone-800 transition-all active:translate-y-[1px] active:shadow-none"
           >
             Entendido [Esc]
           </button>

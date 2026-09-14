@@ -22,6 +22,7 @@ import {
   setGeminiApiKey,
   SenseiInsight,
 } from '../core/senseiAI';
+import { useGlobalUserName } from '../core/profile';
 
 interface SenseiWidgetProps {
   scorePoints: number;
@@ -51,7 +52,7 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
   const projects = loadProjects(seedProjects);
   const activeProject = projects.find((p) => p.status === 'En progreso') || projects[0];
 
-  const userName = (typeof window !== 'undefined' && localStorage.getItem('kz:user_name')) || 'Artesano';
+  const [userName] = useGlobalUserName();
 
   const contextData = {
     userName,
@@ -125,98 +126,100 @@ export const SenseiWidget: React.FC<SenseiWidgetProps> = ({
   };
 
   return (
-    <KzCard variant="surface" className="relative overflow-hidden border-stone-300">
-      {/* Encabezado del Widget */}
-      <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-sm bg-amber-100 border border-amber-300 text-amber-900 flex items-center justify-center">
-            <Sparkles size={13} />
+    <KzCard variant="surface" className="relative overflow-hidden space-y-4 flex flex-col justify-between">
+      <div>
+        {/* Encabezado del Widget */}
+        <div className="flex items-center justify-between border-b-2 border-stone-200/80 pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-amber-100 border-2 border-amber-300 text-amber-950 flex items-center justify-center shadow-[0_2px_0_#fcd34d]">
+              <Sparkles size={14} />
+            </div>
+            <div>
+              <h3 className="font-mono text-xs font-extrabold uppercase tracking-wider text-stone-900">
+                Sensei Kaizen · Inteligencia Holística
+              </h3>
+              <span className="text-[10px] font-mono text-stone-600 block font-medium">
+                Análisis contextual cruzado
+              </span>
+            </div>
           </div>
-          <div>
-            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-900">
-              Sensei Kaizen · Inteligencia Holística
-            </h3>
-            <span className="text-[10px] font-mono text-stone-600 block">
-              Análisis contextual cruzado
-            </span>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleConfigureKey}
+              className={`p-1.5 border-2 rounded-xl cursor-pointer transition-all active:translate-y-[1px] ${
+                hasKey
+                  ? 'border-emerald-400 bg-emerald-50 text-emerald-900 shadow-[0_2px_0_#86efac]'
+                  : 'border-stone-300 bg-white hover:bg-stone-100 text-stone-600 shadow-[0_2px_0_#cfc7b6]'
+              }`}
+              title={hasKey ? 'Gemini IA activa (click para modificar API Key)' : 'Configurar API Key de Gemini para reflexiones de IA en vivo'}
+            >
+              <Key size={12} className={hasKey ? 'text-emerald-700' : 'text-stone-500'} />
+            </button>
+
+            <KzButton
+              variant="craft"
+              size="sm"
+              onClick={handleNextInsight}
+              disabled={isAiLoading}
+              icon={<RefreshCw size={11} className={isAiLoading ? 'animate-spin' : ''} />}
+              title="Siguiente consejo reflexivo del Sensei"
+            >
+              {isAiLoading ? 'Consultando…' : 'Reflexión'}
+            </KzButton>
+
+            <KzButton
+              variant="craft"
+              size="sm"
+              onClick={handleExportCard}
+              disabled={isExporting}
+              icon={<Download size={11} />}
+              title="Descargar tarjeta diaria como imagen PNG"
+            >
+              {isExporting ? 'Generando…' : 'Exportar'}
+            </KzButton>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={handleConfigureKey}
-            className={`p-1.5 border rounded-sm cursor-pointer transition-colors ${
-              hasKey
-                ? 'border-emerald-400 bg-emerald-50 text-emerald-900'
-                : 'border-stone-300 bg-white hover:bg-stone-100 text-stone-600'
-            }`}
-            title={hasKey ? 'Gemini IA activa (click para modificar API Key)' : 'Configurar API Key de Gemini para reflexiones de IA en vivo'}
-          >
-            <Key size={12} className={hasKey ? 'text-emerald-700' : 'text-stone-500'} />
-          </button>
-
-          <KzButton
-            variant="craft"
-            size="sm"
-            onClick={handleNextInsight}
-            disabled={isAiLoading}
-            icon={<RefreshCw size={11} className={isAiLoading ? 'animate-spin' : ''} />}
-            title="Siguiente consejo reflexivo del Sensei"
-          >
-            {isAiLoading ? 'Consultando…' : 'Reflexión'}
-          </KzButton>
-
-          <KzButton
-            variant="craft"
-            size="sm"
-            onClick={handleExportCard}
-            disabled={isExporting}
-            icon={<Download size={11} />}
-            title="Descargar tarjeta diaria como imagen PNG"
-          >
-            {isExporting ? 'Generando…' : 'Exportar'}
-          </KzButton>
-        </div>
-      </div>
-
-      {/* Tarjeta imprimible / exportable */}
-      <div
-        ref={exportCardRef}
-        className="bg-[#faf8f1] border border-stone-200/80 p-4 rounded-sm space-y-3 font-mono text-xs"
-      >
-        <div className="flex items-center justify-between border-b border-stone-200/60 pb-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <KzBadge variant="accent">{currentInsight.title}</KzBadge>
-            {currentInsight.isAiGenerated && <KzBadge variant="info">Gemini IA</KzBadge>}
-            {trainedToday && <KzBadge variant="success">Físico Entrenado</KzBadge>}
-            {dailyPercent >= 100 && <KzBadge variant="success">Meta 1% Lista</KzBadge>}
+        {/* Tarjeta imprimible / exportable */}
+        <div
+          ref={exportCardRef}
+          className="bg-[#faf8f1] border-2 border-[#e2dcd0] p-4 rounded-2xl space-y-3 font-mono text-xs shadow-[0_3px_0_#d8d1c2]"
+        >
+          <div className="flex items-center justify-between border-b-2 border-stone-200/70 pb-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <KzBadge variant="accent">{currentInsight.title}</KzBadge>
+              {currentInsight.isAiGenerated && <KzBadge variant="info">Gemini IA</KzBadge>}
+              {trainedToday && <KzBadge variant="success">Físico Entrenado</KzBadge>}
+              {dailyPercent >= 100 && <KzBadge variant="success">Meta 1% Lista</KzBadge>}
+            </div>
+            <span className="text-[10px] text-stone-600 font-extrabold">KAIZEN OS</span>
           </div>
-          <span className="text-[10px] text-stone-600 font-bold">KAIZEN OS</span>
-        </div>
 
-        <p className="text-stone-800 leading-relaxed text-xs sm:text-sm font-sans">
-          {currentInsight.body}
-        </p>
+          <p className="text-stone-800 leading-relaxed text-xs sm:text-sm font-sans">
+            {currentInsight.body}
+          </p>
 
-        <div className="pt-2 border-t border-stone-200/60 flex items-start gap-2 text-[11px] text-stone-600 italic">
-          <Quote size={12} className="shrink-0 mt-0.5 text-amber-700" />
-          <span>{currentInsight.principio}</span>
-        </div>
-
-        {/* Resumen de telemetría atómica del día */}
-        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-stone-200/60 text-center text-[10px]">
-          <div className="bg-white/70 p-1.5 border border-stone-200/50 rounded-sm">
-            <span className="text-stone-600 uppercase block">Avance 1%</span>
-            <span className="font-bold text-xs text-stone-900">{dailyPercent}%</span>
+          <div className="pt-2 border-t-2 border-stone-200/70 flex items-start gap-2 text-[11px] text-stone-600 italic">
+            <Quote size={12} className="shrink-0 mt-0.5 text-amber-700" />
+            <span>{currentInsight.principio}</span>
           </div>
-          <div className="bg-white/70 p-1.5 border border-stone-200/50 rounded-sm">
-            <span className="text-stone-600 uppercase block">Puntos Hoy</span>
-            <span className="font-bold text-xs text-stone-900">{scorePoints} pts</span>
-          </div>
-          <div className="bg-white/70 p-1.5 border border-stone-200/50 rounded-sm">
-            <span className="text-stone-600 uppercase block">Racha</span>
-            <span className="font-bold text-xs text-stone-900">{streakDays} días</span>
+
+          {/* Resumen de telemetría atómica del día */}
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t-2 border-stone-200/70 text-center text-[10px]">
+            <div className="bg-white/90 p-2 border-2 border-stone-200 rounded-xl shadow-[0_1.5px_0_#d9d3c5]">
+              <span className="text-stone-600 font-bold uppercase block">Avance 1%</span>
+              <span className="font-extrabold text-xs text-stone-900">{dailyPercent}%</span>
+            </div>
+            <div className="bg-white/90 p-2 border-2 border-stone-200 rounded-xl shadow-[0_1.5px_0_#d9d3c5]">
+              <span className="text-stone-600 font-bold uppercase block">Puntos Hoy</span>
+              <span className="font-extrabold text-xs text-stone-900">{scorePoints} pts</span>
+            </div>
+            <div className="bg-white/90 p-2 border-2 border-stone-200 rounded-xl shadow-[0_1.5px_0_#d9d3c5]">
+              <span className="text-stone-600 font-bold uppercase block">Racha</span>
+              <span className="font-extrabold text-xs text-stone-900">{streakDays} días</span>
+            </div>
           </div>
         </div>
       </div>

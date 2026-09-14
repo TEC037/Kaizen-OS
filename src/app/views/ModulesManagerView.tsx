@@ -72,18 +72,18 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Encabezado */}
-      <KzCard variant="surface" className="border-stone-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <KzCard variant="surface" className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <KzBadge variant="default">CONFIGURACIÓN CENTRAL</KzBadge>
-            <span className="font-mono text-xs text-stone-500">
+            <span className="font-mono text-xs text-stone-500 font-bold">
               {allManifests.length} módulos en catálogo
             </span>
           </div>
-          <h1 className="text-xl font-bold text-stone-900 mt-1 tracking-tight font-mono">
+          <h1 className="text-xl font-extrabold text-stone-900 mt-1 tracking-tight font-mono">
             Mis Módulos y Catálogo
           </h1>
-          <p className="text-xs text-stone-600 mt-0.5">
+          <p className="text-xs text-stone-600 mt-0.5 font-medium">
             Personaliza tu espacio instalando solo lo que necesitas. Los módulos desinstalados o suspendidos no ocupan espacio en el menú ni en el dashboard.
           </p>
         </div>
@@ -107,13 +107,13 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
       {/* Barra de Búsqueda Rápida y Filtro por Categorías */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
         <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar módulo por nombre o categoría..."
-            className="w-full pl-8 pr-7 py-1.5 border border-stone-300 bg-white text-stone-900 rounded-sm outline-none focus:border-stone-500 placeholder:text-stone-400"
+            className="w-full pl-9 pr-8 py-2 border-2 border-stone-300 bg-white text-stone-900 rounded-xl outline-none focus:border-stone-500 placeholder:text-stone-400 shadow-[0_2px_0_#cfc7b6] transition-all"
           />
           {searchQuery && (
             <button
@@ -122,7 +122,7 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
                 setSearchQuery('');
                 soundEngine.playTap();
               }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 cursor-pointer p-0.5"
               title="Limpiar búsqueda"
             >
               <X size={13} />
@@ -138,10 +138,10 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
               setSelectedCategory('all');
               soundEngine.playTap();
             }}
-            className={`px-2 py-1 rounded-xs border text-[11px] cursor-pointer transition-colors ${
+            className={`px-3 py-1 rounded-full border-2 text-[11px] font-bold cursor-pointer transition-all active:translate-y-[1px] active:shadow-none ${
               selectedCategory === 'all'
-                ? 'bg-stone-900 border-stone-900 text-stone-100 font-bold'
-                : 'bg-white border-stone-300 text-stone-600 hover:bg-stone-100'
+                ? 'bg-stone-900 border-stone-900 text-stone-100 shadow-[0_2px_0_#0a0807]'
+                : 'bg-white border-stone-300 text-stone-700 hover:bg-[#faf8f1] shadow-[0_1.5px_0_#cfc7b6]'
             }`}
           >
             Todos ({allManifests.length})
@@ -156,10 +156,10 @@ export const ModulesManagerView: React.FC<ModulesManagerViewProps> = ({
                   setSelectedCategory(cat);
                   soundEngine.playTap();
                 }}
-                className={`px-2 py-1 rounded-xs border text-[11px] cursor-pointer transition-colors ${
+                className={`px-3 py-1 rounded-full border-2 text-[11px] font-bold cursor-pointer transition-all active:translate-y-[1px] active:shadow-none ${
                   selectedCategory === cat
-                    ? 'bg-stone-900 border-stone-900 text-stone-100 font-bold'
-                    : 'bg-white border-stone-300 text-stone-600 hover:bg-stone-100'
+                    ? 'bg-stone-900 border-stone-900 text-stone-100 shadow-[0_2px_0_#0a0807]'
+                    : 'bg-white border-stone-300 text-stone-700 hover:bg-[#faf8f1] shadow-[0_1.5px_0_#cfc7b6]'
                 }`}
               >
                 {cat} ({count})

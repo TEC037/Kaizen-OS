@@ -33,10 +33,10 @@
   --color-outline: #8e9379;
   --color-outline-variant: #444933;
 
-  --font-headline: "Space Grotesk", sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
-  --font-label: "Space Grotesk", sans-serif;
-  --font-body: "Lexend", sans-serif;
+  --font-headline: var(--font-kz-mono, "Space Grotesk", sans-serif);
+  --font-display: var(--font-kz-mono, "Space Grotesk", sans-serif);
+  --font-label: var(--font-kz-mono, "Space Grotesk", sans-serif);
+  --font-body: var(--font-kz-sans, "Lexend", sans-serif);
 }
 
 @layer base {
@@ -52,9 +52,9 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: #101319;
-    color: #e1e2eb;
-    font-family: "Lexend", sans-serif;
+    background-color: var(--color-kz-ink, #101319);
+    color: var(--color-kz-surface, #e1e2eb);
+    font-family: var(--font-kz-sans, "Lexend", sans-serif);
   }
 
   html.dark h1,
@@ -71,7 +71,7 @@
   .punto-fuerte-app h5,
   .punto-fuerte-app h6,
   .punto-fuerte-app .font-space {
-    font-family: "Space Grotesk", sans-serif;
+    font-family: var(--font-kz-mono, "Space Grotesk", sans-serif);
   }
 }
 

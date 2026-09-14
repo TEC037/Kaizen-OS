@@ -199,10 +199,10 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
         </div>
 
         {/* Temporizador de Foco Profundo (25m Pomodoro) */}
-        <KzCard variant="surface" className="border-stone-300 p-4 space-y-2.5">
-          <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+        <KzCard variant="surface" className="p-5 space-y-3">
+          <div className="flex items-center justify-between border-b-2 border-stone-200/80 pb-2.5">
             <div className="flex items-center gap-1.5 text-xs font-mono text-stone-700">
-              <Clock size={13} className="text-amber-700" />
+              <Clock size={14} className="text-amber-700" />
               <span className="font-bold uppercase tracking-wider">Bloque de Foco Profundo</span>
             </div>
             <div className="flex items-center gap-2">
@@ -213,22 +213,22 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
                   const next = soundEngine.toggleAmbientRain();
                   setIsRainActive(next);
                 }}
-                className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono border rounded-xs transition-colors cursor-pointer ${
+                className={`flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-mono font-bold border-2 rounded-full transition-all cursor-pointer shadow-[0_1.5px_0_rgba(0,0,0,0.06)] active:translate-y-[1px] active:shadow-none ${
                   isRainActive
-                    ? 'border-cyan-400 bg-cyan-50 text-cyan-900 font-semibold'
-                    : 'border-stone-300 bg-stone-50 text-stone-600 hover:text-stone-900 hover:border-stone-400'
+                    ? 'border-cyan-400 bg-cyan-50 text-cyan-950 shadow-[0_1.5px_0_#67e8f9]'
+                    : 'border-stone-300 bg-white text-stone-600 hover:text-stone-900 shadow-[0_1.5px_0_#cfc7b6]'
                 }`}
                 title={isRainActive ? 'Desactivar lluvia relajante' : 'Activar sonido de lluvia relajante para foco'}
               >
                 <CloudRain size={11} className={isRainActive ? 'text-cyan-600' : 'text-stone-400'} />
                 <span>{isRainActive ? 'Lluvia Zen: On' : 'Lluvia Zen'}</span>
               </button>
-              <span className="text-[10px] font-mono text-stone-500">25 min</span>
+              <span className="text-[10px] font-mono text-stone-500 font-bold">25 min</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between gap-4 pt-1">
-            <div className="text-3xl sm:text-4xl font-mono font-bold text-stone-900 tracking-wider">
+            <div className="text-3xl sm:text-4xl font-mono font-extrabold text-stone-900 tracking-wider">
               {formatTime(secondsLeft)}
             </div>
 
@@ -244,7 +244,7 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
               <button
                 type="button"
                 onClick={resetTimer}
-                className="p-2 border border-stone-300 text-stone-600 hover:text-stone-900 rounded-sm cursor-pointer hover:bg-stone-100"
+                className="p-2 border-2 border-stone-300 text-stone-600 hover:text-stone-900 rounded-xl bg-white hover:bg-stone-50 shadow-[0_2px_0_#cfc7b6] cursor-pointer transition-all active:translate-y-[1px] active:shadow-none"
                 title="Reiniciar temporizador"
               >
                 <RotateCcw size={13} />
@@ -252,31 +252,31 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
             </div>
           </div>
 
-          <div className="w-full bg-stone-200 h-1.5 rounded-xs overflow-hidden">
+          <div className="w-full bg-stone-200/80 h-3 rounded-full overflow-hidden p-0.5 border border-stone-300 shadow-inner">
             <div
-              className="bg-amber-700 h-full transition-all duration-300"
+              className="bg-amber-600 h-full rounded-full transition-all duration-300"
               style={{ width: `${timerProgress}%` }}
             />
           </div>
         </KzCard>
 
         {/* Tarjeta de Foco: La Próxima Acción Inmediata */}
-        <KzCard variant="surface" className="text-left border-stone-300 p-5 shadow-sm space-y-3">
-          <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+        <KzCard variant="surface" className="text-left p-6 space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-stone-200/80 pb-2.5">
             <div className="flex items-center gap-2">
               <KzBadge variant="accent">FOCO INMEDIATO</KzBadge>
-              <span className="text-xs font-mono text-stone-600">FORJA · Taller de Proyectos</span>
+              <span className="text-xs font-mono font-bold text-stone-600">FORJA · Taller de Proyectos</span>
             </div>
             <div className="flex items-center gap-2">
               {activeProjects.length > 1 && (
                 <button
                   type="button"
                   onClick={handleCycleProject}
-                  className="flex items-center gap-1 text-[11px] font-mono text-stone-600 hover:text-stone-900 border border-stone-300 bg-white px-1.5 py-0.5 rounded-xs cursor-pointer hover:border-stone-400"
+                  className="flex items-center gap-1 text-[11px] font-mono font-bold text-stone-700 hover:text-stone-950 border-2 border-stone-300 bg-white px-2.5 py-0.5 rounded-full cursor-pointer shadow-[0_1.5px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none transition-all"
                   title="Cambiar al siguiente proyecto activo"
                 >
                   <RefreshCw size={11} className="text-stone-500" />
-                  <span>Otro proyecto ({activeProjects.length})</span>
+                  <span>Otro ({activeProjects.length})</span>
                 </button>
               )}
               <Sparkles size={14} className="text-amber-600" />
@@ -286,10 +286,10 @@ export const ZenWorkspace: React.FC<ZenWorkspaceProps> = ({
           {activeProject ? (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-stone-600 uppercase tracking-wider block">
+                <span className="text-xs font-mono font-bold text-stone-600 uppercase tracking-wider block">
                   Proyecto: {activeProject.title}
                 </span>
-                <span className="text-[10px] font-mono border border-stone-200 px-1.5 py-0.2 rounded-xs bg-[#faf8f1] text-stone-700">
+                <span className="text-[10px] font-mono font-bold border-2 border-stone-200 px-2 py-0.5 rounded-full bg-[#faf8f1] text-stone-700 shadow-[0_1px_0_#d9d3c5]">
                   {activeProject.progressPercent || 10}%
                 </span>
               </div>

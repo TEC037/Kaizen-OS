@@ -36,27 +36,30 @@ export const KzScorePill: React.FC<KzScorePillProps> = ({
   return (
     <motion.button
       type="button"
-      whileHover={isClickable ? { scale: 1.02 } : undefined}
-      whileTap={isClickable ? { scale: 0.97 } : undefined}
+      whileHover={isClickable ? { scale: 1.04, y: -1 } : undefined}
+      whileTap={isClickable ? { scale: 0.96, y: 2 } : undefined}
+      transition={{ type: 'spring', stiffness: 450, damping: 22 }}
       onClick={isClickable ? handleClick : undefined}
-      className={`inline-flex items-center gap-1.5 font-mono border rounded-sm select-none transition-all ${
+      className={`inline-flex items-center gap-1.5 font-mono border-2 rounded-full select-none transition-all ${
         isGoalDone
-          ? 'border-emerald-400 bg-emerald-50/90 text-emerald-950 hover:bg-emerald-100/90 shadow-[0_0_8px_rgba(16,185,129,0.15)]'
-          : 'border-amber-300/80 bg-amber-50/70 hover:bg-amber-100/70 text-amber-950'
+          ? 'border-emerald-400 bg-emerald-50 text-emerald-950 hover:bg-emerald-100 shadow-[0_2.5px_0_#86efac]'
+          : 'border-amber-300 bg-amber-50/90 hover:bg-amber-100 text-amber-950 shadow-[0_2.5px_0_#fcd34d]'
       } ${
-        size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs'
-      } ${isClickable ? 'cursor-pointer' : 'cursor-default'} ${className}`}
-      title="Puntos Kaizen acumulados y avance diario"
+        size === 'sm' ? 'px-2.5 py-0.5 text-xs' : 'px-3.5 py-1 text-xs'
+      } ${isClickable ? 'cursor-pointer active:shadow-none' : 'cursor-default'} ${className}`}
+      title="Puntos Kaizen acumulados y avance diario (+1%)"
     >
       <Star
-        size={13}
-        className={isGoalDone ? 'text-emerald-600 fill-emerald-500 shrink-0' : 'text-amber-600 fill-amber-500 shrink-0'}
+        size={14}
+        className={`${
+          isGoalDone ? 'text-emerald-600 fill-emerald-500' : 'text-amber-600 fill-amber-500'
+        } shrink-0 transition-transform group-hover:rotate-12`}
       />
-      <span className="font-bold tracking-tight">{points} pts</span>
+      <span className="font-extrabold tracking-tight">{points} pts</span>
       {typeof dailyPercent === 'number' && (
         <>
-          <span className={isGoalDone ? 'text-emerald-400' : 'text-amber-400/80'}>|</span>
-          <span className={`${isGoalDone ? 'text-emerald-800' : 'text-amber-800'} text-[11px] font-medium`}>
+          <span className={isGoalDone ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>•</span>
+          <span className={`${isGoalDone ? 'text-emerald-800' : 'text-amber-900'} text-[11px] font-bold`}>
             +1%: {dailyPercent}% {isGoalDone && '✓'}
           </span>
         </>

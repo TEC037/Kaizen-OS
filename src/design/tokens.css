@@ -12,10 +12,11 @@
  */
 
 @theme {
-  /* ════ Color: neutros cálidos unificados ════ */
+  /* ════ Color: neutros cálidos unificados (Zen Paper & Clay) ════ */
   --color-kz-bg: #f4f2ec;
   --color-kz-surface: #fffdf8;
   --color-kz-surface-2: #faf8f1;
+  --color-kz-sand: #eee9dc;
 
   --color-kz-ink: #211d19;
   --color-kz-ink-soft: #57534e;
@@ -24,9 +25,13 @@
   --color-kz-line: #d9d3c5;
   --color-kz-line-strong: #a5a093;
 
-  /* ════ Color: acento y estados ════ */
+  /* ════ Color: acento y estados (Zen Matcha & Warm Terracotta) ════ */
   --color-kz-accent: #b45309;
   --color-kz-accent-strong: #92400e;
+  --color-kz-matcha: #34633b;
+  --color-kz-matcha-soft: #eaf3ea;
+  --color-kz-bamboo: #4d734d;
+  --color-kz-terracotta: #b85d19;
 
   --color-kz-info: #0e7490;
   --color-kz-success: #166534;
@@ -37,10 +42,17 @@
   --font-kz-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-kz-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* ════ Geo ════ */
-  --radius-kz: 4px;
-  --shadow-kz-card: 0 1px 2px rgba(33, 29, 25, 0.05);
-  --shadow-kz-raised: 0 8px 20px rgba(33, 29, 25, 0.08);
+  /* ════ Geo & Sombras Táctiles (Cartoon Zen) ════ */
+  --radius-kz: 16px;
+  --radius-kz-sm: 10px;
+  --radius-kz-lg: 22px;
+  --radius-kz-full: 9999px;
+  --shadow-kz-card: 0 4px 0 #d9d3c5, 0 10px 24px rgba(33, 29, 25, 0.04);
+  --shadow-kz-card-hover: 0 6px 0 #cec5b3, 0 14px 28px rgba(33, 29, 25, 0.06);
+  --shadow-kz-tactile-sm: 0 2px 0 #cfc7b6;
+  --shadow-kz-tactile-md: 0 3px 0 #cfc7b6;
+  --shadow-kz-tactile-primary: 0 3px 0 #0d0b09;
+  --shadow-kz-raised: 0 8px 24px rgba(33, 29, 25, 0.08);
 }
 
 /* Tripletas RGB derivadas (para composiciones rgba()/color-mix) */

@@ -34,4 +34,35 @@ export const financeManifest: ModuleManifest = {
   permissions: ['storage:local'],
   optionalDependencies: [],
   version: '1.0.0',
+  spec: {
+    theme: {
+      accent: '#166534', // Verde esmeralda financiero
+      bg: '#f4f2ec',
+    },
+    storage: {
+      scope: 'finance',
+      version: 1,
+      defaults: {},
+    },
+    events: {
+      emits: [
+        {
+          name: 'finance:expense-logged',
+          description: 'Registro de gasto presupuestario o aporte a meta de ahorro',
+          points: 10,
+          reason: 'Control presupuestario registrado',
+        },
+      ],
+      listens: [],
+    },
+    settings: [
+      {
+        id: 'limiteGastoMensual',
+        label: 'Límite de presupuesto mensual proyectado ($ COP)',
+        type: 'number',
+        default: 4500000,
+        help: 'Tope máximo mensual asignado para control de gastos en pesos colombianos (COP)',
+      },
+    ],
+  },
 };

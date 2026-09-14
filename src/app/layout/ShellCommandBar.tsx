@@ -24,6 +24,7 @@ import {
   Code2,
   Download,
   Upload,
+  User,
 } from 'lucide-react';
 import { KzHotKey } from '../../components/ui/KzHotKey';
 import { soundEngine } from '../../core/sound';
@@ -48,6 +49,7 @@ interface ShellCommandBarProps {
   onToggleSound: () => void;
   onOpenScoreModal: () => void;
   onOpenInspector: () => void;
+  onOpenProfileModal?: () => void;
 }
 
 export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
@@ -60,6 +62,7 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
   onToggleSound,
   onOpenScoreModal,
   onOpenInspector,
+  onOpenProfileModal,
 }) => {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -248,6 +251,17 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
         },
       },
       {
+        id: 'sys-user-profile',
+        title: 'Perfil de Usuario Global (cambiar nombre de usuario)',
+        category: 'Sistema',
+        icon: <User size={15} className="text-amber-600" />,
+        shortcut: ['U'],
+        action: () => {
+          onClose();
+          onOpenProfileModal?.();
+        },
+      },
+      {
         id: 'sys-inspector',
         title: 'Abrir Inspector de Arquitectura Modular',
         category: 'Sistema',
@@ -349,12 +363,12 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
       }}
     >
       <div
-        className="w-full max-w-xl bg-[#fffdf8] border border-stone-300 shadow-2xl rounded-sm overflow-hidden font-mono text-xs flex flex-col max-h-[75vh]"
+        className="w-full max-w-xl bg-[#fffdf8] border-2 border-stone-300 shadow-[0_10px_0_#cfc7b6,0_30px_50px_rgba(0,0,0,0.18)] rounded-2xl sm:rounded-3xl overflow-hidden font-mono text-xs flex flex-col max-h-[75vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Barra de entrada */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-stone-200 bg-[#faf8f1]">
-          <Search size={16} className="text-stone-400 shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b-2 border-stone-200/80 bg-[#faf8f1]">
+          <Search size={16} className="text-stone-500 shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -364,15 +378,15 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
               setSelectedIndex(0);
             }}
             placeholder="Escribe un comando, hábito o navega..."
-            className="w-full bg-transparent border-none outline-none text-stone-900 placeholder:text-stone-400 text-xs sm:text-sm"
+            className="w-full bg-transparent border-none outline-none text-stone-900 placeholder:text-stone-400 text-xs sm:text-sm font-medium"
           />
           <KzHotKey keys="Esc" size="sm" />
         </div>
 
         {/* Lista de resultados */}
-        <div className="overflow-y-auto p-2 divide-y divide-stone-100 flex-1">
+        <div className="overflow-y-auto p-2.5 space-y-1 flex-1">
           {filteredCommands.length === 0 ? (
-            <div className="p-6 text-center text-stone-500 italic">
+            <div className="p-8 text-center text-stone-500 italic">
               No se encontraron comandos para &quot;{query}&quot;
             </div>
           ) : (
@@ -386,8 +400,10 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
                     command.action();
                   }}
                   onMouseEnter={() => setSelectedIndex(idx)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-sm cursor-pointer transition-colors ${
-                    isSelected ? 'bg-amber-100/70 text-amber-950 font-semibold' : 'text-stone-700 hover:bg-stone-100'
+                  className={`flex items-center justify-between px-3.5 py-2 rounded-xl cursor-pointer transition-all ${
+                    isSelected
+                      ? 'bg-amber-100 text-amber-950 font-bold shadow-[0_2px_0_#fcd34d] translate-x-0.5'
+                      : 'text-stone-700 hover:bg-stone-100/80'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -395,7 +411,7 @@ export const ShellCommandBar: React.FC<ShellCommandBarProps> = ({
                     <span className="truncate">{command.title}</span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <span className="text-[9px] uppercase tracking-wider text-stone-600">
+                    <span className="text-[9px] uppercase font-bold tracking-wider text-stone-600 px-2 py-0.5 rounded-full border border-stone-300 bg-white">
                       {command.category}
                     </span>
                     {command.shortcut && <KzHotKey keys={command.shortcut} size="sm" />}

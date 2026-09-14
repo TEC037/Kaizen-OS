@@ -221,26 +221,26 @@ export const INITIAL_BOOKS: BookItem[] = [
 ];
 
 export const INITIAL_EXPENSE_CATEGORIES: ExpenseCategoryItem[] = [
-  { id: 'c-1', category: 'Vivienda y Servicios', spent: 650, allocated: 700 },
-  { id: 'c-2', category: 'Alimentación saludable', spent: 340, allocated: 400 },
-  { id: 'c-3', category: 'Transporte y Movilidad', spent: 90, allocated: 120 },
-  { id: 'c-4', category: 'Formación y Libros', spent: 65, allocated: 100 },
-  { id: 'c-5', category: 'Ocio y Desconexión', spent: 110, allocated: 150 },
+  { id: 'c-1', category: 'Vivienda y Servicios', spent: 1450000, allocated: 1600000 },
+  { id: 'c-2', category: 'Alimentación saludable', spent: 780000, allocated: 900000 },
+  { id: 'c-3', category: 'Transporte y Movilidad', spent: 220000, allocated: 280000 },
+  { id: 'c-4', category: 'Formación y Libros', spent: 150000, allocated: 250000 },
+  { id: 'c-5', category: 'Ocio y Desconexión', spent: 280000, allocated: 350000 },
 ];
 
 export const INITIAL_FINANCIAL_GOALS: FinancialGoalItem[] = [
   {
     id: 'fg-1',
     title: 'Fondo de tranquilidad (6 meses)',
-    currentAmount: 4800,
-    targetAmount: 6000,
+    currentAmount: 9800000,
+    targetAmount: 14000000,
     deadline: 'Dic 2026',
   },
   {
     id: 'fg-2',
     title: 'Actualización equipamiento de trabajo',
-    currentAmount: 750,
-    targetAmount: 1200,
+    currentAmount: 1750000,
+    targetAmount: 3000000,
     deadline: 'Nov 2026',
   },
 ];

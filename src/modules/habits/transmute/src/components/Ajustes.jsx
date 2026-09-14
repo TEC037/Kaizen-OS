@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store/useStore';
 import { toast } from 'sonner';
 import { haptics } from '../utils/haptics';
 import { getRango, getProximoRango, getProgresoEnRango } from '../domain/InvocadorSystem';
-import { Bell, BellOff, Vibrate, Moon, Sun, LogOut, AlertTriangle, Trash2, ChevronRight, Globe, Lock, Check, Pencil, X, Compass } from 'lucide-react';
-
-
-const NOMBRE_DEFAULT = 'Adept #001';
-
+import { Bell, BellOff, Vibrate, Moon, Sun, LogOut, AlertTriangle, Trash2, ChevronRight, Globe, Lock, Check, Compass } from 'lucide-react';
 
 function AlchemyToggle({ activo, onToggle, idHtml }) {
   return (
@@ -227,47 +223,10 @@ function Ajustes() {
     xp,
   } = useStore();
 
-  
-  const esNombreDefault = !settings.displayName || settings.displayName === NOMBRE_DEFAULT;
-
-  const [editandoNombre, setEditandoNombre]   = useState(esNombreDefault);
-  const [nombreTemporal, setNombreTemporal]   = useState(
-    esNombreDefault ? '' : (settings.displayName || '')
-  );
   const [modalReset, setModalReset]           = useState(false);
   const [modalSignOut, setModalSignOut]       = useState(false);
-  const [guardandoNombre, setGuardandoNombre] = useState(false);
 
   const isDark = theme === 'nigredo';
-
-  
-  useEffect(() => {
-    if (!editandoNombre) {
-      setNombreTemporal(settings.displayName || '');
-    }
-  }, [settings.displayName]);
-
-  
-  const guardarNombre = async () => {
-    const nombre = nombreTemporal.trim();
-    if (!nombre || nombre.length < 2) {
-      toast.error('El nombre debe tener al menos 2 caracteres');
-      return;
-    }
-    if (nombre.length > 30) {
-      toast.error('Máximo 30 caracteres');
-      return;
-    }
-    setGuardandoNombre(true);
-    try {
-      await updateSettings({ displayName: nombre });
-      setEditandoNombre(false);
-    } catch (e) {
-      toast.error('Error al guardar el nombre');
-    } finally {
-      setGuardandoNombre(false);
-    }
-  };
 
   const toggleNotificaciones = () => updateSettings({ notificationsEnabled: !settings.notificationsEnabled });
   const toggleVibracion = () => {
@@ -323,11 +282,9 @@ function Ajustes() {
         </motion.div>
 
         {}
-        <Seccion titulo="Identidad">
-          {}
+        <Seccion titulo="Identidad Global">
           <div className="py-4">
             <div className="flex items-start gap-4">
-              {}
               <div
                 className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-lg"
                 style={{
@@ -338,65 +295,22 @@ function Ajustes() {
                 {getRango(xp).icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black font-serif text-[var(--color-midnight)]">
-                  Nombre de Registro
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-black font-serif text-[var(--color-midnight)]">
+                    Nombre de Usuario
+                  </p>
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/30">
+                    Sincronizado
+                  </span>
+                </div>
+
+                <p className="text-base font-black font-serif text-[var(--color-midnight)] mt-1">
+                  {settings.displayName || 'Alex'}
                 </p>
 
-                {editandoNombre ? (
-                  <div className="mt-2">
-                    {esNombreDefault && (
-                      <p className="text-[9px] opacity-40 mb-2 font-serif">
-                        Elige cómo te identificará el sistema.
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <input
-                        id="input-nombre-registro"
-                        type="text"
-                        value={nombreTemporal}
-                        onChange={(e) => setNombreTemporal(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && guardarNombre()}
-                        maxLength={30}
-                        autoFocus
-                        placeholder="Tu nombre..."
-                        className="flex-1 bg-[var(--color-midnight)]/5 border border-[var(--color-midnight)]/15 rounded-lg px-3 py-2 text-sm font-serif focus:outline-none focus:border-[var(--color-gold)]/50 transition-colors placeholder:opacity-30"
-                      />
-                      <button
-                        onClick={guardarNombre}
-                        disabled={guardandoNombre || !nombreTemporal.trim()}
-                        className="w-8 h-8 rounded-lg bg-[var(--color-midnight)] text-[var(--bg-porcelain)] flex items-center justify-center disabled:opacity-30 transition-opacity"
-                      >
-                        <Check size={14} />
-                      </button>
-                      {!esNombreDefault && (
-                        <button
-                          onClick={() => {
-                            setEditandoNombre(false);
-                            setNombreTemporal(settings.displayName);
-                          }}
-                          className="w-8 h-8 rounded-lg bg-[var(--color-midnight)]/8 flex items-center justify-center opacity-50"
-                        >
-                          <X size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-[10px] opacity-40 font-semibold uppercase tracking-widest">
-                      {settings.displayName}
-                    </p>
-                    <button
-                      onClick={() => {
-                        setEditandoNombre(true);
-                        setNombreTemporal(settings.displayName);
-                      }}
-                      className="opacity-30 hover:opacity-70 transition-opacity"
-                    >
-                      <Pencil size={10} />
-                    </button>
-                  </div>
-                )}
+                <p className="text-[10px] opacity-60 mt-1 font-serif leading-relaxed">
+                  Identidad global vinculada a Kaizen OS. El nombre de usuario se gestiona de manera centralizada desde el Dashboard o la barra de comandos (Cmd+K).
+                </p>
               </div>
             </div>
           </div>

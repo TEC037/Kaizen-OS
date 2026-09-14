@@ -506,8 +506,13 @@ function profilePhase(goal: RealUserProfile['primaryGoal']): string {
 function buildUiProfile(
   user: RealUserProfile,
   history: WorkoutSessionLog[],
-  weightHistory: { date: string; weight: number }[]
+  weightHistory: { date: string; weight: number }[],
+  overrideName?: string
 ): UiProfile {
+  const resolvedName =
+    overrideName ||
+    (typeof window !== 'undefined' ? localStorage.getItem('kz:user_name') : null) ||
+    user.name;
   const now = new Date();
   const monthStartKey = dateKey(new Date(now.getFullYear(), now.getMonth(), 1));
   const todayKey = dateKey(now);
@@ -526,8 +531,8 @@ function buildUiProfile(
       : null;
 
   return {
-    firstName: user.name.split(' ')[0] || user.name,
-    name: user.name,
+    firstName: resolvedName.split(' ')[0] || resolvedName,
+    name: resolvedName,
     email: user.email,
     status: 'Listo para entrenar',
     phase: profilePhase(user.primaryGoal),
@@ -589,6 +594,30 @@ export const UiDataProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [customRoutines, setCustomRoutines] = useState<UiRoutine[]>(() =>
     readCustomRoutines(sessionScope)
   );
+
+  const [globalUserName, setGlobalUserName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('kz:user_name') || 'Alex';
+    }
+    return 'Alex';
+  });
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvt = e as CustomEvent<{ userName?: string }>;
+      if (customEvt.detail?.userName) {
+        setGlobalUserName(customEvt.detail.userName);
+      } else if (typeof window !== 'undefined') {
+        setGlobalUserName(localStorage.getItem('kz:user_name') || 'Alex');
+      }
+    };
+    window.addEventListener('kz:user_name_changed', handler);
+    window.addEventListener('storage', handler);
+    return () => {
+      window.removeEventListener('kz:user_name_changed', handler);
+      window.removeEventListener('storage', handler);
+    };
+  }, []);
 
   // Fuente de verdad en modo real: Supabase. La caché localStorage (por scope)
   // agiliza el arranque; al montar, se reconcilia con la nube.
@@ -690,8 +719,8 @@ export const UiDataProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const value = useMemo<UiDataContextType>(() => {
     // --- Perfil ---
     const profile = real
-      ? buildUiProfile(app.user, app.history, app.weightHistory)
-      : buildUiProfile(app.user, demoSessionData, demoWeightHistory);
+      ? buildUiProfile(app.user, app.history, app.weightHistory, globalUserName)
+      : buildUiProfile(app.user, demoSessionData, demoWeightHistory, globalUserName);
 
     // --- Calorías de hoy: sesiones de hoy + acumulador rápido ---
     const todayKey = dateKey(new Date());
@@ -780,6 +809,7 @@ export const UiDataProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     updateCustomRoutine,
     removeCustomRoutine,
     startWorkoutRoutine,
+    globalUserName,
   ]);
 
   return <UiDataContext.Provider value={value}>{children}</UiDataContext.Provider>;

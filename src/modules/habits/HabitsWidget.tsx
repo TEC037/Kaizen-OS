@@ -13,6 +13,7 @@ import { Check, Square, ArrowRight, Flame, Plus } from 'lucide-react';
 import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
+import { KzButton, KzBadge } from '../../components/ui';
 
 interface TransmuteHabit {
   id: string;
@@ -158,20 +159,20 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
       targetPath="/habits"
       onNavigate={onNavigate}
     >
-      <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs font-mono text-zinc-600">
+      <div className="space-y-3 font-mono">
+        <div className="flex items-center justify-between text-xs text-kz-ink-soft">
           <span>Progreso de hoy: {completed}/{total} transmutados</span>
-          <span className="font-semibold">{percentage}%</span>
+          <span className="font-semibold text-kz-ink">{percentage}%</span>
         </div>
-        <div className="w-full bg-zinc-200 h-2 border border-zinc-300">
+        <div className="w-full bg-kz-line h-2 rounded-xs overflow-hidden">
           <div
-            className="bg-zinc-800 h-full transition-all duration-200"
+            className="bg-kz-ink h-full transition-all duration-200 rounded-xs"
             style={{ width: `${percentage}%` }}
           />
         </div>
 
         {habits.length === 0 ? (
-          <p className="text-xs text-zinc-500 italic py-2">
+          <p className="text-xs text-kz-ink-dim italic py-2">
             Ninguna transmutación activa. Entra al módulo para forjar tus hábitos.
           </p>
         ) : (
@@ -183,37 +184,33 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
                 <div
                   key={habit.id}
                   onClick={() => toggleFromWidget(habit.id)}
-                  className="flex items-center justify-between p-2 border border-zinc-200 hover:border-zinc-400 bg-zinc-50/50 cursor-pointer transition-colors text-xs group"
+                  className="flex items-center justify-between p-2 border border-kz-line hover:border-kz-line-strong bg-kz-surface-2/60 cursor-pointer transition-colors text-xs rounded-sm group"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-zinc-700 shrink-0">
+                    <span className="text-kz-ink shrink-0">
                       {done ? (
-                        <span className="w-4 h-4 flex items-center justify-center bg-zinc-900 text-white">
+                        <span className="w-4 h-4 flex items-center justify-center bg-kz-ink text-kz-surface rounded-xs">
                           <Check size={12} />
                         </span>
                       ) : (
-                        <span className="w-4 h-4 flex items-center justify-center border border-zinc-400 bg-white">
+                        <span className="w-4 h-4 flex items-center justify-center border border-kz-line-strong bg-kz-surface rounded-xs">
                           <Square size={10} className="text-transparent" />
                         </span>
                       )}
                     </span>
-                    <span className={`truncate ${done ? 'line-through text-zinc-400' : 'text-zinc-800'}`}>
+                    <span className={`truncate ${done ? 'line-through text-kz-ink-dim' : 'text-kz-ink'}`}>
                       {habit.name}
                     </span>
                   </div>
 
                   {streak > 0 && (
-                    <div
-                      className={`flex items-center gap-0.5 text-[10px] font-mono px-1.5 py-0.5 shrink-0 border transition-colors ${
-                        streak >= 7
-                          ? 'bg-amber-100/70 border-amber-300 text-amber-900 font-semibold'
-                          : 'bg-stone-100 border-stone-200 text-stone-600'
-                      }`}
-                      title={`Racha: ${streak} día${streak > 1 ? 's' : ''} consecutivos`}
+                    <KzBadge
+                      variant={streak >= 7 ? 'accent' : 'dim'}
+                      icon={<Flame size={11} className={streak >= 7 ? 'text-kz-accent fill-kz-accent' : 'text-kz-ink-dim'} />}
+                      className="shrink-0"
                     >
-                      <Flame size={11} className={streak >= 7 ? 'text-amber-600 fill-amber-500' : 'text-stone-400'} />
-                      <span>{streak}d</span>
-                    </div>
+                      {streak}d
+                    </KzBadge>
                   )}
                 </div>
               );
@@ -231,52 +228,54 @@ export const HabitsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
               onChange={(e) => setNewHabitName(e.target.value)}
               placeholder="Nombre del nuevo hábito..."
               disabled={isSubmitting}
-              className="flex-1 text-xs px-2 py-1 border border-stone-400 bg-white font-mono placeholder:text-stone-400 focus:outline-none focus:border-stone-900"
+              className="flex-1 text-xs px-2 py-1 border border-kz-line bg-kz-surface font-mono placeholder:text-kz-ink-dim focus:outline-none focus:border-kz-line-strong rounded-sm"
             />
-            <button
+            <KzButton
+              variant="primary"
+              size="sm"
               type="submit"
               disabled={isSubmitting || !newHabitName.trim()}
-              className="px-2 py-1 text-[11px] font-mono bg-stone-900 text-stone-100 hover:bg-stone-800 disabled:opacity-40 cursor-pointer"
             >
               Guardar
-            </button>
-            <button
+            </KzButton>
+            <KzButton
+              variant="craft"
+              size="sm"
               type="button"
               onClick={() => {
                 soundEngine.playTap();
                 setIsAdding(false);
                 setNewHabitName('');
               }}
-              className="px-1.5 py-1 text-[11px] font-mono text-stone-500 hover:text-stone-800 cursor-pointer"
             >
               ✕
-            </button>
+            </KzButton>
           </form>
         ) : (
           <div className="pt-2 flex items-center justify-between">
-            <button
-              type="button"
+            <KzButton
+              variant="craft"
+              size="sm"
+              icon={<Plus size={12} />}
               onClick={() => {
                 soundEngine.playTap();
                 setIsAdding(true);
               }}
-              className="text-[11px] font-mono text-stone-600 hover:text-stone-900 flex items-center gap-1 cursor-pointer"
             >
-              <Plus size={12} />
-              <span>Nuevo hábito</span>
-            </button>
+              Nuevo hábito
+            </KzButton>
 
-            <button
-              type="button"
+            <KzButton
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 soundEngine.playTap();
                 onNavigate('/habits');
               }}
-              className="text-xs font-mono text-zinc-800 hover:text-zinc-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
             >
               <span>Gestionar todos</span>
               <ArrowRight size={12} />
-            </button>
+            </KzButton>
           </div>
         )}
       </div>

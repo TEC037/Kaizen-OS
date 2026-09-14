@@ -58,7 +58,7 @@ export const useStore = create(
         notificationsEnabled: true,  
         vibrationEnabled: true,       
         audioEnabled: true,
-        displayName: 'Adept #001',
+        displayName: (typeof window !== 'undefined' && localStorage.getItem('kz:user_name')) || 'Alex',
         avatar: 'User',
         isPublic: true,
         hasFinishedOnboarding: false,
@@ -675,3 +675,38 @@ export const useStore = create(
     }
   )
 );
+
+// Sincronización reactiva con la identidad global de Kaizen OS
+if (typeof window !== 'undefined') {
+  const syncGlobalName = () => {
+    try {
+      const globalName = localStorage.getItem('kz:user_name');
+      if (globalName && globalName.trim()) {
+        const current = useStore.getState().settings?.displayName;
+        if (current !== globalName.trim()) {
+          useStore.getState().updateSettings({ displayName: globalName.trim() });
+        }
+      }
+    } catch {
+      // no-op
+    }
+  };
+
+  window.addEventListener('kz:user_name_changed', (e) => {
+    const customEvt = e;
+    const newName = customEvt.detail?.userName;
+    if (newName) {
+      useStore.getState().updateSettings({ displayName: newName });
+    } else {
+      syncGlobalName();
+    }
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (!e.key || e.key === 'kz:user_name') {
+      syncGlobalName();
+    }
+  });
+
+  setTimeout(syncGlobalName, 0);
+}

@@ -133,7 +133,7 @@
   align-items: center;
   gap: 8px;
   border: 1px solid var(--fj-line-strong);
-  background: #fff;
+  background: var(--fj-panel);
   padding: 6px 10px;
   color: var(--fj-ink-soft);
 }
@@ -169,7 +169,7 @@
 .forja-app .fj-chip[data-active='true'] {
   background: var(--fj-ink);
   border-color: var(--fj-ink);
-  color: #fffdf7;
+  color: var(--fj-panel);
 }
 
 .forja-app .fj-btn {
@@ -191,7 +191,7 @@
 .forja-app .fj-btn-primary {
   background: var(--fj-amber);
   border-color: var(--fj-amber);
-  color: #fffdf7;
+  color: var(--fj-panel);
   font-weight: 600;
 }
 
@@ -292,7 +292,7 @@
 
 .forja-app .fj-card {
   border: 1px solid var(--fj-line-strong);
-  background: #fffdf7;
+  background: var(--fj-panel);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -364,7 +364,7 @@
 
 .forja-app .fj-next-action {
   border: 1px solid var(--fj-line);
-  background: #f7f4ea;
+  background: var(--color-kz-surface-2, #faf8f1);
   padding: 8px 9px;
 }
 
@@ -416,7 +416,7 @@
 .forja-app .fj-progress-track {
   height: 7px;
   border: 1px solid var(--fj-line-strong);
-  background: #ece7da;
+  background: var(--fj-line);
   overflow: hidden;
 }
 
@@ -492,7 +492,7 @@
 
 .forja-app .fj-log {
   border: 1px solid var(--fj-line);
-  background: #f7f4ea;
+  background: var(--color-kz-surface-2, #faf8f1);
   padding: 8px 9px;
   max-height: 140px;
   overflow-y: auto;
@@ -595,7 +595,7 @@
 .forja-app .fj-textarea {
   width: 100%;
   border: 1px solid var(--fj-line-strong);
-  background: #fff;
+  background: var(--fj-panel);
   padding: 8px 10px;
   font-size: 13px;
   color: var(--fj-ink);

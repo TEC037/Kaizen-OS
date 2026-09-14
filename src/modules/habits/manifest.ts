@@ -49,8 +49,38 @@ export const habitsManifest: ModuleManifest = {
       defaults: {},
     },
     events: {
-      emits: [],
-      listens: [],
+      emits: [
+        {
+          name: 'habits:toggled',
+          description: 'Hábito individual transmutado en TRANSMUTE',
+          points: 10,
+          reason: 'Hábito transmutado en TRANSMUTE',
+        },
+        {
+          name: 'habits:all-daily-done',
+          description: 'Todos los hábitos diarios completados al 100% (Día Dorado)',
+          points: 30,
+          reason: 'Día Dorado: todos los hábitos completados',
+        },
+      ],
+      listens: [
+        {
+          name: 'gym:session-completed',
+          description: 'Sinergia: auto-marca hábito de entrenamiento al completar sesión',
+        },
+        {
+          name: 'forja:next-action-done',
+          description: 'Sinergia: auto-marca hábito de trabajo profundo al avanzar acción en FORJA',
+        },
+        {
+          name: 'reading:session-finished',
+          description: 'Sinergia: auto-marca hábito de lectura tras sesión',
+        },
+        {
+          name: 'finance:expense-logged',
+          description: 'Sinergia: auto-marca hábito financiero tras registro',
+        },
+      ],
     },
     settings: [
       {

@@ -22,6 +22,7 @@ import { ModuleManifest, KaizenScoreState } from '../../core/types';
 import { soundEngine } from '../../core/sound';
 import { ShellCommandBar } from './ShellCommandBar';
 import { ShortcutsModal } from '../../components/ShortcutsModal';
+import { UserProfileModal } from '../../components/UserProfileModal';
 
 interface ShellModalsProps {
   // Score Modal
@@ -41,6 +42,11 @@ interface ShellModalsProps {
   // Shortcuts
   showShortcutsModal: boolean;
   onCloseShortcutsModal: () => void;
+
+  // Profile Modal
+  showProfileModal?: boolean;
+  onCloseProfileModal?: () => void;
+  onOpenProfileModal?: () => void;
 
   // Omnibar
   showCommandBar: boolean;
@@ -66,6 +72,9 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
   onNavigate,
   showShortcutsModal,
   onCloseShortcutsModal,
+  showProfileModal,
+  onCloseProfileModal,
+  onOpenProfileModal,
   showCommandBar,
   onCloseCommandBar,
   zenMode,
@@ -109,6 +118,13 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
         onToggleSound={onToggleSound}
         onOpenScoreModal={onOpenScoreModal}
         onOpenInspector={onOpenInspector}
+        onOpenProfileModal={onOpenProfileModal}
+      />
+
+      {/* Modal de Perfil de Usuario Global */}
+      <UserProfileModal
+        isOpen={Boolean(showProfileModal)}
+        onClose={onCloseProfileModal || (() => {})}
       />
 
       {/* Modal de Atajos de Teclado (?) */}
@@ -127,13 +143,13 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
           }}
         >
           <div
-            className="border border-stone-300 bg-[#fffdf8] w-full max-w-2xl p-6 font-mono max-h-[90vh] overflow-y-auto space-y-5 rounded-sm shadow-2xl"
+            className="border-2 border-stone-300 bg-[#fffdf8] w-full max-w-2xl p-6 sm:p-7 font-mono max-h-[90vh] overflow-y-auto space-y-5 rounded-2xl sm:rounded-3xl shadow-[0_12px_0_#cfc7b6,0_30px_50px_rgba(0,0,0,0.18)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+            <div className="flex items-center justify-between border-b-2 border-stone-200/80 pb-3">
               <div className="flex items-center gap-2">
                 <Star size={18} className="text-amber-500 fill-amber-500" />
-                <h2 className="text-sm sm:text-base font-bold text-stone-900 uppercase tracking-wide">
+                <h2 className="text-sm sm:text-base font-extrabold text-stone-900 uppercase tracking-wide">
                   SISTEMA DE PUNTUACIÓN KAIZEN
                 </h2>
               </div>
@@ -143,15 +159,15 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                   onCloseScoreModal();
                   soundEngine.playTap();
                 }}
-                className="text-stone-500 hover:text-stone-900 border border-stone-300 px-2 py-0.5 rounded-sm cursor-pointer"
+                className="text-stone-500 hover:text-stone-900 border-2 border-stone-300 bg-white hover:bg-stone-50 px-2.5 py-1 rounded-xl shadow-[0_1.5px_0_#cfc7b6] cursor-pointer transition-all active:translate-y-[1px]"
               >
                 <X size={14} />
               </button>
             </div>
 
             {/* Filosofía 1% */}
-            <div className="border border-stone-200 bg-[#faf8f1] p-4 text-xs space-y-2 text-stone-700 rounded-sm">
-              <p className="font-bold text-stone-900">
+            <div className="border-2 border-[#ded7c8] bg-[#faf8f1] p-4 text-xs space-y-2 text-stone-700 rounded-2xl shadow-[0_2px_0_#d9d3c5]">
+              <p className="font-extrabold text-stone-900">
                 Principio rector: 1% de mejora cada día
               </p>
               <p className="leading-relaxed">
@@ -161,27 +177,27 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
 
             {/* Métricas de puntuación */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-              <div className="border border-stone-200 p-3 bg-[#faf8f1] rounded-sm">
-                <span className="text-[10px] uppercase text-stone-600 block">Puntos Totales</span>
-                <span className="text-2xl font-bold text-stone-900">{scoreState.totalPoints}</span>
-                <span className="text-[10px] text-stone-600 block">Inicia en 0 pts</span>
+              <div className="border-2 border-stone-200 p-3 bg-[#faf8f1] rounded-2xl shadow-[0_2px_0_#d9d3c5]">
+                <span className="text-[10px] font-bold uppercase text-stone-600 block">Puntos Totales</span>
+                <span className="text-2xl font-extrabold text-stone-900">{scoreState.totalPoints}</span>
+                <span className="text-[10px] text-stone-500 block">Inicia en 0 pts</span>
               </div>
-              <div className="border border-stone-200 p-3 bg-[#faf8f1] rounded-sm">
-                <span className="text-[10px] uppercase text-stone-600 block">Puntos Hoy</span>
-                <span className="text-2xl font-bold text-stone-900">{scoreState.todayPoints}</span>
-                <span className="text-[10px] text-stone-600 block">Meta: {scoreState.dailyGoalPoints} pts</span>
+              <div className="border-2 border-stone-200 p-3 bg-[#faf8f1] rounded-2xl shadow-[0_2px_0_#d9d3c5]">
+                <span className="text-[10px] font-bold uppercase text-stone-600 block">Puntos Hoy</span>
+                <span className="text-2xl font-extrabold text-stone-900">{scoreState.todayPoints}</span>
+                <span className="text-[10px] text-stone-500 block">Meta: {scoreState.dailyGoalPoints} pts</span>
               </div>
-              <div className="border border-stone-200 p-3 bg-[#faf8f1] rounded-sm">
-                <span className="text-[10px] uppercase text-stone-600 block">Meta 1% Hoy</span>
-                <span className="text-2xl font-bold text-emerald-700">{dailyPercent}%</span>
-                <span className="text-[10px] text-stone-600 block">
+              <div className="border-2 border-stone-200 p-3 bg-[#faf8f1] rounded-2xl shadow-[0_2px_0_#d9d3c5]">
+                <span className="text-[10px] font-bold uppercase text-stone-600 block">Meta 1% Hoy</span>
+                <span className="text-2xl font-extrabold text-emerald-800">{dailyPercent}%</span>
+                <span className="text-[10px] text-stone-500 block font-bold">
                   {scoreState.todayPoints >= scoreState.dailyGoalPoints ? 'Cumplido' : 'En progreso'}
                 </span>
               </div>
-              <div className="border border-stone-200 p-3 bg-[#faf8f1] rounded-sm">
-                <span className="text-[10px] uppercase text-stone-600 block">Racha Activa</span>
-                <span className="text-2xl font-bold text-stone-900">{scoreState.currentStreakDays}</span>
-                <span className="text-[10px] text-stone-600 block">Días seguidos</span>
+              <div className="border-2 border-stone-200 p-3 bg-[#faf8f1] rounded-2xl shadow-[0_2px_0_#d9d3c5]">
+                <span className="text-[10px] font-bold uppercase text-stone-600 block">Racha Activa</span>
+                <span className="text-2xl font-extrabold text-stone-900">{scoreState.currentStreakDays}</span>
+                <span className="text-[10px] text-stone-500 block">Días seguidos</span>
               </div>
             </div>
 
@@ -192,61 +208,43 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
               </h3>
               <div className="text-xs space-y-1.5 text-stone-600">
                 <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Hábitos: Marcar hábito como cumplido hoy</span>
-                  <span className="font-bold text-stone-900">+10 pts</span>
-                </div>
-                <div className="flex justify-between border-b border-stone-100 py-1">
                   <span>Hábitos: Definir un nuevo hábito en el sistema</span>
                   <span className="font-bold text-stone-900">+5 pts</span>
                 </div>
                 <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Proyectos: Estructurar nuevo proyecto con próxima acción</span>
+                  <span>FORJA: Completar una tarea o próxima acción</span>
                   <span className="font-bold text-stone-900">+15 pts</span>
                 </div>
                 <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Proyectos: Avanzar el estado de un proyecto</span>
+                  <span>Punto Fuerte: Completar una sesión de entrenamiento</span>
+                  <span className="font-bold text-stone-900">+25 pts</span>
+                </div>
+                <div className="flex justify-between border-b border-stone-100 py-1">
+                  <span>Lectura: Completar una sesión de lectura consciente</span>
                   <span className="font-bold text-stone-900">+15 pts</span>
                 </div>
                 <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Proyectos: Completar la próxima acción inmediata</span>
-                  <span className="font-bold text-stone-900">+5 pts</span>
-                </div>
-                <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Proyectos: Hito de finalizar un proyecto por completo</span>
-                  <span className="font-bold text-stone-900">+50 pts</span>
-                </div>
-                <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Gimnasio: Registrar una sesión de entrenamiento</span>
-                  <span className="font-bold text-stone-900">+30 pts</span>
-                </div>
-                <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Lectura: Completar sesión de lectura de páginas</span>
-                  <span className="font-bold text-stone-900">+15 pts</span>
-                </div>
-                <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Lectura: Hito de finalizar un libro completo</span>
-                  <span className="font-bold text-stone-900">+45 pts</span>
-                </div>
-                <div className="flex justify-between border-b border-stone-100 py-1">
-                  <span>Finanzas: Registro y control presupuestario</span>
+                  <span>Finanzas: Registrar un movimiento contable</span>
                   <span className="font-bold text-stone-900">+10 pts</span>
                 </div>
-                <div className="flex justify-between border-b border-stone-100 py-1 bg-emerald-50 px-2 font-semibold text-emerald-800 rounded-sm">
-                  <span>Hito Kaizen: Alcanzar la meta del 1% del día ({DAILY_1_PERCENT_TARGET} pts)</span>
-                  <span>+25 pts bono</span>
+                <div className="flex justify-between border-b border-stone-100 py-1">
+                  <span>Bono Constancia: Alcanzar el 100% de la meta diaria</span>
+                  <span className="font-bold text-emerald-800">+20 pts</span>
                 </div>
               </div>
             </div>
 
-            {/* Historial de Puntos */}
+            {/* Historial de Puntuación Reciente */}
             <div className="space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-1.5">
-                <h3 className="text-xs font-bold uppercase text-stone-900 flex items-center gap-1.5">
-                  <History size={13} />
-                  <span>Historial de Puntos ({filteredHistory.length})</span>
-                </h3>
+              <div className="flex items-center justify-between border-b border-stone-200 pb-1">
+                <div className="flex items-center gap-1.5">
+                  <History size={14} className="text-stone-700" />
+                  <h3 className="text-xs font-bold uppercase text-stone-900">
+                    Historial de Puntuación de Hoy ({scoreState.history.length})
+                  </h3>
+                </div>
 
-                {/* Micro-filtros por módulo */}
+                {/* Filtro por módulo */}
                 <div className="flex items-center gap-1 text-[10px]">
                   {(['all', 'habits', 'projects', 'gym', 'reading', 'finance', 'system'] as const).map((mod) => {
                     const count = mod === 'all'
@@ -270,10 +268,10 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                           setHistoryFilter(mod);
                           soundEngine.playTap();
                         }}
-                        className={`px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
+                        className={`px-2 py-0.5 rounded-full font-bold transition-all cursor-pointer ${
                           historyFilter === mod
-                            ? 'bg-stone-900 text-stone-100 font-bold'
-                            : 'bg-stone-100 text-stone-600 hover:text-stone-900'
+                            ? 'bg-stone-900 text-stone-100 shadow-[0_1px_0_rgba(0,0,0,0.2)]'
+                            : 'bg-stone-100 text-stone-600 hover:text-stone-900 hover:bg-stone-200'
                         }`}
                       >
                         {labels[mod]} ({count})
@@ -284,11 +282,11 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
               </div>
 
               {scoreState.history.length === 0 ? (
-                <div className="p-4 border border-dashed border-stone-300 text-center text-xs text-stone-500 rounded-sm">
+                <div className="p-4 border-2 border-dashed border-stone-300 text-center text-xs text-stone-500 rounded-xl">
                   Aún no has registrado acciones hoy. Tu puntuación actual es de 0 puntos. ¡Completa tu primer hábito o proyecto para comenzar a sumar!
                 </div>
               ) : filteredHistory.length === 0 ? (
-                <div className="p-4 border border-dashed border-stone-300 text-center text-xs text-stone-500 rounded-sm">
+                <div className="p-4 border-2 border-dashed border-stone-300 text-center text-xs text-stone-500 rounded-xl">
                   No hay acciones registradas en esta categoría.
                 </div>
               ) : (
@@ -296,18 +294,18 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                   {filteredHistory.map((item) => (
                     <div
                       key={item.id}
-                      className="p-2 border border-stone-200 bg-[#faf8f1] flex items-center justify-between gap-2 rounded-sm"
+                      className="p-2.5 border-2 border-stone-200 bg-[#faf8f1] flex items-center justify-between gap-2 rounded-xl"
                     >
                       <div className="space-y-0.5">
                         <span className="font-bold text-stone-900 block">{item.reason}</span>
                         <div className="flex items-center gap-2 text-[10px] text-stone-500">
-                          <span className="uppercase px-1 border border-stone-300 bg-white rounded-xs">
+                          <span className="uppercase font-bold px-1.5 py-0.2 border border-stone-300 bg-white rounded-full">
                             {item.sourceModule}
                           </span>
                           <span>{item.timestamp}</span>
                         </div>
                       </div>
-                      <span className="font-bold text-emerald-700 shrink-0">
+                      <span className="font-bold text-emerald-800 shrink-0">
                         +{item.points} pts
                       </span>
                     </div>
@@ -317,7 +315,7 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
             </div>
 
             {/* Acciones del Modal */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-stone-200 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t-2 border-stone-200/80 text-xs">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -325,22 +323,25 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                     onResetScore();
                     soundEngine.playTap();
                   }}
-                  className="px-3 py-1.5 border border-stone-300 text-stone-600 hover:text-red-700 hover:border-red-300 rounded-sm cursor-pointer"
+                  className="px-3 py-1.5 border-2 border-stone-300 font-bold text-stone-600 hover:text-rose-700 hover:border-rose-300 rounded-xl shadow-[0_2px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
                   title="Restablece la puntuación a 0 para pruebas de verificación"
                 >
-                  Reiniciar puntos
+                  Reiniciar a 0
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
+                  onClick={async () => {
                     soundEngine.playTap();
-                    exportKaizenBackup();
+                    const res = await exportKaizenBackup();
+                    if (res.success) {
+                      window.alert(`¡Copia de seguridad generada con éxito! Se respaldaron ${res.totalKeys} claves de datos.`);
+                    }
                   }}
-                  className="px-3 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-sm cursor-pointer"
-                  title="Descargar copia de seguridad en JSON con todos los datos"
+                  className="px-3 py-1.5 border-2 border-stone-300 font-bold text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-xl shadow-[0_2px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
+                  title="Exportar copia de seguridad completa en JSON (hábitos, proyectos, entrenamientos, finanzas)"
                 >
                   <Download size={13} />
-                  <span>Descargar Respaldo</span>
+                  <span>Respaldar</span>
                 </button>
                 <button
                   type="button"
@@ -348,7 +349,7 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                     soundEngine.playTap();
                     fileInputRef.current?.click();
                   }}
-                  className="px-3 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-sm cursor-pointer"
+                  className="px-3 py-1.5 border-2 border-stone-300 font-bold text-stone-700 hover:bg-stone-100 flex items-center gap-1.5 rounded-xl shadow-[0_2px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
                   title="Restaurar copia de seguridad desde un archivo JSON"
                 >
                   <Upload size={13} />
@@ -369,7 +370,7 @@ export const ShellModals: React.FC<ShellModalsProps> = ({
                   onCloseScoreModal();
                   soundEngine.playTap();
                 }}
-                className="px-4 py-1.5 border border-[#211d19] bg-[#211d19] text-[#faf8f1] font-bold rounded-sm cursor-pointer hover:bg-stone-800"
+                className="px-5 py-2 border-2 border-[#161310] bg-[#211d19] text-[#faf8f1] font-bold rounded-xl shadow-[0_2.5px_0_#0a0807] hover:bg-stone-800 active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
               >
                 Entendido
               </button>

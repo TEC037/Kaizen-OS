@@ -56,21 +56,21 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
     <KzCard
       id={`module-card-${manifest.id}`}
       variant="surface"
-      className="p-5 flex flex-col justify-between border-stone-300 font-mono text-xs"
+      className="p-5 flex flex-col justify-between font-mono text-xs"
     >
       <div>
         {/* Cabecera de la tarjeta: Título, categoría y estado */}
-        <div className="flex items-start justify-between gap-2 pb-3 mb-3 border-b border-stone-200">
+        <div className="flex items-start justify-between gap-2 pb-3 mb-3 border-b-2 border-stone-200/80">
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm sm:text-base font-bold text-stone-900 tracking-tight font-mono">
                 {manifest.name}
               </h3>
-              <span className="text-[10px] text-stone-500 border border-stone-200 px-1.5 py-0.2 bg-[#faf8f1] rounded-xs">
+              <span className="text-[10px] font-bold text-stone-600 border-2 border-stone-300 px-2 py-0.5 bg-[#faf8f1] rounded-full shadow-[0_1px_0_#d9d3c5]">
                 {manifest.id}
               </span>
             </div>
-            <p className="text-[11px] text-stone-500 mt-0.5">
+            <p className="text-[11px] text-stone-500 font-medium mt-0.5">
               Categoría: {manifest.category}
             </p>
           </div>
@@ -83,8 +83,8 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
         </p>
 
         {/* Capacidades que aporta el módulo */}
-        <div className="mb-4 bg-[#faf8f1] border border-stone-200 p-3 space-y-2 rounded-sm text-xs">
-          <div className="font-semibold text-stone-700 text-[10px] uppercase tracking-wider flex items-center gap-1">
+        <div className="mb-4 bg-[#faf8f1] border-2 border-[#e4ded2] p-3.5 space-y-2 rounded-xl text-xs shadow-[0_2px_0_#d9d3c5]">
+          <div className="font-bold text-stone-700 text-[10px] uppercase tracking-wider flex items-center gap-1">
             <Box size={13} className="text-stone-500" />
             <span>Capacidades aportadas</span>
           </div>

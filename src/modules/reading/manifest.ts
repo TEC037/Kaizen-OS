@@ -34,4 +34,35 @@ export const readingManifest: ModuleManifest = {
   permissions: ['storage:local'],
   optionalDependencies: [],
   version: '1.0.0',
+  spec: {
+    theme: {
+      accent: '#0e7490', // Azul zafiro intelectual
+      bg: '#f4f2ec',
+    },
+    storage: {
+      scope: 'reading',
+      version: 1,
+      defaults: {},
+    },
+    events: {
+      emits: [
+        {
+          name: 'reading:session-finished',
+          description: 'Sesión de lectura activa de páginas registrada',
+          points: 15,
+          reason: 'Lectura activa en biblioteca',
+        },
+      ],
+      listens: [],
+    },
+    settings: [
+      {
+        id: 'metaPaginasDiarias',
+        label: 'Meta diaria de páginas leídas',
+        type: 'number',
+        default: 20,
+        help: 'Páginas recomendadas por día para mantener la disciplina intelectual',
+      },
+    ],
+  },
 };

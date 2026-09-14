@@ -7,7 +7,6 @@
 
 import React, { useEffect } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { Toaster } from 'sonner';
 import TransmuteApp from './transmute/src/App';
 import './transmute/src/index.css';
 import { setThemeOnRoot } from './transmute/src/lib/themeRoot';
@@ -44,7 +43,6 @@ export const HabitsPage: React.FC = () => {
     <div className="transmute-app -mx-4 -my-4 sm:-mx-6 sm:-my-6">
       <MemoryRouter initialEntries={['/']}>
         <TransmuteApp />
-        <Toaster position="top-center" richColors />
       </MemoryRouter>
     </div>
   );

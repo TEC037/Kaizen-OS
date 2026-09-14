@@ -29,6 +29,9 @@ interface ShellLayoutContextValue {
   showShortcutsModal: boolean;
   setShowShortcutsModal: (val: boolean) => void;
 
+  showProfileModal: boolean;
+  setShowProfileModal: (val: boolean) => void;
+
   showDashboardCustomize: boolean;
   setShowDashboardCustomize: (val: boolean | ((prev: boolean) => boolean)) => void;
 
@@ -50,6 +53,7 @@ export const ShellLayoutProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [showScoreModal, setShowScoreModal] = useState<boolean>(false);
   const [showArchInspector, setShowArchInspector] = useState<boolean>(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState<boolean>(false);
+  const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
   const [showDashboardCustomize, setShowDashboardCustomize] = useState<boolean>(false);
 
   const { soundEnabled, toggleSound, playTap, playComplete, playMilestone } = useSound();
@@ -61,6 +65,7 @@ export const ShellLayoutProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setShowScoreModal(false);
     setShowArchInspector(false);
     setShowShortcutsModal(false);
+    setShowProfileModal(false);
   };
 
   return (
@@ -79,6 +84,8 @@ export const ShellLayoutProvider: React.FC<{ children: React.ReactNode }> = ({ c
         setShowArchInspector,
         showShortcutsModal,
         setShowShortcutsModal,
+        showProfileModal,
+        setShowProfileModal,
         showDashboardCustomize,
         setShowDashboardCustomize,
         soundEnabled,

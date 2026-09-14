@@ -11,7 +11,8 @@ import { awardKaizenPoints } from '../../core/scoring';
 import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
-import { BookOpen, Plus, Check, Bookmark, ArrowUpRight } from 'lucide-react';
+import { BookOpen, Plus } from 'lucide-react';
+import { KzButton, KzCard, KzBadge } from '../../components/ui';
 
 export const ReadingPage: React.FC = () => {
   const [books, setBooks] = useState<BookItem[]>(() =>
@@ -99,112 +100,111 @@ export const ReadingPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Encabezado del Módulo */}
-      <div className="border border-zinc-300 bg-white p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Encabezado del Módulo con delegación de layout al AppShell */}
+      <KzCard variant="surface" className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-kz-line">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs px-2 py-0.5 border border-zinc-400 bg-zinc-100 text-zinc-800">
-              MÓDULO: /reading
-            </span>
-            <span className="font-mono text-xs text-zinc-500">v1.0.0</span>
+            <KzBadge variant="info">MÓDULO: /reading</KzBadge>
+            <KzBadge variant="dim">v1.0.0</KzBadge>
           </div>
-          <h1 className="text-xl font-bold text-zinc-900 mt-1 tracking-tight flex items-center gap-2">
-            <BookOpen size={20} />
+          <h1 className="text-xl font-bold text-kz-ink mt-1 tracking-tight flex items-center gap-2 font-mono">
+            <BookOpen size={20} className="text-kz-accent" />
             <span>Biblioteca y Sesiones de Lectura</span>
           </h1>
-          <p className="text-xs text-zinc-600 mt-0.5">
-            Desarrollo intelectual mediante lectura deliberada y registro incremental de páginas.
+          <p className="text-xs text-kz-ink-soft mt-0.5">
+            Desarrollo intelectual mediante lectura deliberada y registro incremental de páginas (+1% intelectual).
           </p>
         </div>
 
         <div>
-          <button
-            type="button"
+          <KzButton
+            variant="primary"
+            size="md"
+            icon={<Plus size={14} />}
             onClick={() => {
               soundEngine.playTap();
               setShowAddModal(!showAddModal);
             }}
-            className="px-3.5 py-1.5 text-xs font-semibold border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus size={14} />
-            <span>Añadir libro</span>
-          </button>
+            Añadir libro
+          </KzButton>
         </div>
-      </div>
+      </KzCard>
 
       {/* Modal / Formulario para añadir libro */}
       {showAddModal && (
-        <form
-          onSubmit={handleAddBook}
-          className="border border-zinc-400 bg-zinc-50 p-4 space-y-3"
-        >
-          <div className="font-mono text-xs font-bold text-zinc-800 uppercase tracking-wider">
-            Añadir nuevo libro a la biblioteca
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Título del libro *
-              </label>
-              <input
-                type="text"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="Ej: Solo una cosa"
-                required
-                className="w-full px-3 py-1.5 text-xs border border-zinc-300 bg-white text-zinc-900"
-              />
+        <KzCard variant="sunken" className="p-4 space-y-3 border-kz-line-strong">
+          <form onSubmit={handleAddBook} className="space-y-3">
+            <div className="font-mono text-xs font-bold text-kz-ink uppercase tracking-wider">
+              Añadir nuevo libro a la biblioteca
             </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Autor
-              </label>
-              <input
-                type="text"
-                value={newAuthor}
-                onChange={(e) => setNewAuthor(e.target.value)}
-                placeholder="Ej: Gary Keller"
-                className="w-full px-3 py-1.5 text-xs border border-zinc-300 bg-white text-zinc-900"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-mono font-medium text-kz-ink-soft mb-1">
+                  Título del libro *
+                </label>
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="Ej: Solo una cosa"
+                  required
+                  className="w-full px-3 py-1.5 text-xs font-mono border border-kz-line bg-kz-surface text-kz-ink rounded-sm focus:outline-none focus:border-kz-line-strong"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono font-medium text-kz-ink-soft mb-1">
+                  Autor
+                </label>
+                <input
+                  type="text"
+                  value={newAuthor}
+                  onChange={(e) => setNewAuthor(e.target.value)}
+                  placeholder="Ej: Gary Keller"
+                  className="w-full px-3 py-1.5 text-xs font-mono border border-kz-line bg-kz-surface text-kz-ink rounded-sm focus:outline-none focus:border-kz-line-strong"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono font-medium text-kz-ink-soft mb-1">
+                  Total páginas
+                </label>
+                <input
+                  type="number"
+                  min={10}
+                  value={totalPages}
+                  onChange={(e) => setTotalPages(Number(e.target.value))}
+                  className="w-full px-3 py-1.5 text-xs font-mono border border-kz-line bg-kz-surface text-kz-ink rounded-sm focus:outline-none focus:border-kz-line-strong"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Total páginas
-              </label>
-              <input
-                type="number"
-                min={10}
-                value={totalPages}
-                onChange={(e) => setTotalPages(Number(e.target.value))}
-                className="w-full px-3 py-1.5 text-xs border border-zinc-300 bg-white text-zinc-900"
-              />
+            <div className="flex justify-end gap-2 pt-1">
+              <KzButton
+                variant="craft"
+                size="sm"
+                type="button"
+                onClick={() => {
+                  soundEngine.playTap();
+                  setShowAddModal(false);
+                }}
+              >
+                Cancelar
+              </KzButton>
+              <KzButton
+                variant="primary"
+                size="sm"
+                type="submit"
+              >
+                Guardar libro
+              </KzButton>
             </div>
-          </div>
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={() => {
-                soundEngine.playTap();
-                setShowAddModal(false);
-              }}
-              className="px-3 py-1.5 text-xs border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 cursor-pointer"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-3.5 py-1.5 text-xs font-semibold border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 cursor-pointer"
-            >
-              Guardar libro
-            </button>
-          </div>
-        </form>
+          </form>
+        </KzCard>
       )}
 
       {/* Sección: Libros en Progreso */}
       <div className="space-y-3">
-        <div className="border-b border-zinc-300 pb-1 flex items-center justify-between">
-          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-800">
+        <div className="border-b border-kz-line pb-1 flex items-center justify-between">
+          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-kz-ink">
             Libros en Progreso ({inProgressBooks.length})
           </h2>
         </div>
@@ -213,61 +213,65 @@ export const ReadingPage: React.FC = () => {
           {inProgressBooks.map((book) => {
             const percent = Math.round((book.currentPage / book.totalPages) * 100);
             return (
-              <div
+              <KzCard
                 key={book.id}
-                className="border border-zinc-300 bg-white p-4 space-y-3 flex flex-col justify-between"
+                variant="surface"
+                className="border-kz-line p-4 space-y-3 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="text-sm font-semibold text-zinc-900 tracking-tight">
+                      <h3 className="text-sm font-semibold text-kz-ink tracking-tight font-mono">
                         {book.title}
                       </h3>
-                      <span className="text-xs text-zinc-500">{book.author}</span>
+                      <span className="text-xs text-kz-ink-soft">{book.author}</span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-zinc-800">
+                    <KzBadge variant={percent >= 100 ? 'success' : 'default'}>
                       {percent}%
-                    </span>
+                    </KzBadge>
                   </div>
 
-                  <div className="w-full bg-zinc-200 h-2 border border-zinc-300 mt-2">
-                    <div className="bg-zinc-800 h-full" style={{ width: `${percent}%` }} />
+                  <div className="w-full bg-kz-line h-2 rounded-xs overflow-hidden mt-2">
+                    <div
+                      className={`h-full transition-all duration-300 rounded-xs ${percent >= 100 ? 'bg-kz-success' : 'bg-kz-ink'}`}
+                      style={{ width: `${percent}%` }}
+                    />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] font-mono text-zinc-600 mt-1">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-kz-ink-soft mt-1">
                     <span>Pág {book.currentPage} / {book.totalPages}</span>
                     <span>Quedan {book.totalPages - book.currentPage} págs</span>
                   </div>
                 </div>
 
                 {/* Botones rápidos de registro de sesión */}
-                <div className="pt-2 border-t border-zinc-200 flex items-center justify-between">
-                  <span className="text-[11px] text-zinc-500 font-mono">Registrar lectura:</span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
+                <div className="pt-2 border-t border-kz-line flex items-center justify-between">
+                  <span className="text-[11px] text-kz-ink-dim font-mono">Registrar lectura:</span>
+                  <div className="flex items-center gap-1.5">
+                    <KzButton
+                      variant="craft"
+                      size="sm"
                       onClick={() => handleAddPages(book.id, 10)}
-                      className="px-2 py-0.5 text-xs font-mono border border-zinc-300 bg-zinc-50 hover:bg-zinc-100 cursor-pointer text-zinc-800"
                     >
                       +10 págs
-                    </button>
-                    <button
-                      type="button"
+                    </KzButton>
+                    <KzButton
+                      variant="craft"
+                      size="sm"
                       onClick={() => handleAddPages(book.id, 25)}
-                      className="px-2 py-0.5 text-xs font-mono border border-zinc-300 bg-zinc-50 hover:bg-zinc-100 cursor-pointer text-zinc-800"
                     >
                       +25 págs
-                    </button>
-                    <button
-                      type="button"
+                    </KzButton>
+                    <KzButton
+                      variant="primary"
+                      size="sm"
                       onClick={() => handleAddPages(book.id, book.totalPages - book.currentPage)}
-                      className="px-2 py-0.5 text-xs font-mono border border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800 cursor-pointer"
                     >
                       Terminar
-                    </button>
+                    </KzButton>
                   </div>
                 </div>
-              </div>
+              </KzCard>
             );
           })}
         </div>
@@ -276,48 +280,48 @@ export const ReadingPage: React.FC = () => {
       {/* Sección: Libros Pendientes y Terminados */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Pendientes */}
-        <div className="border border-zinc-300 bg-white p-4 space-y-3">
-          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-800 border-b border-zinc-200 pb-2">
+        <KzCard variant="surface" className="border-kz-line p-4 space-y-3">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-kz-ink border-b border-kz-line pb-2">
             Libros Pendientes ({pendingBooks.length})
           </h3>
-          <div className="divide-y divide-zinc-200">
+          <div className="divide-y divide-kz-line">
             {pendingBooks.map((b) => (
-              <div key={b.id} className="py-2 flex items-center justify-between text-xs">
+              <div key={b.id} className="py-2.5 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-medium text-zinc-900 block">{b.title}</span>
-                  <span className="text-[11px] text-zinc-500">{b.author} ({b.totalPages} págs)</span>
+                  <span className="font-medium text-kz-ink font-mono block">{b.title}</span>
+                  <span className="text-[11px] text-kz-ink-soft">{b.author} ({b.totalPages} págs)</span>
                 </div>
-                <button
-                  type="button"
+                <KzButton
+                  variant="craft"
+                  size="sm"
                   onClick={() => handleAddPages(b.id, 1)}
-                  className="px-2 py-1 text-[11px] font-mono border border-zinc-300 bg-zinc-50 hover:bg-zinc-100 cursor-pointer"
                 >
                   Comenzar
-                </button>
+                </KzButton>
               </div>
             ))}
           </div>
-        </div>
+        </KzCard>
 
         {/* Terminados */}
-        <div className="border border-zinc-300 bg-white p-4 space-y-3">
-          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-800 border-b border-zinc-200 pb-2">
+        <KzCard variant="surface" className="border-kz-line p-4 space-y-3">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-kz-ink border-b border-kz-line pb-2">
             Libros Concluidos ({finishedBooks.length})
           </h3>
-          <div className="divide-y divide-zinc-200">
+          <div className="divide-y divide-kz-line">
             {finishedBooks.map((b) => (
-              <div key={b.id} className="py-2 flex items-center justify-between text-xs">
+              <div key={b.id} className="py-2.5 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-medium text-zinc-900 block">{b.title}</span>
-                  <span className="text-[11px] text-zinc-500">{b.author}</span>
+                  <span className="font-medium text-kz-ink font-mono block">{b.title}</span>
+                  <span className="text-[11px] text-kz-ink-soft">{b.author}</span>
                 </div>
-                <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-300 px-1.5 py-0.2">
+                <KzBadge variant="success">
                   Completado
-                </span>
+                </KzBadge>
               </div>
             ))}
           </div>
-        </div>
+        </KzCard>
       </div>
     </div>
   );

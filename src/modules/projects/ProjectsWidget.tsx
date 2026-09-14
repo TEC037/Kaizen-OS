@@ -13,7 +13,8 @@ import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
 import { awardKaizenPoints } from '../../core/scoring';
-import { ArrowRight, PlayCircle, Check, Sparkles } from 'lucide-react';
+import { ArrowRight, PlayCircle, Check } from 'lucide-react';
+import { KzButton, KzBadge } from '../../components/ui';
 
 function loadProjects(): ProjectItem[] {
   const fromForja = loadCustomData<ProjectItem[] | null>('forja_projects_v1', null);
@@ -89,7 +90,7 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
     >
       <div className="space-y-3 font-mono text-xs">
         {activeProjects.length === 0 ? (
-          <p className="text-xs text-stone-500 italic py-2">
+          <p className="text-xs text-kz-ink-dim italic py-2">
             No hay piezas activas con acciones pendientes en el taller.
           </p>
         ) : (
@@ -97,51 +98,47 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
             {activeProjects.slice(0, 3).map((project) => (
               <div
                 key={project.id}
-                className="p-3 border border-stone-200 bg-[#faf8f1] rounded-sm space-y-2 hover:border-stone-300 transition-colors"
+                className="p-3 border border-kz-line bg-kz-surface-2 rounded-sm space-y-2 hover:border-kz-line-strong transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-stone-900 truncate">
+                  <span className="font-bold text-kz-ink truncate">
                     {project.title}
                   </span>
-                  <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.2 rounded-xs border border-stone-300 bg-white text-stone-700">
+                  <KzBadge variant="dim">
                     {project.status}
-                  </span>
+                  </KzBadge>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 bg-white p-2 border border-stone-200 rounded-sm">
+                <div className="flex items-center justify-between gap-2 bg-kz-surface p-2 border border-kz-line rounded-sm">
                   <div className="flex items-start gap-1.5 min-w-0">
-                    <PlayCircle size={14} className="text-amber-700 shrink-0 mt-0.5" />
-                    <span className="text-[11px] leading-tight text-stone-800 truncate">
+                    <PlayCircle size={14} className="text-kz-accent shrink-0 mt-0.5" />
+                    <span className="text-[11px] leading-tight text-kz-ink truncate">
                       {project.nextAction}
                     </span>
                   </div>
 
-                  <button
-                    type="button"
+                  <KzButton
+                    variant={recentlyDoneId === project.id ? 'primary' : 'craft'}
+                    size="sm"
                     onClick={(e) => completeNextAction(e, project.id)}
                     disabled={recentlyDoneId === project.id}
-                    className={`px-2 py-1 rounded-xs text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0 ${
-                      recentlyDoneId === project.id
-                        ? 'bg-emerald-100 text-emerald-900 border border-emerald-400'
-                        : 'bg-amber-50 hover:bg-emerald-50 text-amber-950 hover:text-emerald-900 border border-amber-300 hover:border-emerald-300'
-                    }`}
+                    icon={<Check size={11} />}
                     title="Completar esta próxima acción ahora (+5 pts Kaizen)"
                   >
-                    <Check size={11} />
-                    <span>{recentlyDoneId === project.id ? '¡Forjado!' : 'Hecho'}</span>
-                  </button>
+                    {recentlyDoneId === project.id ? '¡Forjado!' : 'Hecho'}
+                  </KzButton>
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] text-stone-500 pt-0.5">
+                <div className="flex items-center justify-between text-[10px] text-kz-ink-dim pt-0.5">
                   <div className="flex items-center gap-1.5">
                     <span>Avance:</span>
-                    <div className="w-16 h-1.5 bg-stone-200 rounded-xs overflow-hidden">
+                    <div className="w-16 h-1.5 bg-kz-line rounded-xs overflow-hidden">
                       <div
-                        className="bg-amber-700 h-full transition-all duration-300"
+                        className="bg-kz-accent h-full transition-all duration-300"
                         style={{ width: `${project.progressPercent}%` }}
                       />
                     </div>
-                    <span className="font-bold text-stone-800">{project.progressPercent}%</span>
+                    <span className="font-bold text-kz-ink">{project.progressPercent}%</span>
                   </div>
                   {project.dueDate && <span>Plazo: {project.dueDate}</span>}
                 </div>
@@ -151,17 +148,17 @@ export const ProjectsWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
         )}
 
         <div className="pt-2 flex justify-end">
-          <button
-            type="button"
+          <KzButton
+            variant="ghost"
+            size="sm"
             onClick={() => {
               soundEngine.playTap();
               onNavigate('/projects');
             }}
-            className="text-xs font-mono text-stone-700 hover:text-stone-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
             <span>Abrir taller FORJA</span>
             <ArrowRight size={12} />
-          </button>
+          </KzButton>
         </div>
       </div>
     </ModuleWidget>

@@ -46,7 +46,7 @@ export const GymPage: React.FC<GymPageProps> = () => {
 
   return (
     <div
-      className="punto-fuerte-app -mx-4 -my-4 sm:-mx-6 sm:-my-6 bg-[#101319] text-[#e1e2eb]"
+      className="punto-fuerte-app -mx-4 -my-4 sm:-mx-6 sm:-my-6 bg-kz-ink text-kz-surface"
       style={{ transform: 'translateZ(0)' }}
     >
       <FitAiApp />

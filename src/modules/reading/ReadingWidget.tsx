@@ -13,7 +13,8 @@ import { soundEngine } from '../../core/sound';
 import { kaizenBus } from '../../sdk/bus';
 import { KaizenContracts } from '../../sdk/contracts';
 import { awardKaizenPoints } from '../../core/scoring';
-import { BookOpen, ArrowRight, Plus, CheckCircle2, RefreshCw } from 'lucide-react';
+import { ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react';
+import { KzButton, KzBadge } from '../../components/ui';
 
 export const ReadingWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
   const [books, setBooks] = useState<BookItem[]>(() =>
@@ -88,50 +89,44 @@ export const ReadingWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
     >
       <div className="space-y-3 font-mono text-xs">
         {activeBook ? (
-          <div className="p-3 border border-stone-200 bg-[#faf8f1] rounded-sm space-y-2.5">
+          <div className="p-3 border border-kz-line bg-kz-surface-2 rounded-sm space-y-2.5">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <span className="text-xs font-bold text-stone-900 block font-mono truncate">
+                <span className="text-xs font-bold text-kz-ink block font-mono truncate">
                   {activeBook.title}
                 </span>
-                <span className="text-[11px] text-stone-500 font-sans truncate block">
+                <span className="text-[11px] text-kz-ink-soft font-sans truncate block">
                   {activeBook.author}
                 </span>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 {books.length > 1 && (
-                  <button
-                    type="button"
+                  <KzButton
+                    variant="craft"
+                    size="sm"
+                    className="p-1 min-w-0 h-6"
                     onClick={cycleNextBook}
-                    className="p-1 border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 rounded-xs text-[10px] cursor-pointer"
+                    icon={<RefreshCw size={11} />}
                     title="Alternar entre libros de la biblioteca"
-                  >
-                    <RefreshCw size={11} />
-                  </button>
+                  />
                 )}
-                <span
-                  className={`text-[10px] font-mono border px-1.5 py-0.2 rounded-xs font-bold ${
-                    isCompleted
-                      ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
-                      : 'bg-white text-stone-800 border-stone-300'
-                  }`}
-                >
+                <KzBadge variant={isCompleted ? 'success' : 'default'}>
                   {percent}%
-                </span>
+                </KzBadge>
               </div>
             </div>
 
-            <div className="w-full bg-stone-200 h-1.5 rounded-xs overflow-hidden">
+            <div className="w-full bg-kz-line h-1.5 rounded-xs overflow-hidden">
               <div
                 className={`h-full transition-all duration-300 rounded-xs ${
-                  isCompleted ? 'bg-emerald-600' : 'bg-indigo-700'
+                  isCompleted ? 'bg-kz-success' : 'bg-kz-accent'
                 }`}
                 style={{ width: `${percent}%` }}
               />
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-stone-600">
-              <span>Página <strong>{activeBook.currentPage}</strong> de {activeBook.totalPages}</span>
+            <div className="flex items-center justify-between text-[11px] text-kz-ink-soft">
+              <span>Página <strong className="text-kz-ink">{activeBook.currentPage}</strong> de {activeBook.totalPages}</span>
               <span>
                 {isCompleted ? 'Finalizado' : `${activeBook.totalPages - activeBook.currentPage} págs restantes`}
               </span>
@@ -139,68 +134,68 @@ export const ReadingWidget: React.FC<ModuleWidgetProps> = ({ onNavigate }) => {
 
             {/* Micro-acciones rápidas o estado completado */}
             {isCompleted ? (
-              <div className="flex items-center justify-between pt-1 border-t border-stone-200/60">
-                <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-[11px]">
-                  <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
+              <div className="flex items-center justify-between pt-1 border-t border-kz-line/60">
+                <div className="flex items-center gap-1.5 text-kz-success font-bold text-[11px]">
+                  <CheckCircle2 size={13} className="text-kz-success shrink-0" />
                   <span>¡Lectura concluida! (+45 pts)</span>
                 </div>
                 {books.length > 1 && (
-                  <button
-                    type="button"
+                  <KzButton
+                    variant="craft"
+                    size="sm"
                     onClick={cycleNextBook}
-                    className="px-2 py-0.5 border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 rounded-xs text-[10px] font-bold cursor-pointer"
                   >
                     Siguiente libro →
-                  </button>
+                  </KzButton>
                 )}
               </div>
             ) : (
-              <div className="flex items-center justify-between pt-1 border-t border-stone-200/60">
-                <span className="text-[10px] text-stone-500">Avance rápido:</span>
+              <div className="flex items-center justify-between pt-1 border-t border-kz-line/60">
+                <span className="text-[10px] text-kz-ink-dim">Avance rápido:</span>
                 <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
+                  <KzButton
+                    variant="craft"
+                    size="sm"
                     onClick={() => advancePages(Math.min(5, activeBook.totalPages - activeBook.currentPage))}
-                    className="px-2 py-0.5 border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 rounded-xs text-[10px] font-bold cursor-pointer transition-colors"
                     title={`Registrar ${Math.min(5, activeBook.totalPages - activeBook.currentPage)} páginas leídas (+15 pts Kaizen)`}
                   >
                     +{Math.min(5, activeBook.totalPages - activeBook.currentPage)} págs
-                  </button>
+                  </KzButton>
                   {activeBook.totalPages - activeBook.currentPage > 5 && (
-                    <button
-                      type="button"
+                    <KzButton
+                      variant="primary"
+                      size="sm"
                       onClick={() => advancePages(Math.min(10, activeBook.totalPages - activeBook.currentPage))}
-                      className="px-2 py-0.5 border border-indigo-300 bg-indigo-50 hover:bg-indigo-100 text-indigo-950 rounded-xs text-[10px] font-bold cursor-pointer transition-colors"
                       title={`Registrar ${Math.min(10, activeBook.totalPages - activeBook.currentPage)} páginas leídas (+15 pts Kaizen)`}
                     >
                       +{Math.min(10, activeBook.totalPages - activeBook.currentPage)} págs
-                    </button>
+                    </KzButton>
                   )}
                 </div>
               </div>
             )}
           </div>
         ) : (
-          <p className="text-xs text-stone-500 italic py-2">
+          <p className="text-xs text-kz-ink-dim italic py-2">
             No hay libros en progreso actualmente.
           </p>
         )}
 
         <div className="flex items-center justify-between pt-1">
-          <span className="text-[11px] text-stone-600">
-            Biblioteca: <strong className="text-stone-900">{books.length} libros</strong>
+          <span className="text-[11px] text-kz-ink-soft">
+            Biblioteca: <strong className="text-kz-ink">{books.length} libros</strong>
           </span>
-          <button
-            type="button"
+          <KzButton
+            variant="ghost"
+            size="sm"
             onClick={() => {
               soundEngine.playTap();
               onNavigate('/reading');
             }}
-            className="text-xs text-stone-700 hover:text-stone-950 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
           >
             <span>Ver biblioteca</span>
             <ArrowRight size={12} />
-          </button>
+          </KzButton>
         </div>
       </div>
     </ModuleWidget>

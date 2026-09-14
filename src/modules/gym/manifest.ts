@@ -39,4 +39,35 @@ export const gymManifest: ModuleManifest = {
   permissions: ['storage:local', 'fitness:metrics'],
   optionalDependencies: [],
   version: '1.0.0',
+  spec: {
+    theme: {
+      accent: '#b91c1c', // Carmesí atlético
+      bg: '#f4f2ec',
+    },
+    storage: {
+      scope: 'gym',
+      version: 1,
+      defaults: {},
+    },
+    events: {
+      emits: [
+        {
+          name: 'gym:session-completed',
+          description: 'Sesión de entrenamiento finalizada en Punto Fuerte',
+          points: 30,
+          reason: 'Entrenamiento completado en Punto Fuerte',
+        },
+      ],
+      listens: [],
+    },
+    settings: [
+      {
+        id: 'metaEntrenamientosSemana',
+        label: 'Meta semanal de entrenamientos',
+        type: 'number',
+        default: 4,
+        help: 'Días por semana planificados para actividad física deliberada',
+      },
+    ],
+  },
 };

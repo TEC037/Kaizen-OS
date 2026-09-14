@@ -43,8 +43,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       variant="dashed"
       className="p-8 text-center my-4 flex flex-col items-center justify-center font-mono"
     >
-      <div className="w-10 h-10 border border-stone-300 bg-white flex items-center justify-center mb-3 rounded-sm shadow-2xs">
-        <AlertCircle size={20} className={iconColor} />
+      <div className="w-12 h-12 border-2 border-stone-300 bg-white flex items-center justify-center mb-3.5 rounded-2xl shadow-[0_3px_0_#cfc7b6]">
+        <AlertCircle size={22} className={iconColor} />
       </div>
 
       <h3 className="text-sm sm:text-base font-bold text-stone-900 tracking-tight mb-1 font-mono uppercase">

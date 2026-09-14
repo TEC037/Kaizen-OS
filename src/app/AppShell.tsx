@@ -66,6 +66,8 @@ const InnerShell: React.FC = () => {
     setShowArchInspector,
     showShortcutsModal,
     setShowShortcutsModal,
+    showProfileModal,
+    setShowProfileModal,
     showDashboardCustomize,
     setShowDashboardCustomize,
     soundEnabled,
@@ -129,7 +131,7 @@ const InnerShell: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#f4f2ec] text-[#211d19] font-sans antialiased flex flex-col selection:bg-amber-200 selection:text-amber-950">
+    <div className="min-h-screen bg-[#f4f2ec] text-[#211d19] font-sans antialiased flex flex-col selection:bg-amber-200 selection:text-amber-950 overflow-x-hidden">
       {/* Cabecera del Sistema (oculta en Modo Zen para foco absoluto) */}
       {!zenMode && (
         <ShellHeader
@@ -149,6 +151,7 @@ const InnerShell: React.FC = () => {
           onOpenScoreModal={() => setShowScoreModal(true)}
           onOpenInspector={() => setShowArchInspector(!showArchInspector)}
           isInspectorOpen={showArchInspector}
+          onOpenProfileModal={() => setShowProfileModal(true)}
         />
       )}
 
@@ -184,6 +187,9 @@ const InnerShell: React.FC = () => {
         onNavigate={navigate}
         showShortcutsModal={showShortcutsModal}
         onCloseShortcutsModal={() => setShowShortcutsModal(false)}
+        showProfileModal={showProfileModal}
+        onCloseProfileModal={() => setShowProfileModal(false)}
+        onOpenProfileModal={() => setShowProfileModal(true)}
         showCommandBar={showCommandBar}
         onCloseCommandBar={() => setShowCommandBar(false)}
         zenMode={zenMode}

@@ -20,15 +20,15 @@
   --opacity-muted: 0.7;
   --opacity-dim: 0.55;
   
-  --shadow-solar-out: 12px 12px 30px rgba(0,0,0,0.05), -12px -12px 30px #ffffff;
-  --shadow-solar-in: inset 6px 6px 12px rgba(0,0,0,0.05), inset -6px -6px 12px #ffffff;
+  --shadow-solar-out: 12px 12px 30px rgba(0,0,0,0.05), -12px -12px 30px var(--color-kz-surface, #ffffff);
+  --shadow-solar-in: inset 6px 6px 12px rgba(0,0,0,0.05), inset -6px -6px 12px var(--color-kz-surface, #ffffff);
   
   /* QUANTUM TOKENS */
   --glow-cyan: rgba(34, 211, 238, 0.2);
   --glow-emerald: rgba(16, 185, 129, 0.2);
   
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Oswald', sans-serif;
+  --font-sans: var(--font-kz-sans, 'Inter', sans-serif);
+  --font-serif: var(--font-kz-mono, 'Oswald', sans-serif);
 
   /* OVERRIDES PARA LEGIBILIDAD EXTREMA */
   --op-20: 0.5;

@@ -40,8 +40,9 @@ export const KzRingProgress: React.FC<KzRingProgressProps> = ({
 
   return (
     <motion.div
-      whileHover={isClickable ? { scale: 1.05 } : undefined}
-      whileTap={isClickable ? { scale: 0.95 } : undefined}
+      whileHover={isClickable ? { scale: 1.08 } : undefined}
+      whileTap={isClickable ? { scale: 0.94 } : undefined}
+      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
       onClick={isClickable ? handleClick : undefined}
       className={`relative inline-flex items-center justify-center select-none ${
         isClickable ? 'cursor-pointer' : ''
@@ -55,7 +56,7 @@ export const KzRingProgress: React.FC<KzRingProgressProps> = ({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#e7e2d6"
+          stroke="#eae4d6"
           strokeWidth={strokeWidth}
         />
         {/* Arco de progreso animado */}
@@ -64,21 +65,21 @@ export const KzRingProgress: React.FC<KzRingProgressProps> = ({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={isGoalAchieved ? '#166534' : '#b45309'}
+          stroke={isGoalAchieved ? '#2e6b36' : '#b45309'}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset }}
-          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 140, damping: 18 }}
           strokeLinecap="round"
         />
       </svg>
       {showLabel && (
         <div className="absolute inset-0 flex flex-col items-center justify-center font-mono select-none">
-          <span className={`text-[11px] font-bold leading-none ${isGoalAchieved ? 'text-emerald-800' : 'text-stone-800'}`}>
+          <span className={`text-[12px] font-extrabold leading-none ${isGoalAchieved ? 'text-emerald-900' : 'text-stone-900'}`}>
             {percent}%
           </span>
-          <span className="text-[8px] text-stone-500 uppercase tracking-tighter mt-0.5">+1%</span>
+          <span className="text-[8px] font-bold text-stone-500 uppercase tracking-tighter mt-0.5">+1%</span>
         </div>
       )}
     </motion.div>

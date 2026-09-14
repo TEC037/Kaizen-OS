@@ -20,6 +20,7 @@ import { KzBadge } from '../../components/ui/KzBadge';
 import { KzRingProgress } from '../../components/ui/KzRingProgress';
 import { KzScorePill } from '../../components/ui/KzScorePill';
 import { soundEngine } from '../../core/sound';
+import { useGlobalUserName } from '../../core/profile';
 
 interface DashboardViewProps {
   scoreState: KaizenScoreState;
@@ -72,11 +73,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     );
   }
 
-  const [userName, setUserName] = React.useState(() => {
-    return localStorage.getItem('kz:user_name') || 'Alex';
-  });
+  const [userName, setUserName] = useGlobalUserName();
   const [isEditingName, setIsEditingName] = React.useState(false);
   const [tempName, setTempName] = React.useState(userName);
+
+  React.useEffect(() => {
+    setTempName(userName);
+  }, [userName]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -88,7 +91,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const handleSaveName = () => {
     const trimmed = tempName.trim() || 'Alex';
     setUserName(trimmed);
-    localStorage.setItem('kz:user_name', trimmed);
     setIsEditingName(false);
     soundEngine.playTap();
   };
@@ -123,11 +125,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Banner de Bienvenida y Resumen del Día */}
-      <KzCard variant="surface" className="border-stone-300">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-stone-200 pb-3 mb-3">
+      <KzCard variant="surface">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-stone-200/80 pb-3 mb-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-stone-600">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-stone-600">
                 ESPACIO PERSONAL • KAIZEN OS
               </span>
               <KzBadge variant="success">
@@ -153,12 +155,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       }
                     }}
                     autoFocus
-                    className="text-xl sm:text-2xl font-bold text-stone-900 font-mono bg-white border border-stone-400 px-1.5 py-0 rounded-xs w-36 outline-none shadow-inner"
+                    className="text-xl sm:text-2xl font-bold text-stone-900 font-mono bg-white border-2 border-stone-400 px-2 py-0.5 rounded-xl w-36 outline-none shadow-inner"
                   />
                   <button
                     type="button"
                     onClick={handleSaveName}
-                    className="p-1 border border-stone-400 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xs cursor-pointer"
+                    className="p-1.5 border-2 border-stone-300 bg-white hover:bg-stone-100 text-stone-800 rounded-xl shadow-[0_2px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
                     title="Guardar nombre"
                   >
                     <Check size={14} />
@@ -209,14 +211,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Filosofía Kaizen */}
-        <div className="bg-[#faf8f1] border border-stone-200 p-2.5 text-xs text-stone-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono rounded-sm">
+        <div className="bg-[#faf8f1] border-2 border-[#ded7c8] p-3 text-xs text-stone-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono rounded-xl shadow-[0_2px_0_#d9d3c5]">
           <div className="flex items-center gap-2">
-            <Info size={14} className="text-stone-500 shrink-0" />
+            <Info size={15} className="text-stone-500 shrink-0" />
             <span>
               Filosofía Kaizen: <strong>1% es suficiente avance por día</strong>. La constancia sostenida vence al esfuerzo desmedido.
             </span>
           </div>
-          <span className="text-stone-600 text-[11px]">
+          <span className="text-stone-600 text-[11px] font-bold">
             Modo: Ecosistema Entramado v2
           </span>
         </div>
@@ -225,11 +227,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Grid Superior: Compromiso del 1% y Sensei Kaizen */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Tarjeta: Compromiso de Mejora Continua (+1% Diario) */}
-        <KzCard variant="surface" className="border-stone-300 space-y-4 flex flex-col justify-between">
+        <KzCard variant="surface" className="space-y-4 flex flex-col justify-between">
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-2.5">
+            <div className="flex items-center justify-between border-b-2 border-stone-200/80 pb-2.5">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 border border-stone-300 bg-[#faf8f1] rounded-sm">
+                <div className="p-2 border-2 border-stone-300 bg-[#faf8f1] rounded-xl shadow-[0_2px_0_#cfc7b6]">
                   <TrendingUp size={16} className="text-stone-800" />
                 </div>
                 <div>
@@ -249,10 +251,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onOpenScoreModal();
                     soundEngine.playTap();
                   }}
-                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-all cursor-pointer ${
+                  className={`flex items-center gap-1 border-2 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer shadow-[0_2px_0_rgba(0,0,0,0.06)] active:translate-y-[1px] active:shadow-none ${
                     scoreState.currentStreakDays >= 7
-                      ? 'border-amber-400 bg-amber-100/80 text-amber-950 font-semibold hover:bg-amber-200/80'
-                      : 'border-stone-200 bg-[#faf8f1] text-stone-700 hover:bg-stone-100 hover:border-stone-300'
+                      ? 'border-amber-400 bg-amber-100 text-amber-950 shadow-[0_2px_0_#fcd34d]'
+                      : 'border-stone-300 bg-[#faf8f1] text-stone-700 hover:bg-white shadow-[0_2px_0_#cfc7b6]'
                   }`}
                   title={
                     scoreState.currentStreakDays >= 7
@@ -276,10 +278,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onOpenScoreModal();
                     soundEngine.playTap();
                   }}
-                  className={`flex items-center gap-1 border px-2 py-0.5 rounded-sm text-[11px] transition-all cursor-pointer ${
+                  className={`flex items-center gap-1 border-2 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer active:translate-y-[1px] active:shadow-none ${
                     isDailyGoalAchieved
-                      ? 'border-emerald-400 bg-emerald-100/80 text-emerald-950 font-semibold hover:bg-emerald-200/80'
-                      : 'border-stone-200 bg-[#faf8f1] text-stone-700 hover:bg-stone-100 hover:border-stone-300'
+                      ? 'border-emerald-400 bg-emerald-100 text-emerald-950 shadow-[0_2px_0_#86efac]'
+                      : 'border-stone-300 bg-[#faf8f1] text-stone-700 hover:bg-white shadow-[0_2px_0_#cfc7b6]'
                   }`}
                   title={
                     isDailyGoalAchieved
@@ -318,12 +320,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               >
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-stone-600 group-hover:text-stone-900 transition-colors">Avance de hoy:</span>
-                  <span className="font-bold text-stone-900">{dailyPercent}%</span>
+                  <span className="font-extrabold text-stone-900">{dailyPercent}%</span>
                 </div>
-                <div className="w-full h-2.5 border border-stone-300 group-hover:border-stone-400 bg-stone-100 p-0.5 rounded-xs transition-colors">
+                <div className="w-full h-3.5 border-2 border-stone-300 group-hover:border-stone-400 bg-stone-100 p-0.5 rounded-full overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)] transition-colors">
                   <div
-                    className={`h-full transition-all duration-300 rounded-xs ${
-                      isDailyGoalAchieved ? 'bg-emerald-700' : 'bg-amber-700'
+                    className={`h-full transition-all duration-300 rounded-full ${
+                      isDailyGoalAchieved ? 'bg-emerald-600 shadow-[0_1px_0_#166534]' : 'bg-amber-600 shadow-[0_1px_0_#b45309]'
                     }`}
                     style={{ width: `${Math.min(100, dailyPercent)}%` }}
                   />
@@ -333,14 +335,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           {/* Mensaje de estado */}
-          <div className="flex items-center justify-between pt-2 border-t border-stone-200 text-xs font-mono">
+          <div className="flex items-center justify-between pt-2.5 border-t-2 border-stone-200/80 text-xs font-mono">
             <span className="text-[11px] text-stone-600 flex items-center gap-2">
               {isDailyGoalAchieved ? (
                 <>
-                  <span className="border border-red-800/40 bg-red-50 text-red-900 px-1.5 py-0.2 rounded-xs font-mono text-[9px] uppercase tracking-wider font-bold shadow-xs shrink-0">
+                  <span className="border-2 border-rose-800/40 bg-rose-50 text-rose-950 px-2 py-0.5 rounded-full font-mono text-[9px] uppercase tracking-wider font-extrabold shadow-[0_1px_0_#fca5a5] shrink-0">
                     印 1% CONSOLIDADO
                   </span>
-                  <span className="text-emerald-800 font-semibold">
+                  <span className="text-emerald-800 font-bold">
                     ¡Meta del día lograda! Bono acreditado.
                   </span>
                 </>
@@ -356,7 +358,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 onOpenScoreModal();
                 soundEngine.playTap();
               }}
-              className="text-[11px] underline text-stone-800 hover:text-stone-950 cursor-pointer"
+              className="text-[11px] font-bold text-stone-800 hover:text-stone-950 underline underline-offset-2 cursor-pointer"
             >
               Ver reglas &rarr;
             </button>
@@ -381,17 +383,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </h2>
 
             {onSelectContextMode && (
-              <div className="flex items-center gap-1 border border-stone-300 bg-[#faf8f1] p-0.5 rounded-sm text-[11px] font-mono">
+              <div className="flex items-center gap-1 border-2 border-[#ded7c8] bg-[#f3efe4] p-1 rounded-full text-[11px] font-mono">
                 <button
                   type="button"
                   onClick={() => {
                     onSelectContextMode('all');
                     soundEngine.playTap();
                   }}
-                  className={`px-1.5 py-0.5 rounded-xs transition-colors cursor-pointer ${
+                  className={`px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
                     contextMode === 'all'
-                      ? 'bg-stone-900 text-stone-100 font-bold'
-                      : 'text-stone-600 hover:text-stone-900'
+                      ? 'bg-stone-900 text-stone-100 font-bold shadow-[0_1.5px_0_rgba(0,0,0,0.15)]'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
                   }`}
                   title="Mostrar todos los widgets"
                 >
@@ -403,10 +405,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onSelectContextMode('morning');
                     soundEngine.playTap();
                   }}
-                  className={`px-1.5 py-0.5 rounded-xs flex items-center gap-1 transition-colors cursor-pointer ${
+                  className={`px-2.5 py-0.5 rounded-full flex items-center gap-1 transition-all cursor-pointer ${
                     contextMode === 'morning'
-                      ? 'bg-amber-700 text-white font-bold'
-                      : 'text-stone-600 hover:text-amber-800'
+                      ? 'bg-amber-700 text-white font-bold shadow-[0_1.5px_0_rgba(0,0,0,0.15)]'
+                      : 'text-stone-600 hover:text-amber-800 hover:bg-white/60'
                   }`}
                   title="Modo Mañana: Hábitos y Rutina de Fuerza"
                 >
@@ -419,10 +421,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onSelectContextMode('deepwork');
                     soundEngine.playTap();
                   }}
-                  className={`px-1.5 py-0.5 rounded-xs flex items-center gap-1 transition-colors cursor-pointer ${
+                  className={`px-2.5 py-0.5 rounded-full flex items-center gap-1 transition-all cursor-pointer ${
                     contextMode === 'deepwork'
-                      ? 'bg-amber-900 text-white font-bold'
-                      : 'text-stone-600 hover:text-stone-900'
+                      ? 'bg-amber-900 text-white font-bold shadow-[0_1.5px_0_rgba(0,0,0,0.15)]'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
                   }`}
                   title="Modo Foco Profundo: Taller FORJA y Hábitos"
                 >
@@ -435,10 +437,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onSelectContextMode('evening');
                     soundEngine.playTap();
                   }}
-                  className={`px-1.5 py-0.5 rounded-xs flex items-center gap-1 transition-colors cursor-pointer ${
+                  className={`px-2.5 py-0.5 rounded-full flex items-center gap-1 transition-all cursor-pointer ${
                     contextMode === 'evening'
-                      ? 'bg-indigo-900 text-white font-bold'
-                      : 'text-stone-600 hover:text-stone-900'
+                      ? 'bg-indigo-900 text-white font-bold shadow-[0_1.5px_0_rgba(0,0,0,0.15)]'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
                   }`}
                   title="Modo Cierre: Lectura y Finanzas"
                 >
@@ -457,10 +459,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 onToggleDashboardCustomize();
                 soundEngine.playTap();
               }}
-              className={`px-2.5 py-1 text-xs font-mono border flex items-center gap-1.5 rounded-sm cursor-pointer transition-colors ${
+              className={`px-3 py-1.5 text-xs font-mono font-bold border-2 flex items-center gap-1.5 rounded-xl cursor-pointer transition-all shadow-[0_2px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none ${
                 showDashboardCustomize
-                  ? 'border-stone-400 bg-stone-100 text-stone-900 font-semibold'
-                  : 'border-stone-300 bg-white hover:bg-stone-50 text-stone-700'
+                  ? 'border-stone-400 bg-stone-200 text-stone-900 font-bold'
+                  : 'border-stone-300 bg-[#faf8f1] hover:bg-white text-stone-700'
               }`}
               title="Personalizar orden y visibilidad de widgets"
             >
@@ -472,9 +474,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Panel de Personalización de Widgets */}
         {showDashboardCustomize && widgetLayout.placements.length > 0 && (
-          <div className="border border-stone-300 bg-white p-3 mb-4 space-y-2 rounded-sm shadow-sm font-mono text-xs">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-1.5">
-              <span className="text-[11px] uppercase tracking-wider font-bold text-stone-800">
+          <div className="border-2 border-stone-300 bg-white p-4 mb-4 space-y-3 rounded-2xl shadow-[0_4px_0_#d9d3c5] font-mono text-xs">
+            <div className="flex items-center justify-between border-b-2 border-stone-200/80 pb-2">
+              <span className="text-[11px] uppercase tracking-wider font-extrabold text-stone-800">
                 Personalización del Dashboard
               </span>
               <div className="flex items-center gap-3">
@@ -485,14 +487,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       onResetLayout();
                       soundEngine.playTap();
                     }}
-                    className="text-[10px] text-stone-500 hover:text-stone-900 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
+                    className="text-[10px] font-bold text-stone-500 hover:text-stone-900 flex items-center gap-1 underline underline-offset-2 cursor-pointer"
                     title="Restablecer orden y visibilidad por defecto"
                   >
                     <RotateCcw size={10} />
                     <span>Restablecer por defecto</span>
                   </button>
                 )}
-                <span className="text-[10px] text-stone-500">Se guarda automáticamente</span>
+                <span className="text-[10px] text-stone-500 font-medium">Se guarda automáticamente</span>
               </div>
             </div>
             {widgetLayout.placements.map((placement, index) => {
@@ -501,7 +503,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               return (
                 <div
                   key={placement.widgetId}
-                  className="flex flex-wrap items-center gap-2 border border-stone-200 bg-[#faf8f1] p-2 rounded-sm"
+                  className="flex flex-wrap items-center gap-2 border-2 border-stone-200 bg-[#faf8f1] p-2.5 rounded-xl"
                 >
                   <div className="flex items-center gap-1">
                     <button

@@ -1,8 +1,8 @@
 /**
  * @file src/app/layout/ShellHeader.tsx
- * @description Encabezado principal del Shell de Kaizen OS.
- * Estética artesanal "Wabi-Sabi Tech", selector de contextos diarios,
- * gatillo de Omnibar y métricas del 1% diario.
+ * @description Encabezado principal sintetizado del Shell de Kaizen OS.
+ * Estética artesanal "Wabi-Sabi Tech", navegación modular balanceada,
+ * dock compacto de herramientas y cero desbordamiento horizontal.
  */
 
 import React from 'react';
@@ -22,16 +22,13 @@ import {
   Wallet,
   Hammer,
   ChevronRight,
-  Sun,
-  Flame,
-  Moon,
-  Compass,
 } from 'lucide-react';
 import { KzScorePill } from '../../components/ui/KzScorePill';
 import { KzHotKey } from '../../components/ui/KzHotKey';
 import { ModuleRoute } from '../../core/types';
 import { soundEngine } from '../../core/sound';
 import { DashboardContextMode } from '../providers/ShellLayoutProvider';
+import { useGlobalUserName } from '../../core/profile';
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   CheckSquare,
@@ -53,12 +50,13 @@ interface ShellHeaderProps {
   onToggleZenMode: () => void;
   soundEnabled: boolean;
   onToggleSound: () => void;
-  contextMode: DashboardContextMode;
-  onSelectContextMode: (mode: DashboardContextMode) => void;
   onOpenCommandBar: () => void;
   onOpenScoreModal: () => void;
   onOpenInspector: () => void;
   isInspectorOpen: boolean;
+  onOpenProfileModal?: () => void;
+  contextMode?: DashboardContextMode;
+  onSelectContextMode?: (mode: DashboardContextMode) => void;
 }
 
 export const ShellHeader: React.FC<ShellHeaderProps> = ({
@@ -72,116 +70,44 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
   onToggleZenMode,
   soundEnabled,
   onToggleSound,
-  contextMode,
-  onSelectContextMode,
   onOpenCommandBar,
   onOpenScoreModal,
   onOpenInspector,
   isInspectorOpen,
+  onOpenProfileModal,
 }) => {
+  const [globalUserName] = useGlobalUserName();
+
   return (
-    <header className="border-b border-[#d9d3c5] bg-[#fffdf8] sticky top-0 z-30 shadow-[0_1px_3px_rgba(33,29,25,0.04)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
-        {/* Logo de Marca Artesanal */}
-        <div className="flex items-center gap-4">
+    <header className="border-b-2 border-[#e6e0d2] bg-[#fffdf8]/95 backdrop-blur-md sticky top-0 z-30 shadow-[0_2px_8px_rgba(33,29,25,0.03)] w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-5 py-2 flex items-center justify-between gap-2 sm:gap-3">
+        {/* 1. Logo de Marca (Sintetizado y Compacto) */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={() => {
               onNavigate('/');
               soundEngine.playTap();
             }}
-            className="flex items-center gap-2.5 text-left cursor-pointer group select-none"
+            className="flex items-center gap-2 text-left cursor-pointer group select-none shrink-0"
+            title="Kaizen OS — Inicio"
           >
-            <div className="w-7 h-7 rounded-sm border border-[#211d19] bg-[#211d19] text-[#faf8f1] flex items-center justify-center font-mono font-bold text-sm shadow-sm group-hover:bg-[#3d372e] transition-colors">
+            <div className="w-8 h-8 rounded-xl border-2 border-[#1f1c18] bg-[#211d19] text-[#faf8f1] flex items-center justify-center font-mono font-bold text-sm shadow-[0_2px_0_#0f0d0b] group-hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none transition-all">
               改
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm tracking-tight text-[#211d19] font-mono">
-                  Kaizen OS
-                </span>
-                <span className="text-[9px] font-mono px-1 py-0.2 rounded-sm border border-amber-300 bg-amber-50 text-amber-900 font-semibold">
-                  v2.0
-                </span>
-              </div>
-              <span className="text-[10px] font-mono text-stone-600 block leading-none">
-                MEJORA CONTINUA +1%
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-sm tracking-tight text-[#211d19] font-mono">
+                Kaizen OS
+              </span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full border border-amber-300 bg-amber-50 text-amber-950 font-bold shadow-[0_1px_0_#fcd34d]">
+                v2
               </span>
             </div>
           </button>
-
-          {/* Selector de Contextos del Día (Solo visible en Dashboard) */}
-          {currentPath === '/' && (
-            <div className="hidden lg:flex items-center gap-1 border border-stone-200 bg-[#faf8f1] p-0.5 rounded-sm text-[11px] font-mono">
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectContextMode('all');
-                  soundEngine.playTap();
-                }}
-                className={`px-2 py-0.5 rounded-sm transition-colors cursor-pointer ${
-                  contextMode === 'all'
-                    ? 'bg-[#211d19] text-[#faf8f1] font-bold'
-                    : 'text-stone-600 hover:text-stone-900'
-                }`}
-                title="Ver todos los widgets activos"
-              >
-                Todos
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectContextMode('morning');
-                  soundEngine.playTap();
-                }}
-                className={`px-2 py-0.5 rounded-sm flex items-center gap-1 transition-colors cursor-pointer ${
-                  contextMode === 'morning'
-                    ? 'bg-amber-700 text-white font-bold'
-                    : 'text-stone-600 hover:text-amber-800'
-                }`}
-                title="Modo Mañana: Hábitos y Rutina de Fuerza"
-              >
-                <Sun size={11} />
-                <span>Mañana</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectContextMode('deepwork');
-                  soundEngine.playTap();
-                }}
-                className={`px-2 py-0.5 rounded-sm flex items-center gap-1 transition-colors cursor-pointer ${
-                  contextMode === 'deepwork'
-                    ? 'bg-amber-900 text-white font-bold'
-                    : 'text-stone-600 hover:text-stone-900'
-                }`}
-                title="Modo Foco Profundo: Taller FORJA y Próxima Acción"
-              >
-                <Flame size={11} />
-                <span>Foco</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onSelectContextMode('evening');
-                  soundEngine.playTap();
-                }}
-                className={`px-2 py-0.5 rounded-sm flex items-center gap-1 transition-colors cursor-pointer ${
-                  contextMode === 'evening'
-                    ? 'bg-indigo-900 text-white font-bold'
-                    : 'text-stone-600 hover:text-stone-900'
-                }`}
-                title="Modo Cierre: Lectura y Reflexión del Día"
-              >
-                <Moon size={11} />
-                <span>Cierre</span>
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* Menú de Navegación Modular (Desktop) */}
-        <nav className="hidden md:flex items-center gap-1 font-mono text-xs">
+        {/* 2. Navegación Modular Central (Desktop) */}
+        <nav className="hidden md:flex items-center gap-1 font-mono text-xs overflow-x-auto no-scrollbar shrink-0">
           <button
             type="button"
             id="nav-dashboard"
@@ -189,10 +115,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
               onNavigate('/');
               soundEngine.playTap();
             }}
-            className={`px-3 py-1.5 rounded-sm border flex items-center gap-1.5 cursor-pointer transition-colors ${
+            className={`px-2.5 py-1.5 rounded-xl border-2 flex items-center gap-1.5 cursor-pointer transition-all shrink-0 ${
               currentPath === '/'
-                ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-semibold'
-                : 'border-transparent text-stone-700 hover:border-stone-300 hover:bg-stone-100/50'
+                ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-bold shadow-[0_2px_0_#0f0d0b]'
+                : 'border-transparent text-stone-700 hover:border-stone-300 hover:bg-[#faf8f1]'
             }`}
           >
             <LayoutDashboard size={13} />
@@ -211,10 +137,10 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
                   onNavigate(route.path);
                   soundEngine.playTap();
                 }}
-                className={`px-3 py-1.5 rounded-sm border flex items-center gap-1.5 cursor-pointer transition-colors ${
+                className={`px-2.5 py-1.5 rounded-xl border-2 flex items-center gap-1.5 cursor-pointer transition-all shrink-0 ${
                   isActive
-                    ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-semibold'
-                    : 'border-transparent text-stone-700 hover:border-stone-300 hover:bg-stone-100/50'
+                    ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-bold shadow-[0_2px_0_#0f0d0b]'
+                    : 'border-transparent text-stone-700 hover:border-stone-300 hover:bg-[#faf8f1]'
                 }`}
               >
                 <IconComponent size={13} />
@@ -224,8 +150,8 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
           })}
         </nav>
 
-        {/* Acciones y Gatillos de Cabecera */}
-        <div className="flex items-center gap-2">
+        {/* 3. Clúster Derecho de Acciones y Utilidades (Sintetizado) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Gatillo del Omnibar (Cmd+K) */}
           <button
             type="button"
@@ -234,12 +160,28 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
               soundEngine.playTap();
               onOpenCommandBar();
             }}
-            className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 text-xs font-mono border border-stone-300 bg-[#faf8f1] hover:bg-white text-stone-700 rounded-sm cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs font-mono font-bold border-2 border-stone-300 bg-[#faf8f1] hover:bg-white text-stone-700 rounded-xl shadow-[0_2px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
             title="Abrir Centro de Mando / Omnibar (Cmd+K)"
           >
             <Search size={13} className="text-stone-400" />
-            <span className="hidden md:inline">Comandos</span>
             <KzHotKey keys={['⌘', 'K']} size="sm" />
+          </button>
+
+          {/* Perfil de Usuario Global */}
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.playTap();
+              onOpenProfileModal?.();
+            }}
+            className="px-2 py-1.5 text-xs font-mono font-bold border-2 border-stone-300 bg-[#faf8f1] hover:bg-white text-stone-800 rounded-xl shadow-[0_2px_0_#cfc7b6] active:translate-y-[1px] active:shadow-none cursor-pointer flex items-center gap-1.5 transition-all"
+            title={`Perfil global: ${globalUserName} (Clic para cambiar)`}
+            aria-label="Perfil de usuario global"
+          >
+            <div className="w-4 h-4 rounded-full bg-amber-200 border border-stone-800 flex items-center justify-center text-[9px] font-extrabold text-stone-900">
+              {globalUserName.charAt(0).toUpperCase()}
+            </div>
+            <span className="hidden lg:inline max-w-[80px] truncate">{globalUserName}</span>
           </button>
 
           {/* Indicador de Puntos Kaizen */}
@@ -249,86 +191,86 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
             onClick={onOpenScoreModal}
           />
 
-          {/* Alternar Sonido */}
-          <button
-            type="button"
-            onClick={onToggleSound}
-            className="p-1.5 text-stone-600 hover:text-stone-900 border border-stone-300 bg-[#faf8f1] hover:bg-white rounded-sm cursor-pointer transition-colors"
-            title={soundEnabled ? 'Silenciar sonidos [M]' : 'Activar sonidos de feedback [M]'}
-            aria-label="Alternar sonido (M)"
-          >
-            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} className="text-stone-400" />}
-          </button>
+          {/* Dock Compacto de Herramientas (Segmentado, sin duplicar márgenes sueltos) */}
+          <div className="flex items-center border-2 border-stone-300 bg-[#faf8f1] rounded-xl shadow-[0_2px_0_#cfc7b6] divide-x-2 divide-stone-200 overflow-hidden">
+            {/* Alternar Sonido */}
+            <button
+              type="button"
+              onClick={onToggleSound}
+              className="p-1.5 text-stone-600 hover:text-stone-900 hover:bg-white transition-colors cursor-pointer"
+              title={soundEnabled ? 'Silenciar sonidos [M]' : 'Activar sonidos de feedback [M]'}
+              aria-label="Alternar sonido (M)"
+            >
+              {soundEnabled ? <Volume2 size={13} /> : <VolumeX size={13} className="text-stone-400" />}
+            </button>
 
-          {/* Alternar Modo Zen */}
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.playTap();
-              onToggleZenMode();
-            }}
-            className={`px-2 py-1.5 text-xs font-mono border rounded-sm flex items-center gap-1 cursor-pointer transition-colors ${
-              zenMode
-                ? 'border-amber-400 bg-amber-100 text-amber-950 font-bold'
-                : 'border-stone-300 bg-[#faf8f1] hover:bg-white text-stone-700'
-            }`}
-            title="Alternar Modo Zen / Foco Total (tecla Z)"
-          >
-            {zenMode ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
-            <span className="hidden xl:inline">Zen</span>
-          </button>
+            {/* Alternar Modo Zen */}
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playTap();
+                onToggleZenMode();
+              }}
+              className={`p-1.5 transition-colors cursor-pointer ${
+                zenMode ? 'bg-amber-100 text-amber-950' : 'text-stone-600 hover:text-stone-900 hover:bg-white'
+              }`}
+              title="Alternar Modo Zen / Foco Total [Z]"
+              aria-label="Alternar Modo Zen (Z)"
+            >
+              {zenMode ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+            </button>
 
-          {/* Mis Módulos */}
-          <button
-            type="button"
-            id="nav-modules"
-            onClick={() => {
-              onNavigate('/modules');
-              soundEngine.playTap();
-            }}
-            className={`px-2.5 py-1.5 text-xs font-mono border rounded-sm flex items-center gap-1.5 cursor-pointer transition-colors ${
-              currentPath === '/modules'
-                ? 'border-[#211d19] bg-[#211d19] text-[#faf8f1] font-semibold'
-                : 'border-stone-300 bg-[#faf8f1] text-stone-800 hover:bg-white'
-            }`}
-          >
-            <Layers size={13} />
-            <span className="hidden sm:inline">Módulos</span>
-            <span className="w-4 h-4 bg-stone-200 text-stone-800 text-[10px] flex items-center justify-center font-bold rounded-xs">
-              {enabledModulesCount}
-            </span>
-          </button>
+            {/* Catálogo de Módulos */}
+            <button
+              type="button"
+              id="nav-modules"
+              onClick={() => {
+                onNavigate('/modules');
+                soundEngine.playTap();
+              }}
+              className={`px-2 py-1.5 text-xs font-mono font-bold flex items-center gap-1 transition-colors cursor-pointer ${
+                currentPath === '/modules'
+                  ? 'bg-[#211d19] text-[#faf8f1]'
+                  : 'text-stone-700 hover:bg-white'
+              }`}
+              title={`Catálogo de Módulos (${enabledModulesCount} activos)`}
+              aria-label="Catálogo de módulos"
+            >
+              <Layers size={13} />
+              <span className="text-[10px] font-extrabold">{enabledModulesCount}</span>
+            </button>
 
-          {/* Inspector de Arquitectura */}
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.playTap();
-              onOpenInspector();
-            }}
-            className={`p-1.5 text-xs font-mono border rounded-sm cursor-pointer transition-colors ${
-              isInspectorOpen
-                ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
-                : 'border-stone-300 bg-[#faf8f1] text-stone-600 hover:text-stone-900 hover:bg-white'
-            }`}
-            title="Inspector de Arquitectura Modular y Bus"
-            aria-label="Inspector"
-          >
-            <Code2 size={14} />
-          </button>
+            {/* Inspector de Arquitectura */}
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playTap();
+                onOpenInspector();
+              }}
+              className={`p-1.5 transition-colors cursor-pointer ${
+                isInspectorOpen
+                  ? 'bg-emerald-100 text-emerald-900'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-white'
+              }`}
+              title="Inspector de Arquitectura Modular y Bus"
+              aria-label="Inspector"
+            >
+              <Code2 size={13} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Menú de navegación móvil */}
-      <div className="md:hidden border-t border-stone-200 px-4 py-2 flex items-center gap-1 overflow-x-auto text-xs font-mono bg-[#faf8f1]">
+      <div className="md:hidden border-t-2 border-stone-200/80 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto text-xs font-mono bg-[#faf8f1]">
         <button
           type="button"
           onClick={() => {
             onNavigate('/');
             soundEngine.playTap();
           }}
-          className={`px-2.5 py-1 border rounded-sm shrink-0 ${
-            currentPath === '/' ? 'bg-[#211d19] text-white border-[#211d19]' : 'bg-white border-stone-300'
+          className={`px-3 py-1 border-2 rounded-full font-bold shrink-0 shadow-[0_1.5px_0_rgba(0,0,0,0.1)] ${
+            currentPath === '/' ? 'bg-[#211d19] text-white border-[#211d19]' : 'bg-white border-stone-300 text-stone-800'
           }`}
         >
           Dashboard
@@ -341,8 +283,8 @@ export const ShellHeader: React.FC<ShellHeaderProps> = ({
               onNavigate(route.path);
               soundEngine.playTap();
             }}
-            className={`px-2.5 py-1 border rounded-sm shrink-0 ${
-              currentPath === route.path ? 'bg-[#211d19] text-white border-[#211d19]' : 'bg-white border-stone-300'
+            className={`px-3 py-1 border-2 rounded-full font-bold shrink-0 shadow-[0_1.5px_0_rgba(0,0,0,0.06)] ${
+              currentPath === route.path ? 'bg-[#211d19] text-white border-[#211d19]' : 'bg-white border-stone-300 text-stone-800'
             }`}
           >
             {route.label}
